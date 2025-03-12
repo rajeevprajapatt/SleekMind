@@ -1,6 +1,7 @@
-import {Router} from "express";
+import { Router } from "express";
 import * as userController from "../controllers/user_controller.js";
 import { body } from "express-validator";
+import * as authMiddleware from "../middleware/auth_middleware.js";
 
 const router = Router();
 
@@ -15,5 +16,7 @@ router.post("/login",
     body("password").isLength({ min: 3 }).withMessage("password should be at most 3 characters long"),
     userController.loginUserController
 )
+
+router.get("/profile", authMiddleware.authUser, userController.profileUserController);
 
 export default router;
