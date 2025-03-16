@@ -30,7 +30,7 @@ userSchema.methods.generateJwt = function () {
     return jwt.sign({
         email: this.email
     }, process.env.SECRET_KEY, {
-        expiresIn: "80h"
+        expiresIn: "48h"
     })
 }
 
