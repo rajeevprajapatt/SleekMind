@@ -2,6 +2,7 @@ import User from "../models/user.js";
 import * as userService from "../services/user_services.js";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
+import redisClient from "../services/redis_service.js";
 
 export const createUserController = async (req, res) => {
 
@@ -56,5 +57,16 @@ export const profileUserController = async (req, res) => {
         res.status(200).json({ user });
     } catch (error) {
         res.status(400).send({ error: "User not found" });
+    }
+}
+
+export const logoutUserController = async (req, res) => {
+    try {
+        const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+        await redisClient.set(token, 'logout', 'EX', 60 * 60 * 24);
+        res.status(200).send({ message: "Logout successful" });
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ error: "Logout failed" });
     }
 }
