@@ -5,10 +5,12 @@ import connect from "./database/db.js";
 import dotenv from "dotenv/config";
 import Routes from "./routes/user_routes.js"
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 const app = express();
 connect();
 
+app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
