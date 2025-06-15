@@ -1,10 +1,9 @@
 import React from 'react'
+import AppRoutes from './routes/AppRoutes'
 
 const App = () => {
   return (
-    <div className="text-center text-2xl font-bold">
-      App
-    </div>
+    <AppRoutes />
   )
 }
 
