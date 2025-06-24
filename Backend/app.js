@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import connect from "./database/db.js";
 import dotenv from "dotenv/config";
-import Routes from "./routes/user_routes.js"
+import userRoutes from "./routes/user_routes.js"
+import projectRouter from './routes/project_routes.js';
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -20,7 +21,8 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
     return res.json({ msg: "Hello World" });
 })
-app.use("/users", Routes);
+app.use("/users", userRoutes);
+app.use("/projects", projectRouter);
 
 
 export default app;
