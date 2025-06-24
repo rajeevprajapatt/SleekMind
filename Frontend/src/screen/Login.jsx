@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../config/axios"
+import { UserContext } from '../context/user-context';
+// import { set } from "mongoose";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const { setUser } = useContext(UserContext);
+
     const navigate = useNavigate();
 
     function submitHandler(e) {
@@ -12,6 +17,10 @@ const Login = () => {
         axios.post("/users/login", { email, password })
             .then((response) => {
                 console.log("Login successful:", response.data);
+
+                localStorage.setItem("token", response.data.token);
+                setUser(response.data.user);
+
                 navigate("/");
             })
             .catch((error) => {
