@@ -20,7 +20,7 @@ export const createProject = async (req, res) => {
 
         res.status(201).json(newProject);
     } catch (error) {
-        console.log(error); // Fixed variable name
+        console.log(error); 
         res.status(400).send(error.message);
     }
 }
