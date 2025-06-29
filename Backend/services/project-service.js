@@ -4,17 +4,25 @@ import projectModel from '../models/project-model.js'
 export const createProject = async ({
     name, userId
 }) => {
-    if(!name){
+    if (!name) {
         throw new Error('Name is required')
     }
-    if(!userId){
+    if (!userId) {
         throw new Error('User is required')
     }
 
-    const project = await projectModel.create({
-        name,
-        users: [userId]
-    });
+    let project;
+    try {
+        project = await projectModel.create({
+            name,
+            users: [userId]
+        });
+    } catch (error) {
+        if (error.code === 11000) {
+            throw new Error('Project name must be unique');
+        }
+        throw error;
+    }
 
     return project;
 }
