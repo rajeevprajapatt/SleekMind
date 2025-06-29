@@ -15,7 +15,8 @@ export const createUserController = async (req, res) => {
         const user = await userService.createUser(req.body);
 
         const token = await user.generateJwt();
-        delete user._doc.password; // Remove password from the response
+        // Remove password from the response
+        delete user._doc.password; 
         res.status(200).json({ user, token });
     } catch (error) {
         res.status(400).send(error.message)
