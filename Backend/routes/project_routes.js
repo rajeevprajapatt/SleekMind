@@ -22,4 +22,22 @@ router.post(
     projectController.createProject
 );
 
+router.get("/all",
+    authMiddleware.authUser,
+    projectController.getAllProject
+);
+
+router.put("/addUser",
+    authMiddleware.authUser,
+    body("projectId").isString().withMessage("ProjectId must be a string"),
+    body("users")
+        .isArray({ min: 1 }).withMessage("Users must be a non-empty array")
+        .custom((arr) => arr.every(u => typeof u === "string")).withMessage("Each user must be a string"),
+    handleValidation,
+
+    projectController.addUserToProject
+)
+
+
+
 export default router;
