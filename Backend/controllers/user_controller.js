@@ -16,7 +16,7 @@ export const createUserController = async (req, res) => {
 
         const token = await user.generateJwt();
         // Remove password from the response
-        delete user._doc.password; 
+        delete user._doc.password;
         res.status(200).json({ user, token });
     } catch (error) {
         res.status(400).send(error.message)
@@ -71,5 +71,22 @@ export const logoutUserController = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(400).send({ error: "Logout failed" });
+    }
+}
+
+export const getAllUsersController = async (req, res) => {
+    try {
+        const loggedInUser = await User.findOne({
+            email: req.user.email
+        })
+
+        const allUsers = await userService.getAllUsers({ userId: loggedInUser._id });
+
+        return res.status(200).json({
+            users: allUsers
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ error: err.message })
     }
 }
