@@ -1,74 +1,31 @@
-import React, { useContext, useState } from 'react'
-import { UserContext } from '../context/user-context'
-import axios from "../config/axios"
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../context/user-context';
 
 const Home = () => {
   const { user } = useContext(UserContext);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [projectName, setProjectName] = useState(null);
+  const navigate = useNavigate();
 
-  function createProject(e) {
-    e.preventDefault();
-    axios.post("/projects/create", {
-      name: projectName,
-    }).then((res) => {
-      console.log(res.data)
-    })
-      .catch((err) => {
-        console.error("Error creating project:", err)
-      })
-      ;
-    console.log("Create Project Clicked");
-    console.log(projectName);
+  // If already logged in, redirect to /home
+  if (user) {
+    navigate("/home");
+    return null;
   }
 
   return (
-    <main className='p-4'>
-      <div className="projects">
-        <button onClick={() => setIsModalOpen(true)} className="project p-4 border border-slate-300 rounded-md">
-          <i className="ri-link mr-2" ></i>New Project
-        </button>
-      </div>
+    <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white px-4">
+      <h1 className="text-4xl font-bold mb-4 text-center">Welcome to Project Manager</h1>
+      <p className="mb-6 text-lg text-center max-w-md">
+        Manage your teams and ideas in one powerful platform.
+      </p>
+      <button
+        onClick={() => navigate("/login")}
+        className="bg-white text-blue-700 px-6 py-2 rounded-md font-semibold hover:bg-blue-100 transition"
+      >
+        Login
+      </button>
+    </div>
+  );
+};
 
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">Create New Project</h2>
-            <form
-              onSubmit={createProject}
-            >
-              <label className="block mb-2 text-sm font-medium text-gray-700">
-                Project Name
-              </label>
-              <input
-                onChange={(e) => setProjectName(e.target.value)}
-                type="text"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter project name"
-                required
-              />
-              <div className="flex justify-end space-x-2">
-                <button
-                  type="button"
-                  className="px-4 py-2 rounded-md bg-gray-200 text-gray-700"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-md bg-blue-600 text-white"
-                >
-                  Create
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-    </main>
-  )
-}
-
-export default Home
+export default Home;
