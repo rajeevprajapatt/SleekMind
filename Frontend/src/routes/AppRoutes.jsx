@@ -4,11 +4,17 @@ import Login from '../screen/login'
 import Register from '../screen/Register'
 import Home from '../screen/Home'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Dashboard from '../screen/Dashboard'
 
 const router = createBrowserRouter([
   {
     path: "/", element: <div>
       <Home />
+    </div>
+  },
+  {
+    path:"/dashboard",element:<div>
+      <Dashboard/>
     </div>
   },
   {
