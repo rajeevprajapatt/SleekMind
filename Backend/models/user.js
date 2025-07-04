@@ -16,6 +16,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         select: false
     }
+},{
+    timestamps: true
 })
 
 userSchema.statics.hashPassword = async (password) => {
