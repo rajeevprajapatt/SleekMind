@@ -5,6 +5,7 @@ import Register from '../screen/Register'
 import Home from '../screen/Home'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Dashboard from '../screen/Dashboard'
+import Project from '../screen/Project'
 
 const router = createBrowserRouter([
   {
@@ -13,8 +14,8 @@ const router = createBrowserRouter([
     </div>
   },
   {
-    path:"/dashboard",element:<div>
-      <Dashboard/>
+    path: "/dashboard", element: <div>
+      <Dashboard />
     </div>
   },
   {
@@ -25,6 +26,11 @@ const router = createBrowserRouter([
   {
     path: "/register", element: <div>
       <Register />
+    </div>
+  },
+  {
+    path: "/project", element: <div>
+      <Project />
     </div>
   }
 ])
