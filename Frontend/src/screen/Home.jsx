@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/user-context';
 
@@ -7,10 +7,14 @@ const Home = () => {
   const navigate = useNavigate();
 
   // If already logged in, redirect to /home
-  if (user) {
-    navigate("/home");
-    return null;
-  }
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/dashboard");
+    }
+    else{
+      navigate("/");
+    }
+  })
 
   return (
     <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white px-4">

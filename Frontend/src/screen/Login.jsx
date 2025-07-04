@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../config/axios"
 import { UserContext } from '../context/user-context';
@@ -11,6 +11,12 @@ const Login = () => {
     const { setUser } = useContext(UserContext);
 
     const navigate = useNavigate();
+    useEffect(() => {
+        if (localStorage.getItem("token")) {
+            navigate("/dashboard");
+        }
+    })
+
 
     function submitHandler(e) {
         e.preventDefault();
@@ -19,6 +25,7 @@ const Login = () => {
                 console.log("Login successful:", response.data);
 
                 localStorage.setItem("token", response.data.token);
+                localStorage.setItem("user", JSON.stringify(response.data.user)); // <-- add this
                 setUser(response.data.user);
 
                 navigate("/dashboard");

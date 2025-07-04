@@ -1,7 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../config/axios";
-import {UserContext} from "../context/user-context";
+import { UserContext } from "../context/user-context";
 
 const Register = () => {
     const [email, setEmail] = useState("");
@@ -10,6 +10,17 @@ const Register = () => {
     const { setUser } = useContext(UserContext);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (localStorage.getItem("token")) {
+            navigate("/dashboard");
+        }
+        else{
+            navigate("/");
+        }
+    })
+
+
 
     function submitHandler(e) {
         e.preventDefault();
@@ -62,7 +73,7 @@ const Register = () => {
                         type="submit"
                         className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded transition"
                     >
-                        Register 
+                        Register
                     </button>
                 </form>
                 <p className="mt-6 text-center text-gray-400">

@@ -1,25 +1,43 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../context/user-context'
 import axios from "../config/axios"
 
 const Dashboard = () => {
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [projectName, setProjectName] = useState(null);
+  const [projectName, setProjectName] = useState("");
+  const [projects, setProjects] = useState([]);
+  const navigate = useNavigate();
 
   function createProject(e) {
     e.preventDefault();
     axios.post("/projects/create", {
       name: projectName,
     }).then((res) => {
-      console.log(res.data)
+      setIsModalOpen(false);
+      setProjectName("");
     })
       .catch((err) => {
         console.error("Error creating project:", err)
       });
-    console.log("Create Project Clicked");
-    console.log(projectName);
   }
+
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/");
+      return;
+    }
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    axios.get("/projects/all").then(response => {
+      setProjects(response.data.projects);
+    }).catch(err => {
+      console.error("Error fetching projects:", err);
+    })
+  }, [navigate, setUser]);
 
   return (
     <main className='p-4'>
@@ -29,18 +47,37 @@ const Dashboard = () => {
         </button>
       </div>
 
+      <div className="projects-list flex flex-col mt-4">
+        {projects.map((project) => (
+          <div
+            key={project._id}
+            className="project p-4 border border-slate-300 rounded-md mb-2 cursor-pointer max-w-xl hover:bg-gray-100 transition-colors duration-200"
+            onClick={() => navigate(`/project`, {
+              state: { project }
+            })}
+          >
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-semibold text-gray-800 pb-1">{project.name}</h2>
+              <span className="text-xs text-gray-500">{project.createdAt ? new Date(project.createdAt).toLocaleDateString() : '2025-07-05'}</span>
+            </div>
+            <div className="mt-1 text-sm text-gray-600 font-semibold">
+              <i className="ri-team-line font-normal text-lg"></i> Collaborators : {project.users ? project.users.length : 0}
+            </div>
+          </div>
+        ))}
+      </div>
+
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">Create New Project</h2>
-            <form
-              onSubmit={createProject}
-            >
+            <form onSubmit={createProject}>
               <label className="block mb-2 text-sm font-medium text-gray-700">
                 Project Name
               </label>
               <input
                 onChange={(e) => setProjectName(e.target.value)}
+                value={projectName}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter project name"
@@ -65,7 +102,6 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-
     </main>
   )
 }
