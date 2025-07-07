@@ -34,6 +34,7 @@ const Dashboard = () => {
     }
     axios.get("/projects/all").then(response => {
       setProjects(response.data.projects);
+      console.log("Projects fetched:", response.data.projects);
     }).catch(err => {
       console.error("Error fetching projects:", err);
     })
@@ -46,7 +47,7 @@ const Dashboard = () => {
           <i className="ri-link mr-2" ></i>New Project
         </button>
       </div>
-
+      {/* <h1>{JSON.stringify(user)}</h1> */}
       <div className="projects-list flex flex-col mt-4">
         {projects.map((project) => (
           <div
