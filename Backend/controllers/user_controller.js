@@ -35,15 +35,14 @@ export const loginUserController = async (req, res) => {
         console.log(password);
 
         const user = await User.findOne({ email }).select('+password');
-        console.log(user);
         if (!user) {
-            res.status(401).json({ error: "Invalid credential" });
+            return res.status(401).json({ error: "Invalid credential" });
         }
 
         const isMatch = await user.isValidPassword(password);
 
         if (!isMatch) {
-            res.status(401).json({ error: "Invalid Password" });
+            return res.status(401).json({ error: "Invalid Password" });
         }
 
         const token = await user.generateJwt();

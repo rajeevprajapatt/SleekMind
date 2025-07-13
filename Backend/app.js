@@ -7,6 +7,7 @@ import userRoutes from "./routes/user_routes.js"
 import projectRouter from './routes/project_routes.js';
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import ImageKit from "imagekit";
 
 const app = express();
 connect();
@@ -17,6 +18,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+const imagekit = new ImageKit({
+  urlEndpoint: process.env.URL_ENDPOINT, 
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY
+});
 
 app.get("/", (req, res) => {
     return res.json({ msg: "Hello World" });
@@ -24,5 +30,9 @@ app.get("/", (req, res) => {
 app.use("/users", userRoutes);
 app.use("/projects", projectRouter);
 
+app.get("/imagekitAuth", (req, res) => {
+  const {token,expire, signature} = imagekit.getAuthenticationParameters();
+  return res.send({ token, expire, signature, publicKey: process.env.IMAGEKIT_PUBLIC_KEY });
+});
 
 export default app;
