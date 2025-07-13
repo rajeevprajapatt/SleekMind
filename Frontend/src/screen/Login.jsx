@@ -2,24 +2,23 @@ import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../config/axios"
 import { UserContext } from '../context/user-context';
-// import { set } from "mongoose";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
+    const [error, setError] = useState("");
     const { setUser } = useContext(UserContext);
-
     const navigate = useNavigate();
     useEffect(() => {
         if (localStorage.getItem("token")) {
             navigate("/dashboard");
         }
-    })
+    }, [navigate]);
 
 
     function submitHandler(e) {
         e.preventDefault();
+        setError("");
         axios.post("/users/login", { email, password })
             .then((response) => {
                 console.log("Login successful:", response.data);
@@ -31,7 +30,11 @@ const Login = () => {
                 navigate("/dashboard");
             })
             .catch((error) => {
-                console.log(error.response)
+                if (error.response && error.response.data && error.response.data.error) {
+                    setError("Wrong email or password");
+                } else {
+                    setError("An error occurred. Please try again.");
+                }
             });
     }
 
@@ -59,7 +62,7 @@ const Login = () => {
                             Password
                         </label>
                         <input
-                            className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={`w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${error ? 'border border-red-500' : ''}`}
                             type="password"
                             id="password"
                             name="password"
@@ -67,6 +70,7 @@ const Login = () => {
                             required
                             autoComplete="current-password"
                         />
+                        {error && <div className="text-red-500 text-sm mt-1">{error}</div>}
                     </div>
                     <button
                         type="submit"

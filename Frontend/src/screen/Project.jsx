@@ -1,15 +1,18 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import defaultAvatar from '../assets/defaultAvatar.jpg';
 
 const Project = () => {
 
   const location = useLocation();
 
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+
   return (
     <main className="h-screen w-screen flex">
-      <section className='left h-full flex flex-col min-w-80 bg-slate-200'>
+      <section className='left relative h-full flex flex-col min-w-80 bg-slate-200'>
         <header className='flex justify-end p-2 px-4 w-full bg-green-400'>
-          <button className='p-2'>
+          <button className='p-2' onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}>
             <i className="ri-group-line text-xl"></i>
           </button>
         </header>
@@ -32,6 +35,29 @@ const Project = () => {
               </button>
             </div>
           </div>
+        </div>
+
+        <div className={`sidePanel w-full h-full flex flex-col gap-2 bg-transparent backdrop-blur-md transition-all absolute ${isSidePanelOpen ? '-translate-x-0' : '-translate-x-full'} top-0`}>
+          <header className='flex justify-end p-2 px-4 bg-green-500'>
+            <button className='p-2' onClick={() => setIsSidePanelOpen(false)}>
+              <i className="ri-close-line text-xl" ></i>
+            </button>
+          </header>
+
+          <div className='users flex flex-col gap-1 p-2'>
+            {[1,2,3].map((_, idx) => (
+              <div key={idx} className='user flex items-center gap-3 bg-white/80 rounded-lg px-2 py-1 mb-1 shadow-sm cursor-pointer hover:shadow-lg hover:transition-shadow hover:translate-x-1 hover:duration-400 hover:transition-all'>
+                <div className='w-12 h-12 rounded-full overflow-hidden bg-slate-800 flex-shrink-0'>
+                  <img src={defaultAvatar} alt='user' className='w-full h-full object-cover' />
+                </div>
+                <div className='flex flex-col'>
+                  <span className='font-medium text-gray-800 text-sm'>User Name</span>
+                  <span className='text-xs text-gray-500'>user@email.com</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          
         </div>
 
       </section>
