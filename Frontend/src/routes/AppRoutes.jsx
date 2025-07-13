@@ -6,6 +6,7 @@ import Home from '../screen/Home'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Dashboard from '../screen/Dashboard'
 import Project from '../screen/Project'
+import UploadExample from '../screen/UploadExample'
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,11 @@ const router = createBrowserRouter([
   {
     path: "/project", element: <div>
       <Project />
+    </div>
+  },
+  {
+    path: "/upload-example", element: <div>
+      <UploadExample />
     </div>
   }
 ])
