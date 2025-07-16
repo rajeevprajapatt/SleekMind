@@ -55,6 +55,7 @@ const Login = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                             autoComplete="email"
+                            placeholder="Enter your email"
                         />
                     </div>
                     <div>
@@ -69,6 +70,7 @@ const Login = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                             autoComplete="current-password"
+                            placeholder="Enter your password"
                         />
                         {error && <div className="text-red-500 text-sm mt-1">{error}</div>}
                     </div>

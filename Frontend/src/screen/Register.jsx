@@ -6,25 +6,26 @@ import { UserContext } from "../context/user-context";
 const Register = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [fullName, setFullName] = useState("");
 
     const { setUser } = useContext(UserContext);
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (localStorage.getItem("token")) {
-            navigate("/dashboard");
-        }
-        else{
-            navigate("/");
-        }
-    })
+    // useEffect(() => {
+    //     if (localStorage.getItem("token")) {
+    //         navigate("/dashboard");
+    //     }
+    //     else{
+    //         navigate("/register");
+    //     }
+    // })
 
 
 
     function submitHandler(e) {
         e.preventDefault();
-        axios.post("/users/register", { email, password })
+        axios.post("/users/register", {fullName, email, password })
             .then((response) => {
                 console.log("Registration successful:", response.data);
                 localStorage.setItem("token", response.data.token);
@@ -43,6 +44,20 @@ const Register = () => {
                 <form onSubmit={submitHandler} className="space-y-5">
                     <div>
                         <label className="block text-gray-300 mb-2" htmlFor="email">
+                            Full Name
+                        </label>
+                        <input
+                            className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            type="text"
+                            id="fullName"
+                            name="fullName"
+                            onChange={(e) => setFullName(e.target.value)}
+                            autoComplete="fullName"
+                            placeholder="Enter your full name"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-300 mb-2" htmlFor="email">
                             Email
                         </label>
                         <input
@@ -53,6 +68,7 @@ const Register = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                             autoComplete="email"
+                            placeholder="Enter your email"
                         />
                     </div>
                     <div>
@@ -67,6 +83,7 @@ const Register = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                             autoComplete="current-password"
+                            placeholder="Enter your password"
                         />
                     </div>
                     <button

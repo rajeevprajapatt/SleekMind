@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import defaultAvatar from '../assets/defaultAvatar.jpg';
 import axios from '../config/axios';
 
@@ -7,40 +7,24 @@ const Project = () => {
   const location = useLocation();
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
-
   const [users, setUsers] = useState([]);
   const [projectUsers, setProjectUsers] = useState([]);
 
+  // Fetch project users and all users
   useEffect(() => {
     axios.get(`projects/getProject/${location.state.project._id}`)
-      .then((res) => {
-        setProjectUsers(res.data.project.users);
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    axios.get("/users/all").then(res => {
-      setUsers(res.data.users);
-    }).catch(err => {
-      console.log(err);
-    })
+      .then((res) => setProjectUsers(res.data.project.users))
+      .catch(console.log);
+    axios.get("/users/all").then(res => setUsers(res.data.users)).catch(console.log);
   }, [location.state.project._id]);
 
-  // Remove project users from all users after both are loaded
+  // Remove project users from all users
   useEffect(() => {
     if (users.length > 0 && projectUsers.length > 0) {
       setUsers(prevUsers => prevUsers.filter(user => !projectUsers.some(pu => pu._id === user._id)));
     }
   }, [users.length, projectUsers.length]);
-
-  console.log("Users available for selection: ", users);
-
-  const handleUserSelect = (userId) => {
-    setSelectedUserId(userId);
-    setIsModalOpen(false);
-  };
 
   const handleToggleUserSelect = (userId) => {
     setSelectedUserIds((prev) =>
@@ -55,13 +39,15 @@ const Project = () => {
       projectId: location.state.project._id,
       users: selectedUserIds
     }).then((res) => {
-      console.log("Collaborators added successfully:", res.data);
-    }).catch((err) => {
-      console.log(err);
-    })
+      // Update projectUsers state with new users
+      if (res.data.project && res.data.project.users) {
+        setProjectUsers(res.data.project.users);
+        // Remove newly added users from users list
+        setUsers(prevUsers => prevUsers.filter(user => !selectedUserIds.includes(user._id)));
+      }
+    }).catch(console.log);
     setIsModalOpen(false);
     setSelectedUserIds([]);
-    console.log("Selected User IDs:", selectedUserIds);
   };
 
   return (
