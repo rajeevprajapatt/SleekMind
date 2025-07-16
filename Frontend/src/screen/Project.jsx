@@ -88,7 +88,7 @@ const Project = () => {
           </header>
           <div className='users flex flex-col gap-1 p-2'>
             {projectUsers.map((user) => (
-              <div key={user._id} className='user flex items-center gap-3 bg-white/80 rounded-lg px-2 py-1 mb-1 shadow-sm cursor-pointer hover:shadow-lg hover:transition-shadow hover:translate-x-1 duration-700 hover:transition-all'>
+              <div key={user._id} className='user flex items-center gap-3 bg-white/80 rounded-lg px-2 py-1 mb-1 shadow-sm cursor-pointer hover:shadow-lg hover:translate-x-1 duration-700 hover:transition-all'>
                 <div className='w-12 h-12 rounded-full overflow-hidden bg-slate-800 flex-shrink-0'>
                   <img src={defaultAvatar} alt='user' className='w-full h-full object-cover' />
                 </div>
