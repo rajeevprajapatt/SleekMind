@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import defaultAvatar from '../assets/defaultAvatar.jpg';
 import axios from '../config/axios';
+import { initializeSocket, receiveMessage, sendMessage } from '../config/socket';
 
 const Project = () => {
   const location = useLocation();
@@ -11,8 +12,12 @@ const Project = () => {
   const [users, setUsers] = useState([]);
   const [projectUsers, setProjectUsers] = useState([]);
 
+
   // Fetch project users and all users
   useEffect(() => {
+
+    initializeSocket();
+
     axios.get(`projects/getProject/${location.state.project._id}`)
       .then((res) => setProjectUsers(res.data.project.users))
       .catch(console.log);
@@ -93,7 +98,7 @@ const Project = () => {
                   <img src={defaultAvatar} alt='user' className='w-full h-full object-cover' />
                 </div>
                 <div className='flex flex-col'>
-                  <span className='font-medium text-gray-800 text-sm'>{user.email}</span>
+                  <span className='font-medium text-gray-800 text-sm'>{user.fullName ? user.fullName : user.email}</span>
                   <span className='text-xs text-gray-500'>{user.email}</span>
                 </div>
               </div>
