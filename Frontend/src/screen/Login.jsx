@@ -2,11 +2,15 @@ import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../config/axios"
 import { UserContext } from '../context/user-context';
+import { useForm } from 'react-hook-form'
 
 const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const { register, handleSubmit, formState: { errors } } = useForm();
+
+
+    // const [email, setEmail] = useState("");
+    // const [password, setPassword] = useState("");
+    // const [error, setError] = useState("");
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
     useEffect(() => {
@@ -15,34 +19,32 @@ const Login = () => {
         }
     }, [navigate]);
 
-
-    function submitHandler(e) {
-        e.preventDefault();
-        setError("");
-        axios.post("/users/login", { email, password })
-            .then((response) => {
-                console.log("Login successful:", response.data);
-
-                localStorage.setItem("token", response.data.token);
-                localStorage.setItem("user", JSON.stringify(response.data.user)); // <-- add this
-                setUser(response.data.user);
-
-                navigate("/dashboard");
+    const submitHandler = async (data) => {
+        try {
+            const response = await axios.post("/users/login", {
+                email: data.email,
+                password: data.password
             })
-            .catch((error) => {
-                if (error.response && error.response.data && error.response.data.error) {
-                    setError("Wrong email or password");
-                } else {
-                    setError("An error occurred. Please try again.");
-                }
-            });
+            console.log(response);
+            localStorage.setItem("token", response.data.token);
+            localStorage.setItem("user", JSON.stringify(response.data.user));
+            setUser(response.data.user);
+            navigate("/dashboard");
+        } catch (error) {
+            if (error.response?.data?.error) {
+                // Set form error manually
+                console.log("Wrong email or password");
+            } else {
+                console.log("An error occurred. Please try again.");
+            }
+        }
     }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-900">
             <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-8">
                 <h2 className="text-3xl font-bold text-white mb-6 text-center">Login</h2>
-                <form onSubmit={submitHandler} className="space-y-5">
+                <form onSubmit={handleSubmit(submitHandler)} className="space-y-5">
                     <div>
                         <label className="block text-gray-300 mb-2" htmlFor="email">
                             Email
@@ -51,28 +53,36 @@ const Login = () => {
                             className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             type="email"
                             id="email"
-                            name="email"
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            autoComplete="email"
                             placeholder="Enter your email"
+                            {...register("email", {
+                                required: "email is required",
+                                pattern: {
+                                    value: /^\S+@\S+$/i,
+                                    message: "Invalid email address"
+                                }
+                            })}
                         />
+                        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                     </div>
                     <div>
                         <label className="block text-gray-300 mb-2" htmlFor="password">
                             Password
                         </label>
                         <input
-                            className={`w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${error ? 'border border-red-500' : ''}`}
+                            className={`w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border border-red-500' : ''}`}
                             type="password"
                             id="password"
-                            name="password"
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            autoComplete="current-password"
                             placeholder="Enter your password"
+                            {...register("password", {
+                                required: "password is required",
+                            })}
+
+                        // name="password"
+                        // onChange={(e) => setPassword(e.target.value)}
+                        // required
+                        // autoComplete="current-password"
                         />
-                        {error && <div className="text-red-500 text-sm mt-1">{error}</div>}
+                        {errors.password && <div className="text-red-500 text-sm mt-1">{errors.password.message}</div>}
                     </div>
                     <button
                         type="submit"

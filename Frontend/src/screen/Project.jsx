@@ -11,12 +11,15 @@ const Project = () => {
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [users, setUsers] = useState([]);
   const [projectUsers, setProjectUsers] = useState([]);
-
+  const [project, setProject] = useState(location.state.project)
 
   // Fetch project users and all users
   useEffect(() => {
+    initializeSocket(project._id);
 
-    initializeSocket();
+    receiveMessage('project-message', data => {
+      console.log(data);
+    })
 
     axios.get(`projects/getProject/${location.state.project._id}`)
       .then((res) => setProjectUsers(res.data.project.users))
@@ -79,7 +82,7 @@ const Project = () => {
             </div>
             <div className="inputField w-full flex p-2 border-t  absolute left-0 bottom-0">
               <input className='w-full p-2 px-4 border-none outline-none rounded-3xl mr-1' type="text" placeholder="Type your message here..." />
-              <button className='flex-grow px-3 bg-white rounded-3xl'>
+              <button className='flex-grow px-3 bg-white rounded-3xl' >
                 <i className="ri-send-plane-fill text-xl"></i>
               </button>
             </div>
