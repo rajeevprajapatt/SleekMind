@@ -7,7 +7,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Dashboard from '../screen/Dashboard'
 import Project from '../screen/Project'
 import UploadExample from '../screen/UploadExample'
-
+import UserAuth from '../auth/UserAuth'
 const router = createBrowserRouter([
   {
     path: "/", element: <div>
@@ -16,7 +16,8 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard", element: <div>
-      <Dashboard />
+      <UserAuth><Dashboard /></UserAuth>
+
     </div>
   },
   {
@@ -31,7 +32,8 @@ const router = createBrowserRouter([
   },
   {
     path: "/project", element: <div>
-      <Project />
+      <UserAuth><Project /></UserAuth>
+
     </div>
   },
   {
