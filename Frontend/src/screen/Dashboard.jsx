@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../context/user-context'
 import axios from "../config/axios"
+import Navbar from '../components/Navbar'
 
 const Dashboard = () => {
   const { user, setUser } = useContext(UserContext);
@@ -24,24 +25,34 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
+    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
+    if (!token || !storedUser) {
       navigate("/");
       return;
     }
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
+    else {
       setUser(JSON.parse(storedUser));
     }
-    axios.get("/projects/all").then(response => {
-      setProjects(response.data.projects);
-      console.log("Projects fetched:", response.data.projects);
-    }).catch(err => {
-      console.error("Error fetching projects:", err);
-    })
-  }, [navigate, setUser]);
+
+  }, [navigate, setUser])
+
+  useEffect(() => {
+    if (user) {
+      axios.get("/projects/all").then(response => {
+        setProjects(response.data.projects);
+      }).catch(err => {
+        console.error("Error fetching projects:", err);
+      })
+    }
+  }, [user]);
+
 
   return (
     <main className='p-4'>
+      <Navbar />
+      <div className="pt-3" />
       <div className="projects">
         <button onClick={() => setIsModalOpen(true)} className="project p-4 border border-slate-300 rounded-md">
           <i className="ri-link mr-2" ></i>New Project

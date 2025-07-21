@@ -22,10 +22,12 @@ const Register = () => {
                 password: data.password,
             });
 
-            console.log("Registration successful:", response.data);
+            
             localStorage.setItem("token", response.data.token);
+            localStorage.setItem("user", JSON.stringify(response.data.user));
             setUser(response.data.user);
-            navigate("/dashboard");
+
+            window.location.href = "/dashboard";
         } catch (error) {
             console.log(error.response?.data || "Registration failed");
         }

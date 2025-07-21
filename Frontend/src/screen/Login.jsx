@@ -6,13 +6,9 @@ import { useForm } from 'react-hook-form'
 
 const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
-
-
-    // const [email, setEmail] = useState("");
-    // const [password, setPassword] = useState("");
-    // const [error, setError] = useState("");
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
+
     useEffect(() => {
         if (localStorage.getItem("token")) {
             navigate("/dashboard");
@@ -25,14 +21,14 @@ const Login = () => {
                 email: data.email,
                 password: data.password
             })
-            console.log(response);
+
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("user", JSON.stringify(response.data.user));
             setUser(response.data.user);
-            navigate("/dashboard");
+
+            window.location.href = "/dashboard";
         } catch (error) {
             if (error.response?.data?.error) {
-                // Set form error manually
                 console.log("Wrong email or password");
             } else {
                 console.log("An error occurred. Please try again.");
@@ -76,11 +72,6 @@ const Login = () => {
                             {...register("password", {
                                 required: "password is required",
                             })}
-
-                        // name="password"
-                        // onChange={(e) => setPassword(e.target.value)}
-                        // required
-                        // autoComplete="current-password"
                         />
                         {errors.password && <div className="text-red-500 text-sm mt-1">{errors.password.message}</div>}
                     </div>
