@@ -53,6 +53,7 @@ io.on('connection', socket => {
     socket.join(socket.project._id);
 
     socket.on('project-message', data => {
+        console.log(data)
         socket.broadcast.to(socket.project._id).emit('project-message', data)
     })
 
