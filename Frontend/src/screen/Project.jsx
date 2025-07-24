@@ -4,6 +4,7 @@ import defaultAvatar from '../assets/defaultAvatar.jpg';
 import axios from '../config/axios';
 import { initializeSocket, receiveMessage, sendMessage } from '../config/socket';
 import { UserContext } from '../context/user-context'
+import { useRef } from 'react';
 const Project = () => {
   const location = useLocation();
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
@@ -14,17 +15,27 @@ const Project = () => {
   const [project, setProject] = useState(location.state.project)
   const [message, setMessage] = useState('');
   const { user } = useContext(UserContext);
-  
+  const messageBox = useRef();
+
   // Fetch project users and all users
   useEffect(() => {
     initializeSocket(project._id);
 
     receiveMessage('project-message', data => {
       console.log(data);
+      appendIncomingMessage(data)
     })
 
     axios.get(`projects/getProject/${location.state.project._id}`)
-      .then((res) => setProjectUsers(res.data.project.users))
+      .then((res) => {
+        console.log(res.data.project.users);
+        const users = res.data.project.users;
+
+        const currentUserId = JSON.parse(localStorage.getItem("user"))?._id;
+        const currentUser = users.find(user => user._id === currentUserId);
+        const otherProjectUsers = users.filter(user => user._id !== currentUserId).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        setProjectUsers([currentUser, ...otherProjectUsers])
+      })
       .catch(console.log);
     axios.get("/users/all").then(res => setUsers(res.data.users)).catch(console.log);
   }, [location.state.project._id]);
@@ -32,6 +43,10 @@ const Project = () => {
   // Remove project users from all users
   useEffect(() => {
     if (users.length > 0 && projectUsers.length > 0) {
+
+      console.log("All users: ", users);
+      console.log("Project Users: ", projectUsers)
+
       setUsers(prevUsers => prevUsers.filter(user => !projectUsers.some(pu => pu._id === user._id)));
     }
   }, [users.length, projectUsers.length]);
@@ -66,7 +81,33 @@ const Project = () => {
       message,
       sender: user._id
     })
+    appendOutgoingMessage(message);
     setMessage("");
+  }
+  
+
+  function appendIncomingMessage(messageObject) {
+    const messageBox = document.querySelector(".message-box");
+
+    const message = document.createElement('div');
+    message.classList.add('message', 'max-w-66', 'flex', 'flex-col', 'p-2', 'bg-red-200', 'w-fit', 'rounded-md', 'm-1')
+    message.innerHTML = `
+      <small className='opacity-65 text-xs'>${messageObject.user.name || messageObject.user.email}</small>
+      <p className='text-sm'>${messageObject.message}</p>
+      `
+    messageBox.appendChild(message)
+  }
+
+  function appendOutgoingMessage(msg) {
+    const messageBox = document.querySelector(".message-box");
+
+    const message = document.createElement('div');
+    message.classList.add('message', 'ml-auto', 'max-w-66', 'flex', 'flex-col', 'p-2', 'bg-red-200', 'w-fit', 'rounded-md', 'm-1')
+    message.innerHTML = `
+      <small className='opacity-65 text-xs'>${user.name || user.email}</small>
+      <p className='text-sm'>${msg}</p>
+      `
+    messageBox.appendChild(message)
   }
 
   return (
@@ -81,8 +122,9 @@ const Project = () => {
             <i className="ri-group-line "></i>
           </button>
         </header>
-        <div className="conversation-area flex flex-grow flex-col ">
-          <div className="message-box flex-grow flex flex-col relative">
+        <div className="conversation-area flex flex-grow flex-col relative overflow-hidden">
+          <div ref={messageBox}
+            className="message-box flex flex-col gap-1 overflow-y-auto px-2 py-2 h-full pb-20">
             <div className='message max-w-66 flex flex-col p-2 bg-red-200 w-fit rounded-md m-1'>
               <small className='opacity-65 text-xs'>test@gmail.com</small>
               <p className='text-sm'>lorem ipsum dolor sit amet consectetur.</p>
@@ -91,7 +133,7 @@ const Project = () => {
               <small className='opacity-65 text-xs'>test@gmail.com</small>
               <p className='text-sm'>lorem ipsum dolor sit amet consectetur.</p>
             </div>
-            <div className="inputField w-full flex p-2 border-t  absolute left-0 bottom-0">
+            <div className="inputField w-full flex p-2 border-t absolute left-0 bottom-0">
               <input className='w-full p-2 px-4 border-none outline-none rounded-3xl mr-1' type="text" placeholder="Type your message here..."
                 value={message} onChange={(e) => setMessage(e.target.value)}
               />
