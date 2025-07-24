@@ -31,7 +31,7 @@ const Navbar = () => {
             </div>
             <div className='flex items-center gap-4'>
                 {isLoggedIn ? <button onClick={handleLogOut} className='bg-red-600 flex justify-center gap-1 text-lg p-2 px-4 rounded-md'>Log Out</button> :
-                    <button onClick={() => navigate("/login")} className='bg-blue-200 flex justify-center gap-1 text-lg p-2 px-4 rounded-md'> <i className="ri-user-line"></i>Login</button>
+                    <button onClick={() => navigate("/login")} className='bg-blue-600 flex justify-center gap-1 text-lg p-2 px-4 rounded-md'> <i className="ri-user-line"></i>Login</button>
                 }
             </div>
         </div>
