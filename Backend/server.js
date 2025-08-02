@@ -6,7 +6,8 @@ import jwt from 'jsonwebtoken'
 import mongoose from "mongoose";
 import projectModel from './models/project-model.js';
 import User from "./models/user.js";
-
+import ChatMessage from "./models/chat-message.js";
+import { generateResult } from "./services/ai_service.js";
 
 const Port = process.env.PORT || 3000;
 
@@ -55,12 +56,38 @@ io.on('connection', socket => {
     socket.join(socket.roomId);
 
     socket.on('project-message', async (data) => {
-        data.user = await User.findById(data.sender);
-        socket.broadcast.to(socket.roomId).emit('project-message', data)
+        const { message, sender, projectId } = data;
+        let user = await User.findById(sender);
+        const UserMessage = await ChatMessage.create({
+            projectId,
+            sender: user,
+            message
+        })
+        io.to(socket.roomId).emit('project-message', UserMessage);
+
+        const isAI = message.includes('@ai');
+        if (isAI) {
+            const AIindex = message.indexOf('@ai');
+            const prompt = message.substr(AIindex + 3, message.length).trim();
+            const result = await generateResult(prompt);
+
+            const AI_USER_ID = "000000000000000000000001";
+            user = await User.findById(AI_USER_ID);
+
+            const AIresponse = await ChatMessage.create({
+                projectId,
+                sender: user,
+                message: result
+            })
+            io.to(socket.roomId).emit('project-message', AIresponse);
+        }
+        console.log("message sent");
     })
 
-    socket.on('event', data => { /* … */ });
-    socket.on('disconnect', () => { /* … */ });
+    socket.on('disconnect', () => {
+        console.log("a user disconnected");
+        socket.leave(socket.roomId);
+    });
 })
 
 server.listen(Port, () => {
