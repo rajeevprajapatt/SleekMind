@@ -86,6 +86,6 @@ export const getAllUsersController = async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        res.status(400).send({ error: err.message })
+        res.status(400).send({ error: error.message })
     }
 }
