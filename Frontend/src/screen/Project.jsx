@@ -2,55 +2,84 @@ import React, { useEffect, useState, useContext } from 'react'
 import { useLocation } from 'react-router-dom'
 import defaultAvatar from '../assets/defaultAvatar.jpg';
 import axios from '../config/axios';
-import { initializeSocket, receiveMessage, sendMessage } from '../config/socket';
+import { initializeSocket, sendMessage } from '../config/socket';
 import { UserContext } from '../context/user-context'
 import { useRef } from 'react';
+
 const Project = () => {
   const location = useLocation();
-  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+  const messageBox = useRef();
+  const socketRef = useRef(null);
+  const { user } = useContext(UserContext);
+
+  const [users, setUsers] = useState([]);
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [projectUsers, setProjectUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [projectUsers, setProjectUsers] = useState([]);
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [project, setProject] = useState(location.state.project)
-  const [message, setMessage] = useState('');
-  const { user } = useContext(UserContext);
-  const messageBox = useRef();
 
-  // Fetch project users and all users
+  const userId = JSON.parse(localStorage.getItem("user"))?._id;
+
+  //Initialize socket
   useEffect(() => {
-    initializeSocket(project._id);
+    const socket = initializeSocket(project._id);
+    socketRef.current = socket;
 
-    receiveMessage('project-message', data => {
-      console.log(data);
-      appendIncomingMessage(data)
-    })
+    socket.on("connect", () => {
+      console.log("Socket connected!", socket.id);
+    });
 
+    //Receive message
+    socket.on("project-message", newMessage => {
+      if (newMessage) {
+        setMessages(prev => [...prev, newMessage]);
+      }
+    });
+
+    return () => {
+      socket.off("project-message");
+      socket.disconnect();
+    };
+  }, []);
+
+  //Fetch project users
+  useEffect(() => {
     axios.get(`projects/getProject/${location.state.project._id}`)
       .then((res) => {
-        console.log(res.data.project.users);
         const users = res.data.project.users;
-
         const currentUserId = JSON.parse(localStorage.getItem("user"))?._id;
         const currentUser = users.find(user => user._id === currentUserId);
         const otherProjectUsers = users.filter(user => user._id !== currentUserId).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
         setProjectUsers([currentUser, ...otherProjectUsers])
       })
       .catch(console.log);
+
+    //Fetch all users
     axios.get("/users/all").then(res => setUsers(res.data.users)).catch(console.log);
   }, [location.state.project._id]);
 
   // Remove project users from all users
   useEffect(() => {
     if (users.length > 0 && projectUsers.length > 0) {
-
-      console.log("All users: ", users);
-      console.log("Project Users: ", projectUsers)
-
       setUsers(prevUsers => prevUsers.filter(user => !projectUsers.some(pu => pu._id === user._id)));
     }
   }, [users.length, projectUsers.length]);
 
+  //Fetch project messages
+  useEffect(() => {
+    axios.get(`/chats/${location.state.project._id}`)
+      .then(response =>
+        setMessages(response.data)
+      )
+      .catch(error =>
+        console.log(error)
+      )
+  }, [])
+
+  //Select users
   const handleToggleUserSelect = (userId) => {
     setSelectedUserIds((prev) =>
       prev.includes(userId)
@@ -59,6 +88,7 @@ const Project = () => {
     );
   };
 
+  // Add collaborators
   const handleAddCollaborators = () => {
     axios.put("/projects/addUser", {
       projectId: location.state.project._id,
@@ -73,47 +103,41 @@ const Project = () => {
     }).catch(console.log);
     setIsModalOpen(false);
     setSelectedUserIds([]);
+    window.location.reload();
   };
 
+  //Send message
   const send = () => {
-    console.log(user);
-    sendMessage("project-message", {
-      message,
-      sender: user._id
-    })
-    appendOutgoingMessage(message);
-    setMessage("");
-  }
-  
+    if (!socketRef.current) return;
 
-  function appendIncomingMessage(messageObject) {
-    const messageBox = document.querySelector(".message-box");
-
-    const message = document.createElement('div');
-    message.classList.add('message', 'max-w-66', 'flex', 'flex-col', 'p-2', 'bg-red-200', 'w-fit', 'rounded-md', 'm-1')
-    message.innerHTML = `
-      <small className='opacity-65 text-xs'>${messageObject.user.name || messageObject.user.email}</small>
-      <p className='text-sm'>${messageObject.message}</p>
-      `
-    messageBox.appendChild(message)
+    if (message.length > 0) {
+      socketRef.current.emit("project-message", {
+        message,
+        sender: user._id,
+        projectId: project._id
+      });
+      setMessage("");
+    }
   }
 
-  function appendOutgoingMessage(msg) {
-    const messageBox = document.querySelector(".message-box");
+  //Scroll chat message to bottom
+  useEffect(() => {
+    if (messageBox.current) {
+      setTimeout(() => {
+        messageBox.current.scrollTo({
+          top: messageBox.current.scrollHeight,
+          behavior: 'smooth',
+        });
+      }, 100);
+    }
+  }, [messages]);
 
-    const message = document.createElement('div');
-    message.classList.add('message', 'ml-auto', 'max-w-66', 'flex', 'flex-col', 'p-2', 'bg-red-200', 'w-fit', 'rounded-md', 'm-1')
-    message.innerHTML = `
-      <small className='opacity-65 text-xs'>${user.name || user.email}</small>
-      <p className='text-sm'>${msg}</p>
-      `
-    messageBox.appendChild(message)
-  }
+
 
   return (
     <main className="h-screen w-screen flex">
-      <section className='left relative h-full flex flex-col min-w-96 bg-slate-200'>
-        <header className='flex justify-between items-center p-2 px-4 w-full bg-green-400'>
+      <section className='left relative h-full flex flex-col min-w-96 bg-[#EDF0F6]'>
+        <header className='flex justify-between items-center p-2 px-4 w-full bg-[#E5EBEE] backdrop-blur-2xl border-b-2'>
           <button className='flex gap-1' onClick={() => setIsModalOpen(true)}>
             <i className="ri-user-add-line mr-1 "></i>
             <p>Add Collaborator</p>
@@ -122,22 +146,33 @@ const Project = () => {
             <i className="ri-group-line "></i>
           </button>
         </header>
-        <div className="conversation-area flex flex-grow flex-col relative overflow-hidden">
+        <div className="conversation-area flex flex-grow flex-col relative overflow-hidden" >
           <div ref={messageBox}
-            className="message-box flex flex-col gap-1 overflow-y-auto px-2 py-2 h-full pb-20">
-            <div className='message max-w-66 flex flex-col p-2 bg-red-200 w-fit rounded-md m-1'>
-              <small className='opacity-65 text-xs'>test@gmail.com</small>
-              <p className='text-sm'>lorem ipsum dolor sit amet consectetur.</p>
-            </div>
-            <div className='ml-auto message max-w-66 flex flex-col p-2 bg-red-200 w-fit rounded-md m-1'>
-              <small className='opacity-65 text-xs'>test@gmail.com</small>
-              <p className='text-sm'>lorem ipsum dolor sit amet consectetur.</p>
-            </div>
-            <div className="inputField w-full flex p-2 border-t absolute left-0 bottom-0">
-              <input className='w-full p-2 px-4 border-none outline-none rounded-3xl mr-1' type="text" placeholder="Type your message here..."
+            className="message-box flex flex-col gap-1 overflow-y-auto px-2 py-2 h-full pb-20 " >
+            {messages.map((msg, index) => {
+              const isSender = msg.sender._id === userId;
+              return (
+                <div key={index}
+                  className={`message ${isSender ? "ml-auto bg-[#D0D4E5]" : "bg-[#FFFFFF]"} max-w-[250px] flex flex-col p-2 w-fit rounded-md m-1 break-words text-gray-800`}>
+                  <small className={`opacity-65 text-xs ${isSender ? "ml-auto" : ""}`}>
+                    {msg.sender.fullName || msg.sender.email}
+                  </small>
+                  <p className={`text-sm ${isSender ? "ml-auto" : ""}`}>{msg.message}</p>
+                </div>
+              )
+            })}
+            <div className="inputField w-full flex p-2 border-t absolute left-0 bottom-0  bg-[#E5EBEE] backdrop-blur-2xl">
+              <input className='w-full p-2 px-4 border-none outline-none rounded-md mr-1' type="text" placeholder="Type your message here..."
                 value={message} onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && message.trim()) {
+                    e.preventDefault();
+                    send()
+                  }
+                }}
               />
-              <button onClick={send} className='flex-grow px-3 bg-white rounded-3xl' >
+              <button onClick={send} className='flex-grow px-3 bg-white rounded-md'
+              >
                 <i className="ri-send-plane-fill text-xl"></i>
               </button>
             </div>
