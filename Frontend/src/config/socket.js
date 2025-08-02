@@ -18,8 +18,17 @@ export const initializeSocket = (projectId) => {
 }
 
 export const receiveMessage = (eventName, cb) => {
+    if (!socketInstance) {
+        console.error("Socket not initialized yet.");
+        return;
+    }
     socketInstance.on(eventName, cb);
-}
+};
+
 export const sendMessage = (eventName, data) => {
+    if (!socketInstance) {
+        console.error("Socket not initialized yet.");
+        return;
+    }
     socketInstance.emit(eventName, data);
-}
+};
