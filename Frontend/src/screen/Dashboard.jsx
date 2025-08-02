@@ -18,6 +18,7 @@ const Dashboard = () => {
     }).then((res) => {
       setIsModalOpen(false);
       setProjectName("");
+      window.location.reload();
     })
       .catch((err) => {
         console.error("Error creating project:", err)
