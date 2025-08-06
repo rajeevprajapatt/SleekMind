@@ -8,6 +8,8 @@ import Dashboard from '../screen/Dashboard'
 import Project from '../screen/Project'
 import UploadExample from '../screen/UploadExample'
 import UserAuth from '../auth/UserAuth'
+
+
 const router = createBrowserRouter([
   {
     path: "/", element: <div>
@@ -15,7 +17,7 @@ const router = createBrowserRouter([
     </div>
   },
   {
-    path: "/dashboard", element: <div>
+    path: "/projects", element: <div>
       <UserAuth><Dashboard /></UserAuth>
 
     </div>
