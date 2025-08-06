@@ -11,7 +11,7 @@ const Login = () => {
 
     useEffect(() => {
         if (localStorage.getItem("token")) {
-            navigate("/dashboard");
+            navigate("/projects");
         }
     }, [navigate]);
 
@@ -26,7 +26,7 @@ const Login = () => {
             localStorage.setItem("user", JSON.stringify(response.data.user));
             setUser(response.data.user);
 
-            window.location.href = "/dashboard";
+            window.location.href = "/projects";
         } catch (error) {
             if (error.response?.data?.error) {
                 console.log("Wrong email or password");

@@ -5,6 +5,7 @@ import axios from '../config/axios';
 import { initializeSocket, sendMessage } from '../config/socket';
 import { UserContext } from '../context/user-context'
 import { useRef } from 'react';
+import Markdown from 'markdown-to-jsx'
 
 const Project = () => {
   const location = useLocation();
@@ -36,6 +37,7 @@ const Project = () => {
     socket.on("project-message", newMessage => {
       if (newMessage) {
         setMessages(prev => [...prev, newMessage]);
+        console.log(newMessage)
       }
     });
 
@@ -151,13 +153,24 @@ const Project = () => {
             className="message-box flex flex-col gap-1 overflow-y-auto px-2 py-2 h-full pb-20 " >
             {messages.map((msg, index) => {
               const isSender = msg.sender._id === userId;
+              const isAI = msg.sender._id === "000000000000000000000001";
               return (
                 <div key={index}
-                  className={`message ${isSender ? "ml-auto bg-[#D0D4E5]" : "bg-[#FFFFFF]"} max-w-[250px] flex flex-col p-2 w-fit rounded-md m-1 break-words text-gray-800`}>
+                  className={`message ${isSender ? "ml-auto bg-[#D0D4E5] " : "bg-[#FFFFFF]"} ${isAI ? "max-w-80 bg-green-300" : "max-w-[250px]"}  flex flex-col p-2 w-fit rounded-md m-1 break-words text-gray-800`}>
                   <small className={`opacity-65 text-xs ${isSender ? "ml-auto" : ""}`}>
                     {msg.sender.fullName || msg.sender.email}
                   </small>
-                  <p className={`text-sm ${isSender ? "ml-auto" : ""}`}>{msg.message}</p>
+                  {isAI ? (
+                    <div className={`text-sm ${isSender ? "ml-auto" : ""}`}>
+                      <div className="overflow-x-auto">
+                        <Markdown>{msg.message}</Markdown>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className={`text-sm ${isSender ? "ml-auto" : ""}`}>
+                      {msg.message}
+                    </p>
+                  )}
                 </div>
               )
             })}
