@@ -22,7 +22,12 @@ export const createUser = async ({ fullName, email, password }) => {
 
 export const getAllUsers = async ({ userId }) => {
     const users = await User.find({
-        _id: { $ne: userId }
+        _id: {
+            $ne: userId,
+            $ne: {
+                _id: "000000000000000000000001"
+            }
+        }
     });
     return users;
 }
