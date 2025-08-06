@@ -11,7 +11,7 @@ const Login = () => {
 
     useEffect(() => {
         if (localStorage.getItem("token")) {
-            navigate("/dashboard");
+            navigate("/projects");
         }
     }, [navigate]);
 
@@ -25,7 +25,7 @@ const Login = () => {
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("user", JSON.stringify(response.data.user));
             setUser(response.data.user);
-            navigate("/dashboard");
+            navigate("/projects");
         } catch (error) {
             if (error.response?.data?.error) {
                 // Set form error manually

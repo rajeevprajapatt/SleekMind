@@ -25,7 +25,7 @@ const Register = () => {
             console.log("Registration successful:", response.data);
             localStorage.setItem("token", response.data.token);
             setUser(response.data.user);
-            navigate("/dashboard");
+            navigate("/projects");
         } catch (error) {
             console.log(error.response?.data || "Registration failed");
         }

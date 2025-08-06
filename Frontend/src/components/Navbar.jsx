@@ -21,17 +21,26 @@ const Navbar = () => {
         localStorage.removeItem("user")
         setIsLoggedIn(false)
         navigate("/")
+        window.location.reload();
     }
 
     return (
-        <div className="bg-black/50 backdrop-blur-md text-white p-4 w-[98%] mx-auto rounded-xl shadow-md flex justify-between text-center items-center">
+        <div className="bg-[#F7F5F5]/50 backdrop-blur-sm text-slate-900 p-2 w-[98%] mx-[1%] shadow-md flex justify-between rounded-md text-center items-center fixed top-1 z-50">
             <div className='flex justify-center items-center'>
-                <h1 className="text-4xl font-bold px-8"><Link to="/">Sleek Mind</Link></h1>
-                <h1 className="text-xl font-bold px-8"><Link to="/dashboard">Dashboard</Link></h1>
+                <h1 className="text-3xl font-bold pl-16 pr-10 text-[#690031]"><Link to="/">Sleek Mind</Link></h1>
+                <ul className="flex gap-4 opacity-70 text-md font-semibold">
+                    <li className=""><Link to="/projects">Projects</Link></li>
+                </ul>
             </div>
             <div className='flex items-center gap-4'>
-                {isLoggedIn ? <button onClick={handleLogOut} className='bg-red-600 flex justify-center gap-1 text-lg p-2 px-4 rounded-md'>Log Out</button> :
-                    <button onClick={() => navigate("/login")} className='bg-blue-600 flex justify-center gap-1 text-lg p-2 px-4 rounded-md'> <i className="ri-user-line"></i>Login</button>
+                {isLoggedIn ?
+                    <div className='flex items-center gap-6 text-md font-semibold mr-12'>
+                        <button onClick={handleLogOut} className='bg-black text-white flex justify-center gap-1 text-md p-2 px-3 rounded-md'>Log Out</button>
+                    </div> :
+                    <div className='flex items-center gap-6 text-md font-semibold mr-12'>
+                        <p className='text-slate-900 opacity-70'><Link to="/login">Log In</Link></p>
+                        <button onClick={() => navigate("/register")} className='bg-black text-white flex justify-center gap-1 p-2 px-3 rounded-sm'>Get Started</button>
+                    </div>
                 }
             </div>
         </div>
