@@ -7,7 +7,7 @@ export const getAllChatMessages = async (req, res) => {
         const projectId = req.params.projectId;
 
         const allMessages = await messageService.allProjectMessages(projectId);
-        console.log(projectId);
+        // console.log(projectId);
         return res.status(201).json(allMessages);
 
     } catch (error) {
