@@ -6,6 +6,27 @@ import { initializeSocket, sendMessage } from '../config/socket';
 import { UserContext } from '../context/user-context'
 import { useRef } from 'react';
 import Markdown from 'markdown-to-jsx'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+
+const CodeBlock = (current) => {
+  console.log("current file s: ", `${current}`);
+
+  return (
+    <SyntaxHighlighter
+      language={"javascript"}
+      // style={vscDarkPlus}   // theme
+      wrapLongLines={true}
+      customStyle={{
+        borderRadius: "10px",
+        padding: "15px",
+        fontSize: "14px",
+        background: "none"
+      }}
+    >
+      {current}
+    </SyntaxHighlighter>
+  );
+}
 
 const Project = () => {
   const location = useLocation();
@@ -20,11 +41,14 @@ const Project = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
-  const [project, setProject] = useState(location.state.project)
+  const [project, setProject] = useState(location.state.project);
+  const [AiGeneratedFiles, setAiGeneratedFiles] = useState(null);
+  const [currentFile, setCurrentFile] = useState(null);
+  const [tempSelectedFile, setTempSelectedFile] = useState([]);
 
   const userId = JSON.parse(localStorage.getItem("user"))?._id;
 
-  //Initialize socket
+  //Initialize socket & Fetch messages
   useEffect(() => {
     const socket = initializeSocket(project._id);
     socketRef.current = socket;
@@ -33,11 +57,24 @@ const Project = () => {
       console.log("Socket connected!", socket.id);
     });
 
+    axios.get(`/chats/${location.state.project._id}`)
+      .then(response => {
+        setMessages(response.data)
+        setAiGeneratedFiles(response.data
+          .filter(msg => msg.message.includes(`"fileTree"`))
+          .map(msg => JSON.parse(msg.message)));
+      })
+      .catch(error =>
+        console.log(error)
+      )
+
     //Receive message
     socket.on("project-message", newMessage => {
       if (newMessage) {
         setMessages(prev => [...prev, newMessage]);
-        console.log(newMessage)
+        if (newMessage.message.includes(`"fileTree"`)) {
+          setAiGeneratedFiles(prev => [...prev, JSON.parse(newMessage.message)]);
+        }
       }
     });
 
@@ -45,7 +82,7 @@ const Project = () => {
       socket.off("project-message");
       socket.disconnect();
     };
-  }, []);
+  }, [location.state.project._id]);
 
   //Fetch project users
   useEffect(() => {
@@ -69,17 +106,6 @@ const Project = () => {
       setUsers(prevUsers => prevUsers.filter(user => !projectUsers.some(pu => pu._id === user._id)));
     }
   }, [users.length, projectUsers.length]);
-
-  //Fetch project messages
-  useEffect(() => {
-    axios.get(`/chats/${location.state.project._id}`)
-      .then(response =>
-        setMessages(response.data)
-      )
-      .catch(error =>
-        console.log(error)
-      )
-  }, [])
 
   //Select users
   const handleToggleUserSelect = (userId) => {
@@ -133,8 +159,9 @@ const Project = () => {
       }, 100);
     }
   }, [messages]);
+  console.log("temo selected file : ", tempSelectedFile);
 
-
+  console.log("current file : ", currentFile);
 
   return (
     <main className="h-screen w-screen flex">
@@ -161,16 +188,16 @@ const Project = () => {
                     {msg.sender.fullName || msg.sender.email}
                   </small>
                   {isAI ? (
-                    <div className={`text-sm ${isSender ? "ml-auto" : ""}`}>
-                      <div className="overflow-x-auto">
-                        <Markdown>{msg.message}</Markdown>
-                      </div>
-                    </div>
+                    <p className={`text-sm ${isSender ? "ml-auto" : ""}`}>
+                      {JSON.parse(msg.message).text}
+                    </p>
+                    /* writeAiMessage(JSON.parse(msg.message).text) */
                   ) : (
                     <p className={`text-sm ${isSender ? "ml-auto" : ""}`}>
                       {msg.message}
                     </p>
-                  )}
+                  )
+                  }
                 </div>
               )
             })}
@@ -211,51 +238,87 @@ const Project = () => {
             ))}
           </div>
         </div>
-        {/* Modal for user selection */}
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-2 p-4 flex flex-col">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">Select Users</h2>
-                <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-800">
-                  <i className="ri-close-line text-2xl"></i>
-                </button>
-              </div>
-              <div className="flex flex-col gap-2 max-h-80 overflow-y-auto">
-                {users.length === 0 ? (
-                  <p className='text-center text-gray-500'>No users available</p>) : (
-                  users.map(user => (
-                    <div
-                      key={user._id}
-                      onClick={() => handleToggleUserSelect(user._id)}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg border cursor-pointer hover:bg-blue-100 transition-all ${selectedUserIds.includes(user._id)
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 bg-white'
-                        }`}
-                    >
-                      <div className='w-10 h-10 rounded-full overflow-hidden bg-slate-800 flex-shrink-0'>
-                        <img src={defaultAvatar} alt={user.name} className='w-full h-full object-cover' />
-                      </div>
-                      <div className='flex flex-col items-start'>
-                        <span className='font-medium text-gray-800 text-sm'>{user.name}</span>
-                        <span className='text-xs text-gray-500'>{user.email}</span>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-              <button
-                className="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
-                onClick={handleAddCollaborators}
-                disabled={selectedUserIds.length === 0}
-              >
-                Add Collaborators
-              </button>
-              <p className='flex justify-center item-center text-sm text-green-500'>Total selected : {selectedUserIds.length}</p>
+      </section>
+
+      <section className='right flex-grow bg-red-100 h-full flex'>
+        <div className='explorer h-full max-w-64 min-w-52 py-0 bg-green-200'>
+          {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile, idx) => (
+            <div className='folder p-2 px-4 flex flex-col gap-1 shadow-md mb-1' key={idx}>
+              <p>{aiFile.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</p>
+              {aiFile.fileTree && Object.keys(aiFile.fileTree).map((fileName, index) => (
+                <div className='file-tree w-full' key={fileName}>
+                  <div className='tree-element px-4 flex items-center gap-2 w-full cursor-pointer' onClick={() => { setCurrentFile(aiFile.fileTree[fileName]), setTempSelectedFile(prev => [...prev, aiFile.fileTree[fileName]]) }}>
+                    <p className='text-sm hover:transform hover:translate-x-1 duration-300'>{fileName}</p>
+                  </div>
+                </div>
+              ))}
             </div>
+          ))}
+        </div>
+        {currentFile ? (
+          <div className='code-editor w-full h-full overflow-y-auto '>
+            <div className='top flex items-center bg-green-500 p-4 gap-3 text-md'>
+              {/* {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file, index) => (
+                <p className='text-white' key={index}>{file}</p>
+              ))} */}
+            </div>
+            <div className='bottom'>
+              {CodeBlock(currentFile.content)}
+            </div>
+
+          </div>
+        ) : (
+          <div className='flex items-center justify-center w-full h-full text-gray-500'>
+            <p className='text-lg'>Select a file to view its content</p>
           </div>
         )}
+
       </section>
+
+      {/* Modal for user selection */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-2 p-4 flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Select Users</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-800">
+                <i className="ri-close-line text-2xl"></i>
+              </button>
+            </div>
+            <div className="flex flex-col gap-2 max-h-80 overflow-y-auto">
+              {users.length === 0 ? (
+                <p className='text-center text-gray-500'>No users available</p>) : (
+                users.map(user => (
+                  <div
+                    key={user._id}
+                    onClick={() => handleToggleUserSelect(user._id)}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg border cursor-pointer hover:bg-blue-100 transition-all ${selectedUserIds.includes(user._id)
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 bg-white'
+                      }`}
+                  >
+                    <div className='w-10 h-10 rounded-full overflow-hidden bg-slate-800 flex-shrink-0'>
+                      <img src={defaultAvatar} alt={user.name} className='w-full h-full object-cover' />
+                    </div>
+                    <div className='flex flex-col items-start'>
+                      <span className='font-medium text-gray-800 text-sm'>{user.name}</span>
+                      <span className='text-xs text-gray-500'>{user.email}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <button
+              className="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
+              onClick={handleAddCollaborators}
+              disabled={selectedUserIds.length === 0}
+            >
+              Add Collaborators
+            </button>
+            <p className='flex justify-center item-center text-sm text-green-500'>Total selected : {selectedUserIds.length}</p>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
