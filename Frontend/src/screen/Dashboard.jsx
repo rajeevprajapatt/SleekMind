@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useContext, useState, useEffect, } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 import { UserContext } from '../context/user-context'
 import axios from "../config/axios"
 import Navbar from '../components/Navbar'
@@ -103,7 +103,7 @@ const Dashboard = () => {
     // Flatten the array and return option elements
     return [...topOptions, ...otherOptions].map(option => (
       <option key={option.value} value={option.value}>
-        {option.label}<span><i className="ri-arrow-drop-down-line text-black"></i></span>
+        {option.label}
       </option>
     ));
   }
@@ -150,40 +150,104 @@ const Dashboard = () => {
       </div>
       <div className="pt-2 bg-[#F7F5F5] h-0" />
 
-      <div className='text-red-500 w-[80%] m-auto mt-10 mb-5'>
-        <div className="projects bg-green-500 flex justify-between items-center p-2 rounded-md shadow-md">
-          <button onClick={() => setIsModalOpen(true)} className="project py-3 px-8 border border-slate-300 ml-10 rounded-md">
+      <div className='text-[#690031] w-[80%] m-auto mt-10 mb-5'>
+        <div className="projects text-lg bg-[#F7F5F5] flex justify-between items-center p-3 rounded-md shadow-md">
+          <button onClick={() => setIsModalOpen(true)} className="project bg-white py-3 px-8 border border-slate-300 ml-5 rounded-md">
             <i className="ri-link mr-2" ></i>New Project
           </button>
           <select
-            className="project-select py-3 px-8 border border-slate-300 rounded-md mr-10 "
+            className="project-select py-3 px-8 border border-slate-300 rounded-md mr-5 "
             onChange={handleSortChange}
             value={selectedSort}
           >
-            {renderSortOptions()} 
+            {renderSortOptions()}
           </select>
         </div>
-        <div className="projects-list flex flex-col mt-4">
-          {projects.map((project) => (
-            <div
-              key={project._id}
-              className="project p-4 border border-slate-300 rounded-md mb-2 cursor-pointer max-w-xl hover:bg-gray-100 transition-colors duration-200"
-              onClick={() => navigate(`/project`, {
-                state: { project }
-              })}
-            >
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-semibold text-gray-800 pb-1">{project.name}</h2>
-                <span className="text-xs text-gray-500">{project.createdAt ? new Date(project.createdAt).toLocaleDateString() : '2025-01-01'}</span>
-              </div>
-              <div className="mt-1 text-sm text-gray-600 font-semibold">
-                <i className="ri-team-line font-normal text-lg"></i> Collaborators : {project.users ? project.users.length : 0}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+        <div className="projects-list flex flex-col mt-4 pb-5">
+          {projects.length > 0 ? (
+            projects.map((project, idx) => (
+              <div
+                key={project._id}
+                className={`project p-4 border ${idx % 2 === 0 ? 'bg-white' : 'bg-[#F7F5F5]'} border-slate-300 rounded-md mb-2 cursor-pointer min-w-xl hover:bg-gray-100 transition-colors duration-200`}
+                onClick={() => navigate(`/project`, {
+                  state: { project }
+                })}
+              >
+                <div className="flex flex-wrap justify-between items-center gap-2">
+                  <h2 className="text-3xl font-semibold text-[#690031] flex-1 min-w-[200px] capitalize">
+                    {project.name}
+                  </h2>
 
+                  <div className="flex-1 min-w-[150px] text-center text-sm text-gray-500">
+                    <i className="ri-team-line font-normal text-lg "></i>
+                    {" "}Collaborators: {project.users ? project.users.length : 0}
+                  </div>
+
+                  <span className="flex-1 min-w-[150px] text-right text-xs text-gray-500">
+                    {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : '2025-01-01'}
+                  </span>
+                </div>
+                <div className="mt-1 text-sm text-gray-600 font-semibold">
+                  <span className="text-sm text-gray-500">{project.description ? project.description : 'No description'}</span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center text-gray-500">
+              <p className="text-lg">No projects found.</p>
+              <p className="text-sm">Create a new project to get started!</p>
+            </div>
+          )}
+
+        </div>
+
+      </div>
+      <div className="pt-2 bg-[#F7F5F5] h-0" />
+
+      <footer className="bg-[#2A2B2C] rounded-lg shadow-sm m-4 mt-10">
+        <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
+          <div className="sm:flex sm:items-center sm:justify-between">
+            <Link
+              to="/"
+              className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse"
+            >
+              <span className="self-center text-3xl font-semibold whitespace-nowrap text-white">
+                Sleek Mind
+              </span>
+            </Link>
+            <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-white sm:mb-0 ">
+              <li>
+                <a href="#" className="hover:underline me-4 md:me-6">
+                  About
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:underline me-4 md:me-6">
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:underline me-4 md:me-6">
+                  Licensing
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:underline">
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </div>
+          <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
+          <span className="block text-sm text-white sm:text-center dark:text-gray-400">
+            © 2023{" "}
+            <Link to="/" className="hover:underline">
+              Sleek Mind
+            </Link>
+            . All Rights Reserved.
+          </span>
+        </div>
+      </footer>
 
 
       {isModalOpen && (
