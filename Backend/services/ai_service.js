@@ -48,9 +48,22 @@ Response: {
     }
 }
 </example>
+
+<example>
+User: "Write a function in JavaScript to add two numbers"
+Response: {
+    "text": "Here is a simple JavaScript function that adds two numbers:",
+    "folder-name": "math-utils",
+    "fileTree": {
+        "add.js": {
+            "content": "function add(a, b) {\\n  return a + b;\\n}\\n\\nconsole.log(add(5, 3)); // 8"
+        }
+    }
+}
+</example>
 `,
     generationConfig: {
-        responseMimeType: "application/json" 
+        responseMimeType: "application/json"
     }
 });
 
