@@ -33,3 +33,19 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.explorer::-webkit-scrollbar {
+  display: none;
+}
+.explorer {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.code-editor::-webkit-scrollbar {
+  display: none;
+}
+.code-editor {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
