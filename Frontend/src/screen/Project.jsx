@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, NavLink } from 'react-router-dom'
 import defaultAvatar from '../assets/defaultAvatar.jpg';
 import axios from '../config/axios';
 import { initializeSocket, sendMessage } from '../config/socket';
@@ -9,19 +9,16 @@ import Markdown from 'markdown-to-jsx'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 
 const CodeBlock = (current) => {
-  console.log("current file s: ", `${current}`);
+  // console.log("current file s: ", `${current}`);
 
   return (
     <SyntaxHighlighter
       language={"javascript"}
       // style={vscDarkPlus}   // theme
       wrapLongLines={true}
-      customStyle={{
-        borderRadius: "10px",
-        padding: "15px",
-        fontSize: "14px",
-        background: "none"
-      }}
+      customStyle={{ background: "none", margin: 0, paddingTop: "8px" }}
+      PreTag="div"  // default <pre> ke jagah <div>
+      CodeTag="span" // default <code> ke jagah <span>
     >
       {current}
     </SyntaxHighlighter>
@@ -159,14 +156,11 @@ const Project = () => {
       }, 100);
     }
   }, [messages]);
-  console.log("temo selected file : ", tempSelectedFile);
-
-  console.log("current file : ", currentFile);
 
   return (
     <main className="h-screen w-screen flex">
-      <section className='left relative h-full flex flex-col min-w-96 bg-[#EDF0F6]'>
-        <header className='flex justify-between items-center p-2 px-4 w-full bg-[#E5EBEE] backdrop-blur-2xl border-b-2'>
+      <section className='left relative h-full flex flex-col min-w-96 bg-[#ffffff]'>
+        <header className='flex justify-between items-center p-2 px-4 w-full bg-[#ffffff] backdrop-blur-2xl border-b-2 border-[#E5EBEE]'>
           <button className='flex gap-1' onClick={() => setIsModalOpen(true)}>
             <i className="ri-user-add-line mr-1 "></i>
             <p>Add Collaborator</p>
@@ -182,27 +176,39 @@ const Project = () => {
               const isSender = msg.sender._id === userId;
               const isAI = msg.sender._id === "000000000000000000000001";
               return (
-                <div key={index}
-                  className={`message ${isSender ? "ml-auto bg-[#D0D4E5] " : "bg-[#FFFFFF]"} ${isAI ? "max-w-80 bg-green-300" : "max-w-[250px]"}  flex flex-col p-2 w-fit rounded-md m-1 break-words text-gray-800`}>
-                  <small className={`opacity-65 text-xs ${isSender ? "ml-auto" : ""}`}>
+                <div
+                  key={index}
+                  className={`message flex flex-col p-2 w-fit rounded-md m-1 break-words text-sm
+                      ${isAI ? "max-w-80 bg-[#F5F5F7] text-gray-800"
+                      : isSender
+                        ? "ml-auto max-w-80 bg-[#690031] text-white"
+                        : "max-w-80 bg-[#F2ECEF]  text-[#690031]"
+                    }`}
+                >
+                  {/* Sender Info */}
+                  <small
+                    className={`opacity-65 text-xs mb-1 ${isSender ? "ml-auto" : ""
+                      }`}
+                  >
                     {msg.sender.fullName || msg.sender.email}
                   </small>
+
+                  {/* Message Text */}
                   {isAI ? (
-                    <p className={`text-sm ${isSender ? "ml-auto" : ""}`}>
+                    <p className={`${isSender ? "ml-auto" : ""}`}>
                       {JSON.parse(msg.message).text}
                     </p>
-                    /* writeAiMessage(JSON.parse(msg.message).text) */
                   ) : (
-                    <p className={`text-sm ${isSender ? "ml-auto" : ""}`}>
+                    <p className={`${isSender ? "ml-auto" : ""}`}>
                       {msg.message}
                     </p>
-                  )
-                  }
+                  )}
                 </div>
+
               )
             })}
-            <div className="inputField w-full flex p-2 border-t absolute left-0 bottom-0  bg-[#E5EBEE] backdrop-blur-2xl">
-              <input className='w-full p-2 px-4 border-none outline-none rounded-md mr-1' type="text" placeholder="Type your message here..."
+            <div className="inputField w-full flex p-2 absolute left-0 bottom-0  bg-white backdrop-blur-2xl">
+              <input className='w-full p-3 px-4 border-none outline-none rounded-l-md bg-[#E5EBEE]' type="text" placeholder="Type your message here..."
                 value={message} onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey && message.trim()) {
@@ -211,9 +217,9 @@ const Project = () => {
                   }
                 }}
               />
-              <button onClick={send} className='flex-grow px-3 bg-white rounded-md'
+              <button onClick={send} className='flex-grow px-3 bg-[#E5EBEE] rounded-r-md'
               >
-                <i className="ri-send-plane-fill text-xl"></i>
+                <i className="ri-send-plane-2-fill text-xl"></i>
               </button>
             </div>
           </div>
@@ -240,36 +246,55 @@ const Project = () => {
         </div>
       </section>
 
-      <section className='right flex-grow bg-red-100 h-full flex'>
-        <div className='explorer h-full max-w-64 min-w-52 py-0 bg-green-200'>
-          {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile, idx) => (
-            <div className='folder p-2 px-4 flex flex-col gap-1 shadow-md mb-1' key={idx}>
-              <p>{aiFile.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</p>
-              {aiFile.fileTree && Object.keys(aiFile.fileTree).map((fileName, index) => (
-                <div className='file-tree w-full' key={fileName}>
-                  <div className='tree-element px-4 flex items-center gap-2 w-full cursor-pointer' onClick={() => { setCurrentFile(aiFile.fileTree[fileName]), setTempSelectedFile(prev => [...prev, aiFile.fileTree[fileName]]) }}>
-                    <p className='text-sm hover:transform hover:translate-x-1 duration-300'>{fileName}</p>
-                  </div>
+      <section className='right flex-grow h-full flex'>
+        <div className='explorer h-full max-w-64 min-w-52 bg-[#F9F9FB] overflow-y-auto border-2 border-[#E5EBEE] border-t-0'>
+          <div className='folder p-4 sticky top-0 z-10 flex items-center text-md font-medium bg-white border-b-2 border-[#E5EBEE]'>Files</div>
+          <div className='w-full h-full rounded-md'>
+            {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile, idx) => (
+              <div className='folder flex flex-col gap-1 m-2 mt-2 bg-white rounded-md' key={idx}>
+                <div className='w-full rounded-t-md p-2 px-4 bg-[#690031] text-white'>
+                  <p className='text-sm font-medium'>{aiFile.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</p>
                 </div>
-              ))}
-            </div>
-          ))}
+                {aiFile.fileTree && Object.keys(aiFile.fileTree).map((fileName, index) => (
+                  <div className='file-tree w-full' key={fileName}>
+                    <div className='tree-element p-1 px-4 flex items-center gap-2 w-full cursor-pointer hover:bg-[#F9F9FB]'
+                      onClick={() => {
+                        setCurrentFile(aiFile.fileTree[fileName]),
+                          setTempSelectedFile(prev => {
+                            const exist = prev.some((file) => Object.keys(file)[0] === fileName);
+                            if (!exist) {
+                              return [...prev, { [fileName]: aiFile.fileTree[fileName] }];
+                            }
+                            return prev;
+                          })
+                      }}>
+                      <p className='text-sm hover:transform hover:translate-x-1 duration-300'>{fileName}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
         {currentFile ? (
-          <div className='code-editor w-full h-full overflow-y-auto '>
-            <div className='top flex items-center bg-green-500 p-4 gap-3 text-md'>
-              {/* {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file, index) => (
-                <p className='text-white' key={index}>{file}</p>
-              ))} */}
+          <div className='code-editor w-full h-full overflow-y-auto m-0'>
+            <div className='top flex items-center bg-white text-md sticky top-0 z-10 w-full border-b-2'>
+              {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file) => (
+                Object.keys(file).length > 0 && Object.keys(file).map((fileName, index) => (
+                  <div className='file-name flex items-center gap-2 cursor-pointer hover:bg-green-400' key={index}>
+                    <p className='text-black text-md cursor-pointer p-4' onClick={() => setCurrentFile(file[fileName])} key={index}>{fileName}</p>
+                  </div>
+                ))
+              ))}
             </div>
-            <div className='bottom'>
+            <div className='bottom p-0'>
               {CodeBlock(currentFile.content)}
             </div>
 
           </div>
         ) : (
           <div className='flex items-center justify-center w-full h-full text-gray-500'>
-            <p className='text-lg'>Select a file to view its content</p>
+            <p className='text-lg'>Use AI assistant to generate files and start coding</p>
           </div>
         )}
 
