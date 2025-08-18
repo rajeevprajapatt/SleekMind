@@ -38,7 +38,7 @@ export const getAllProject = async (req, res) => {
         return res.status(200).json({ projects: allProjects })
     } catch (error) {
         console.log(error);
-        res.status(400).json({ error: err.message })
+        res.status(400).json({ error: error.message })
     }
 }
 
