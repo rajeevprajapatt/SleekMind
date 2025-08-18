@@ -49,7 +49,7 @@ const Register = () => {
                             Full Name
                         </label>
                         <input
-                            className={`w-full px-4 py-2 rounded backdrop-blur-md bg-white/80 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.fullName ? 'border border-red-500' : ''}`}
+                            className={`w-full px-4 py-2 rounded backdrop-blur-md bg-white/80 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.fullName ? 'border border-red-500' : ''}`}
                             type="text"
                             id="fullName"
                             placeholder="Enter your full name"
@@ -62,7 +62,7 @@ const Register = () => {
                             Email
                         </label>
                         <input
-                            className={`w-full px-4 py-2 rounded backdrop-blur-md bg-white/80 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border border-red-500' : ''}`}
+                            className={`w-full px-4 py-2 rounded backdrop-blur-md bg-white/80 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border border-red-500' : ''}`}
                             type="email"
                             id="email"
                             placeholder="Enter your email"
@@ -81,7 +81,7 @@ const Register = () => {
                             Password
                         </label>
                         <input
-                            className={`w-full px-4 py-2 rounded backdrop-blur-md bg-white/80 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border border-red-500' : ''}`}
+                            className={`w-full px-4 py-2 rounded backdrop-blur-md bg-white/80 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border border-red-500' : ''}`}
                             type="password"
                             id="password"
                             placeholder="Enter your password"
