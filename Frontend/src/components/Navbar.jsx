@@ -25,9 +25,10 @@ const Navbar = () => {
     }
 
     return (
-        <div className="bg-[#F7F5F5]/50 backdrop-blur-sm text-slate-900 p-2 w-[98%] mx-[1%] shadow-md flex justify-between rounded-md text-center items-center fixed top-1 z-50">
+        <div className="bg-white/20 backdrop-blur-sm text-slate-900 p-2 w-full border-black flex justify-between
+                         text-center items-center fixed top-0 border-b z-50">
             <div className='flex justify-center items-center'>
-                <h1 className="text-3xl font-bold pl-16 pr-10 text-[#690031]"><Link to="/">Sleek Mind</Link></h1>
+                <h1 className="text-3xl font-bold pl-16 pr-10 text-[#2f27ce]"><Link to="/">Sleek Mind</Link></h1>
                 <ul className="flex gap-4 opacity-70 text-md font-semibold">
                     <li className=""><Link to="/projects">Projects</Link></li>
                 </ul>
