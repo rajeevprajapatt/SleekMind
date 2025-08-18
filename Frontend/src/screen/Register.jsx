@@ -3,10 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "../config/axios";
 import { UserContext } from "../context/user-context";
 import { useForm } from "react-hook-form";
+import bgImage from '../assets/pexels-tara-winstead-8386369.jpg'
+
 
 const Register = () => {
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
+
+    if(localStorage.getItem("token")) {
+        navigate("/");
+    }
 
     const {
         register,
@@ -34,16 +40,16 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900">
-            <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-8">
-                <h2 className="text-3xl font-bold text-white mb-6 text-center">Register</h2>
+        <div className="min-h-screen flex items-center justify-center" style={{backgroundImage: `url(${bgImage})`, backgroundSize: 'cover'}}>
+            <div className="w-full max-w-md backdrop-blur-md bg-white/10 rounded-lg shadow-lg p-8">
+                <h2 className="text-3xl font-bold text-[#433bff] mb-6 text-center">Register</h2>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     <div>
-                        <label className="block text-gray-300 mb-2" htmlFor="fullName">
+                        <label className="block text-gray-900 mb-2" htmlFor="fullName">
                             Full Name
                         </label>
                         <input
-                            className={`w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.fullName ? 'border border-red-500' : ''}`}
+                            className={`w-full px-4 py-2 rounded backdrop-blur-md bg-white/80 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.fullName ? 'border border-red-500' : ''}`}
                             type="text"
                             id="fullName"
                             placeholder="Enter your full name"
@@ -52,11 +58,11 @@ const Register = () => {
                         {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>}
                     </div>
                     <div>
-                        <label className="block text-gray-300 mb-2" htmlFor="email">
+                        <label className="block text-gray-900 mb-2" htmlFor="email">
                             Email
                         </label>
                         <input
-                            className={`w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border border-red-500' : ''}`}
+                            className={`w-full px-4 py-2 rounded backdrop-blur-md bg-white/80 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border border-red-500' : ''}`}
                             type="email"
                             id="email"
                             placeholder="Enter your email"
@@ -71,11 +77,11 @@ const Register = () => {
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                     </div>
                     <div>
-                        <label className="block text-gray-300 mb-2" htmlFor="password">
+                        <label className="block text-gray-900 mb-2" htmlFor="password">
                             Password
                         </label>
                         <input
-                            className={`w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border border-red-500' : ''}`}
+                            className={`w-full px-4 py-2 rounded backdrop-blur-md bg-white/80 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border border-red-500' : ''}`}
                             type="password"
                             id="password"
                             placeholder="Enter your password"
@@ -91,14 +97,14 @@ const Register = () => {
                     </div>
                     <button
                         type="submit"
-                        className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded transition"
+                        className="w-full py-2 bg-[#433bff] hover:bg-blue-700 text-white font-semibold rounded transition"
                     >
                         Register
                     </button>
                 </form>
-                <p className="mt-6 text-center text-gray-400">
+                <p className="mt-6 text-center text-gray-800">
                     Already have an account?{" "}
-                    <Link to="/login" className="text-blue-400 hover:underline">
+                    <Link to="/login" className="text-blue-300 hover:underline">
                         Login
                     </Link>
                 </p>

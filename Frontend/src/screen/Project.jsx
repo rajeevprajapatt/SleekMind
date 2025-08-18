@@ -163,7 +163,7 @@ const Project = () => {
   return (
     <main className="h-screen w-screen flex ">
       <section className='left relative h-full flex flex-col min-w-96  mr-2'>
-        <header className='flex justify-between items-center rounded-tr-xl p-2 px-4 w-full bg-[#433bff] text-white backdrop-blur-2xl border-b-2 border-[#433bff]'>
+        <header className='flex justify-between items-center rounded-tr-xl shadow-md p-2 px-4 w-full bg-[#433bff] text-white backdrop-blur-2xl border-b-2 border-[#433bff]'>
           <button className='flex gap-1' onClick={() => setIsModalOpen(true)}>
             <i className="ri-user-add-line mr-1 "></i>
             <p>Add Collaborator</p>
@@ -234,15 +234,15 @@ const Project = () => {
             </div>
           </div>
         </div>
-        <div className={`sidePanel w-full h-full flex flex-col gap-2 bg-transparent backdrop-blur-md transition-all absolute ${isSidePanelOpen ? '-translate-x-0' : '-translate-x-full'} top-0`}>
-          <header className='flex justify-end p-2 px-4 bg-green-500'>
+        <div className={`sidePanel w-full h-full flex flex-col gap-2 bg-transparent rounded-tr-xl backdrop-blur-md duration-500 transition-all absolute ${isSidePanelOpen ? '-translate-x-0' : '-translate-x-full'} top-0`}>
+          <header className='flex justify-end p-2 px-4 bg-[#433bff] rounded-tr-xl text-white'>
             <button className='p-2' onClick={() => setIsSidePanelOpen(false)}>
               <i className="ri-close-line text-xl" ></i>
             </button>
           </header>
           <div className='users flex flex-col gap-1 p-2'>
             {projectUsers.map((user) => (
-              <div key={user._id} className='user flex items-center gap-3 bg-white/80 rounded-lg px-2 py-1 mb-1 shadow-sm cursor-pointer hover:shadow-lg hover:translate-x-1 duration-700 hover:transition-all'>
+              <div key={user._id} className='user flex items-center gap-3 bg-white/80 border border-slate-400 rounded-lg px-2 py-1 mb-1 shadow-sm cursor-pointer hover:shadow-lg hover:translate-x-1 duration-700 hover:transition-all'>
                 <div className='w-12 h-12 rounded-full overflow-hidden bg-slate-800 flex-shrink-0'>
                   <img src={defaultAvatar} alt='user' className='w-full h-full object-cover' />
                 </div>
@@ -258,7 +258,7 @@ const Project = () => {
 
       <section className='right flex-grow h-full flex'>
         <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full max-w-64 min-w-52 bg-[#F9F9FB] border-2 border-t-0 border-[#433bff] overflow-y-auto mr-2 rounded-xl`}>
-          <div className={`folder  h-[7.8%] p-4 sticky top-0 z-10 flex items-center text-md bg-[#433bff] text-white font-semibold`}>Files</div>
+          <div className={`folder  h-[7.8%] p-4 sticky top-0 z-10 flex items-center text-md bg-[#433bff] text-white font-semibold transition-all duration-500`}>Files</div>
           <div className='w-full h-[92.2%] bg-[#fbfbfe] overflow-y-auto'>
             {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile, idx) => (
               <div className='folder flex flex-col gap-1 m-2 bg-white' key={idx}>
@@ -365,13 +365,13 @@ const Project = () => {
               )}
             </div>
             <button
-              className="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
+              className="mt-4 bg-[#433bff] text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
               onClick={handleAddCollaborators}
               disabled={selectedUserIds.length === 0}
             >
               Add Collaborators
             </button>
-            <p className='flex justify-center item-center text-sm text-green-500'>Total selected : {selectedUserIds.length}</p>
+            <p className='flex justify-center item-center text-sm text-[#433bff] pt-2'>Total selected : {selectedUserIds.length}</p>
           </div>
         </div>
       )}
