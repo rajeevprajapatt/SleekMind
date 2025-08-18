@@ -59,12 +59,12 @@ const Home = () => {
       <div className="pt-12" />
 
       <div className="home-banner w-full bg-white">
-        <div className='flex flex-col items-center justify-center text-center gap-4 text-[#690031]'>
+        <div className='flex flex-col items-center justify-center text-center gap-4 text-[#050315]'>
           {fontsReady && (
             <SplitText
               text={
                 <>
-                  Where your teams and AI <br />coordinate work together
+                  Where your teams and <span className='text-[#2f27ce]'>AI</span> <br />coordinate work together
                 </>
               }
               className="pt-16 pb-5 text-4xl md:text-7xl"
@@ -80,14 +80,14 @@ const Home = () => {
             />
           )}
 
-          <p className='text-2xl pb-5'>See how your work connects to goals while working alongside AI that <br /> understands your business.</p>
-          <div className='flex items-center gap-6 text-xl font-semibold pb-5'>
-            {user ? <button onClick={() => navigate("/projects")} className='bg-[#690031] text-white flex justify-center gap-1 p-5 rounded-full'>Dashboard</button>
-              : <button onClick={() => navigate("/register")} className='bg-[#690031] text-white flex justify-center gap-1 p-5  rounded-full'>Get Started</button>
+          <p className='text-2xl pb-5 opacity-70'>See how your work connects to goals while working alongside AI that <br /> understands your business.</p>
+          <div className='flex items-center gap-6 text-lg font-semibold pb-5'>
+            {user ? <button onClick={() => navigate("/projects")} className='bg-[#2f27ce] text-white flex justify-center gap-1 p-4 px-7 rounded-md'>Dashboard</button>
+              : <button onClick={() => navigate("/register")} className='bg-[#2f27ce] text-white flex justify-center gap-1 p-5  rounded-full'>Get Started</button>
             }
-            <button onClick={() => navigate("#")} className='text-[#690031] border-2 border-[#690031] flex justify-center gap-1 p-5 rounded-full'>See how it works</button>
+            <button onClick={() => navigate("#")} className='bg-[#dedcff] text-black flex justify-center gap-1 p-4 px-7 rounded-md'>See how it works</button>
           </div>
-          <div className='flex justify-center items-center mb-12 gap-4 '>
+          <div className='flex justify-center items-center gap-4 '>
             <div className='w-[42%] bg-green-700 rounded-xl'>
               <img src={image1} alt="Home" className='w-full h-full object-cover rounded-xl' />
             </div>
@@ -98,9 +98,9 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="pt-2 bg-[#F7F5F5] h-0" />
+      <div className="pt-24 h-0" />
 
-      <div className='flex flex-col items-center justify-center text-center  gap-4 text-black bg-grey-100'>
+      <div className='flex flex-col items-center justify-center text-center bg-[#dedcff] w-[85%] mx-[7.5%] rounded-xl  gap-4 text-black bg-grey-100'>
         <h1 className='pt-16 pb-5 text-4xl font-semibold'>Tired of messy team communication and <br /> disconnected workflows?</h1>
         <div className='flex flex-col items-start justify-center gap-4 text-black pb-5 text-xl'>
           <p className=''><span className="text-red-500 text-xl">✘</span> Project updates scattered across chats, emails, and docs</p>
@@ -111,11 +111,11 @@ const Home = () => {
         <p className='text-xl pb-5'>With Sleek Mind, everything your team needs is in one place. Chat in real-time, track tasks, <br />and get AI help without switching tools. Stay organized, make faster decisions,<br /> and work together smoothly — all in one sleek flow.</p>
       </div>
 
-      <div className="pt-6" />
+      <div className="pt-24 h-0" />
 
-      <div className='flex flex-col pb-5 items-center justify-center text-center  gap-4 text-black bg-gradient-to-b from-[#F7F5F5] to-white'>
+      <div className='flex flex-col pb-5 items-center justify-center text-center  gap-4 text-black bg-[#dedcff] w-[85%] mx-[7.5%] rounded-xl'>
         <h1 className='pt-16 pb-16 text-4xl font-semibold'>Messaging that fits the way your team <br /> works</h1>
-        <div className='flex items-start justify-center w-full text-black pb-16 text-xl gap-24 '>
+        <div className='flex justify-center w-full text-black pb-10 text-xl gap-24 items-center'>
           <div className='w-1/3 flex flex-col items-start justify-center gap-2 text-start'>
             <p className='pt-5'>Team chat</p>
             <h1 className='pt-1 pb-1 text-4xl font-semibold'>Chat across the whole team</h1>
@@ -125,7 +125,7 @@ const Home = () => {
             <img src={team_chat} alt="Team Chat" className='w-full h-full object-cover rounded-xl' />
           </div>
         </div>
-        <div className='flex flex-row-reverse items-start justify-center w-full text-black pt-8 pb-5 text-xl gap-24'>
+        <div className='flex flex-row-reverse justify-center w-full text-black pt-1 pb-5 text-xl gap-24 items-center'>
           <div className='w-1/3 flex flex-col items-start justify-center gap-2 text-start'>
             <p className='pt-5'>Team chat</p>
             <h1 className='pt-1 pb-1 text-4xl font-semibold'>Chat across the whole team</h1>
@@ -137,14 +137,14 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="pt-2 bg-[#F7F5F5] h-0" />
+      <div className="pt-24  h-0" />
 
-      <div className='flex flex-col items-center justify-center text-center  gap-4 text-black bg-grey-100'>
-        <h1 className='pt-16 pb-5 text-4xl font-semibold'>Why messaging belongs in your project management tool</h1>
+      <div className='flex flex-col items-center justify-center text-center  gap-4 text-black w-[85%] mx-[7.5%]'>
+        <h1 className=' pb-5 text-4xl font-semibold'>Why messaging belongs in your project management tool</h1>
         <div className="overflow-x-auto px-4 py-6">
-          <table className="min-w-full table-auto border-collapse  text-sm md:text-base">
+          <table className="min-w-full table-auto border-collapse  text-sm md:text-base border-3 border-[#dedcff]">
             <thead>
-              <tr className="bg-[#F7F5F5] text-left">
+              <tr className="bg-[#dedcff] text-left">
                 <th className="p-4 font-semibold text-gray-700 w-1/3"> </th>
                 <th className="p-4 font-semibold text-gray-700 text-center">Sleek Mind</th>
                 <th className="p-4 font-semibold text-gray-700 text-center">Others</th>
@@ -155,7 +155,7 @@ const Home = () => {
               {data.map((row, idx) => (
                 <tr
                   key={idx}
-                  className={idx % 2 === 0 ? "bg-white" : "bg-[#F7F5F5]"}
+                  // className={idx % 2 === 0 ? "bg-white" : "bg-[#dedcff]"}
                 >
                   <td className="p-4 align-top opacity-70 font-semibold">{row.feature}</td>
                   <td className="p-4 text-center">

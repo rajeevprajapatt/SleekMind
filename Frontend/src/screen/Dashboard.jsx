@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { UserContext } from '../context/user-context'
 import axios from "../config/axios"
 import Navbar from '../components/Navbar'
-import video from '../assets/Developer activity.mp4'
+import DeveloperImage from '../assets/Developer activity.gif'
 import SplitText from '../animations/SplitText';
 import Footer from '../components/Footer'
 
@@ -115,13 +115,13 @@ const Dashboard = () => {
     <main className=''>
       <Navbar />
       <div className="pt-16 w-full" />
-      <div className='w-[80%] flex justify-between items-center m-auto pb-5'>
+      <div className='w-[80%] flex justify-between items-center m-auto text-[#050315]'>
         <div className='w-2/3 h-full p-16'>
           {fontsReady && (
             <SplitText
               text={
                 <>
-                  Welcome, <span className='text-[#690031]'>{user.fullName}</span> 👋
+                  Welcome, <span className='text-[#2f27ce]'>{user.fullName}</span> 👋
                 </>
               }
               className="text-4xl font-semibold text-black"
@@ -137,22 +137,20 @@ const Dashboard = () => {
             />
           )}
 
-          <p className="text-black mt-2 text-xl leading-relaxed">
+          <p className="text-black mt-2 text-xl leading-relaxed opacity-70">
             Ready to build something amazing today? <br />
-            You can <span className="font-medium text-[#690031]">create a new project</span> or
-            <span className="font-medium text-[#690031]"> join your existing teams</span> to collaborate in real-time.
+            You can <span className="font-medium text-[#2f27ce]">create a new project</span> or
+            <span className="font-medium text-[#2f27ce]"> join your existing teams</span> to collaborate in real-time.
           </p>
         </div>
         <div className='w-1/3 flex justify-end items-center'>
-          <video className='right-0 w-[80%] mx-auto object-cover' autoPlay loop muted>
-            <source src={video} type="video/mp4" />
-          </video>
+          <img src={DeveloperImage} width='80%'></img>
         </div>
       </div>
-      <div className="pt-2 bg-[#F7F5F5] h-0" />
+      <div className="pt-12  h-0" />
 
-      <div className='text-[#690031] w-[80%] m-auto mt-10 mb-5'>
-        <div className="projects text-lg bg-[#F7F5F5] flex justify-between items-center p-3 rounded-md shadow-md">
+      <div className='text-slate-800 w-[80%] m-auto mt-10 mb-5'>
+        <div className="projects text-lg bg-[#433bff] flex justify-between items-center p-3 rounded-md shadow-md">
           <button onClick={() => setIsModalOpen(true)} className="project bg-white py-3 px-8 border border-slate-300 ml-5 rounded-md">
             <i className="ri-link mr-2" ></i>New Project
           </button>
@@ -169,13 +167,13 @@ const Dashboard = () => {
             projects.map((project, idx) => (
               <div
                 key={project._id}
-                className={`project p-4 border ${idx % 2 === 0 ? 'bg-white' : 'bg-[#F7F5F5]'} border-slate-300 rounded-md mb-2 cursor-pointer min-w-xl hover:bg-gray-100 transition-colors duration-200`}
+                className={`project p-4 border border-slate-300 rounded-md mb-2 cursor-pointer min-w-xl hover:bg-slate-100 transition-colors duration-200`}
                 onClick={() => navigate(`/project`, {
                   state: { project }
                 })}
               >
                 <div className="flex flex-wrap justify-between items-center gap-2">
-                  <h2 className="text-3xl font-semibold text-[#690031] flex-1 min-w-[200px] capitalize">
+                  <h2 className="text-3xl font-semibold opacity-90 flex-1 min-w-[200px] capitalize">
                     {project.name}
                   </h2>
 
@@ -203,7 +201,7 @@ const Dashboard = () => {
         </div>
 
       </div>
-      <div className="pt-2 bg-[#F7F5F5] h-0" />
+      <div className="pt-2 h-0" />
 
       <Footer />
 

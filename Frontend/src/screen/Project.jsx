@@ -7,6 +7,9 @@ import { UserContext } from '../context/user-context'
 import { useRef } from 'react';
 import Markdown from 'markdown-to-jsx'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import chatBotImage from '../assets/Chat bot.gif';
+import SplitText from '../animations/SplitText';
+import Conversation from '../assets/Conversation.gif';
 
 const CodeBlock = (current) => {
   // console.log("current file s: ", `${current}`);
@@ -158,9 +161,9 @@ const Project = () => {
   }, [messages]);
 
   return (
-    <main className="h-screen w-screen flex">
-      <section className='left relative h-full flex flex-col min-w-96 bg-[#ffffff]'>
-        <header className='flex justify-between items-center p-2 px-4 w-full bg-[#ffffff] backdrop-blur-2xl border-b-2 border-[#E5EBEE]'>
+    <main className="h-screen w-screen flex ">
+      <section className='left relative h-full flex flex-col min-w-96  mr-2'>
+        <header className='flex justify-between items-center rounded-tr-xl p-2 px-4 w-full bg-[#433bff] text-white backdrop-blur-2xl border-b-2 border-[#433bff]'>
           <button className='flex gap-1' onClick={() => setIsModalOpen(true)}>
             <i className="ri-user-add-line mr-1 "></i>
             <p>Add Collaborator</p>
@@ -169,9 +172,16 @@ const Project = () => {
             <i className="ri-group-line "></i>
           </button>
         </header>
-        <div className="conversation-area flex flex-grow flex-col relative overflow-hidden" >
+        <div className="conversation-area flex flex-grow flex-col relative overflow-hidden bg-[#fbfbfe] " >
           <div ref={messageBox}
-            className="message-box flex flex-col gap-1 overflow-y-auto px-2 py-2 h-full pb-20 " >
+            className={`message-box flex flex-col ${messages.length > 0 ? "" : "justify-center"} gap-1 overflow-y-auto px-2 py-2 h-full pb-20 rounded-br-xl border-r-2 border-[#433bff]`}>
+            {messages.length === 0 &&
+              <div className='flex flex-col justify-center items-center'>
+                <p className="text-center text-xl text-gray-500">Start conversation now with<br /> your team & AI</p>
+                <img src={Conversation} width="300"></img>
+                <p className='text-center text-sm text-gray-500'>Type a message with @ai to chat with AI assistant</p>
+              </div>
+            }
             {messages.map((msg, index) => {
               const isSender = msg.sender._id === userId;
               const isAI = msg.sender._id === "000000000000000000000001";
@@ -179,10 +189,10 @@ const Project = () => {
                 <div
                   key={index}
                   className={`message flex flex-col p-2 w-fit rounded-md m-1 break-words text-sm
-                      ${isAI ? "max-w-80 bg-[#F5F5F7] text-gray-800"
+                      ${isAI ? "max-w-80 bg-[#dedcff] text-gray-800"
                       : isSender
-                        ? "ml-auto max-w-80 bg-[#690031] text-white"
-                        : "max-w-80 bg-[#F2ECEF]  text-[#690031]"
+                        ? "ml-auto max-w-80 bg-[#433bff] text-white"
+                        : "max-w-80 bg-[#DBDBDB]  text-black"
                     }`}
                 >
                   {/* Sender Info */}
@@ -207,7 +217,7 @@ const Project = () => {
 
               )
             })}
-            <div className="inputField w-full flex p-2 absolute left-0 bottom-0  bg-white backdrop-blur-2xl">
+            <div className="inputField w-full flex p-2 absolute left-0 bottom-0 border-2 border-[#433bff] bg-[#fbfbfe] rounded-br-xl backdrop-blur-2xl">
               <input className='w-full p-3 px-4 border-none outline-none rounded-l-md bg-[#E5EBEE]' type="text" placeholder="Type your message here..."
                 value={message} onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
@@ -247,17 +257,17 @@ const Project = () => {
       </section>
 
       <section className='right flex-grow h-full flex'>
-        <div className='explorer h-full max-w-64 min-w-52 bg-[#F9F9FB] overflow-y-auto border-2 border-[#E5EBEE] border-t-0'>
-          <div className='folder p-4 sticky top-0 z-10 flex items-center text-md font-medium bg-white border-b-2 border-[#E5EBEE]'>Files</div>
-          <div className='w-full h-full rounded-md'>
+        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full max-w-64 min-w-52 bg-[#F9F9FB] border-2 border-t-0 border-[#433bff] overflow-y-auto mr-2 rounded-xl`}>
+          <div className={`folder  h-[7.8%] p-4 sticky top-0 z-10 flex items-center text-md bg-[#433bff] text-white font-semibold`}>Files</div>
+          <div className='w-full h-[92.2%] bg-[#fbfbfe] overflow-y-auto'>
             {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile, idx) => (
-              <div className='folder flex flex-col gap-1 m-2 mt-2 bg-white rounded-md' key={idx}>
-                <div className='w-full rounded-t-md p-2 px-4 bg-[#690031] text-white'>
+              <div className='folder flex flex-col gap-1 m-2 bg-white' key={idx}>
+                <div className='w-full rounded-t-md p-2 px-4 bg-[#dedcff]'>
                   <p className='text-sm font-medium'>{aiFile.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</p>
                 </div>
                 {aiFile.fileTree && Object.keys(aiFile.fileTree).map((fileName, index) => (
                   <div className='file-tree w-full' key={fileName}>
-                    <div className='tree-element p-1 px-4 flex items-center gap-2 w-full cursor-pointer hover:bg-[#F9F9FB]'
+                    <div className='tree-element p-1 px-4 flex items-center gap-2 w-full cursor-pointer hover:bg-slate-100'
                       onClick={() => {
                         setCurrentFile(aiFile.fileTree[fileName]),
                           setTempSelectedFile(prev => {
@@ -277,24 +287,45 @@ const Project = () => {
           </div>
         </div>
         {currentFile ? (
-          <div className='code-editor w-full h-full overflow-y-auto m-0'>
-            <div className='top flex items-center bg-white text-md sticky top-0 z-10 w-full border-b-2'>
+          <div className='code-editor w-full h-full overflow-y-auto m-0 '>
+            <div className='top flex h-[7.8%] items-center bg-[#433bff] text-white text-md sticky top-0 z-10 w-full rounded-tl-xl border-b-2 border-[#433bff]'>
               {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file) => (
                 Object.keys(file).length > 0 && Object.keys(file).map((fileName, index) => (
                   <div className='file-name flex items-center gap-2 cursor-pointer hover:bg-green-400' key={index}>
-                    <p className='text-black text-md cursor-pointer p-4' onClick={() => setCurrentFile(file[fileName])} key={index}>{fileName}</p>
+                    <p className='text-md cursor-pointer p-4' onClick={() => setCurrentFile(file[fileName])} key={index}>{fileName}</p>
                   </div>
                 ))
               ))}
             </div>
-            <div className='bottom p-0'>
+            <div className='bottom p-0 h-[92.2%] border-l-2 overflow-y-auto border-[#433bff] bg-[#FBFBFE] rounded-bl-xl'>
               {CodeBlock(currentFile.content)}
             </div>
 
           </div>
         ) : (
-          <div className='flex items-center justify-center w-full h-full text-gray-500'>
-            <p className='text-lg'>Use AI assistant to generate files and start coding</p>
+
+          <div className='flex flex-col items-center justify-center w-full h-full text-gray-500'>
+            {/* <p className='text-lg'>Use AI assistant to generate files and start coding</p> */}
+            <div className=''><SplitText
+              text={
+                <>
+                  <span className="text-[#433bff]">Use AI Assistant to generate files <br /> and start coding</span>
+                </>
+              }
+              className="pt-16 pb-5 text-2xl md:text-4xl"
+              delay={80}
+              duration={0.6}
+              ease="power3.out"
+              splitType="chars"
+              from={{ opacity: -6, y: -40 }}
+              to={{ opacity: 1, y: 0 }}
+              threshold={0.1}
+              rootMargin="-100px"
+              textAlign="center"
+            /></div>
+            <div><button onClick={() => navigate("#")} className='bg-[#433bff] text-white flex justify-center gap-1 p-3 px-7 rounded-md delay-200'>See how it works</button>
+            </div>
+            <div className='mt-4 flex justify-center items-center'><img width='80%' src={chatBotImage}></img></div>
           </div>
         )}
 
