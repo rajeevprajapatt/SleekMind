@@ -119,18 +119,7 @@ const SplitText = ({
                 splitter.revert();
             }
         };
-    }, [
-        text,
-        delay,
-        duration,
-        ease,
-        splitType,
-        from,
-        to,
-        threshold,
-        rootMargin,
-        onLetterAnimationComplete,
-    ]);
+    }, []); // Only run on mount
 
     return (
         <p
