@@ -15,7 +15,7 @@ const app = express();
 connect();
 
 app.use(cors({
-  origin:"https://sleekmind.vercel.app/",
+  origin:"https://sleekmind.vercel.app",
   credentials: true
 }));
 // app.use(morgan("dev"));
