@@ -80,7 +80,7 @@ const Home = () => {
             />
           )}
 
-          <p className='text-2xl pb-5 opacity-70'>See how your work connects to goals while working alongside AI that <br /> understands your business.</p>
+          <p className='text-[5px] pb-5 opacity-70 sm:text-2xl'>See how your work connects to goals while working alongside AI that <br /> understands your business.</p>
           <div className='flex items-center gap-6 text-lg font-semibold pb-5'>
             {user ? <button onClick={() => navigate("/projects")} className='bg-[#2f27ce] text-white flex justify-center gap-1 p-4 px-7 rounded-md'>Dashboard</button>
               : <button onClick={() => navigate("/register")} className='bg-[#2f27ce] text-white flex justify-center gap-1 p-4 px-7 rounded-md'>Get Started</button>
