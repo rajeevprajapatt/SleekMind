@@ -14,10 +14,11 @@ import ImageKit from "imagekit";
 const app = express();
 connect();
 
-app.use(cors({
-  origin:"https://sleekmind.vercel.app",
-  credentials: true
-}));
+app.use(cors());
+// app.use(cors({
+//   origin:"https://sleekmind.vercel.app",
+//   credentials: true
+// }));
 // app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -32,6 +33,8 @@ const imagekit = new ImageKit({
 app.get("/", (req, res) => {
     return res.json({ msg: "Hello World" });
 })
+app.get("/ping", (req, res) => res.send("Server is alive"));
+
 app.use("/users", userRoutes);
 app.use("/projects", projectRouter);
 app.use("/chats",chatRouter);

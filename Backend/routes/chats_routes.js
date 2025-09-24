@@ -10,4 +10,9 @@ router.get("/:projectId",
     chatsController.getAllChatMessages
 )
 
+router.put("/UpdateMessage",
+    authMiddleware.authUser,
+    chatsController.getMessage
+)
+
 export default router;

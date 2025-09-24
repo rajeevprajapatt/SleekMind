@@ -71,6 +71,7 @@ Response: {
 
 export const generateResult = async (prompt) => {
     const result = await model.generateContent(prompt);
+    console.log(JSON.parse(result.response.text()));
 
     return result.response.text();
 }

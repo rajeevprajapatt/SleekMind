@@ -61,7 +61,9 @@ io.on('connection', socket => {
         const UserMessage = await ChatMessage.create({
             projectId,
             sender: user,
-            message
+            message: {
+                text: message
+            }
         })
         io.to(socket.roomId).emit('project-message', UserMessage);
 
@@ -70,6 +72,7 @@ io.on('connection', socket => {
             const AIindex = message.indexOf('@ai');
             const prompt = message.substr(AIindex + 3, message.length).trim();
             const result = await generateResult(prompt);
+            // console.log(JSON.parse(result));
 
             const AI_USER_ID = "000000000000000000000001";
             user = await User.findById(AI_USER_ID);
@@ -77,7 +80,7 @@ io.on('connection', socket => {
             const AIresponse = await ChatMessage.create({
                 projectId,
                 sender: user,
-                message: result
+                message: JSON.parse(result)
             })
             io.to(socket.roomId).emit('project-message', AIresponse);
         }
