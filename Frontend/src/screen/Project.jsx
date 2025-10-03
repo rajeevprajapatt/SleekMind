@@ -10,6 +10,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import chatBotImage from '../assets/Chat bot.gif';
 import SplitText from '../animations/SplitText';
 import Conversation from '../assets/Conversation.gif';
+import bgImage from '../assets/5072612.jpg'
 
 const CodeBlock = (current) => {
   // console.log("current file s: ", `${current}`);
@@ -43,8 +44,10 @@ const Project = () => {
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [project, setProject] = useState(location.state.project);
   const [AiGeneratedFiles, setAiGeneratedFiles] = useState(null);
-  const [currentFile, setCurrentFile] = useState(null);
+  const [currentFile, setCurrentFile] = useState({});
   const [tempSelectedFile, setTempSelectedFile] = useState([]);
+  // console.log("AI Generated Files: ", AiGeneratedFiles);
+  // console.log("currentFile: ", currentFile);
 
   const userId = JSON.parse(localStorage.getItem("user"))?._id;
 
@@ -61,8 +64,8 @@ const Project = () => {
       .then(response => {
         setMessages(response.data)
         setAiGeneratedFiles(response.data
-          .filter(msg => msg.message.includes(`"fileTree"`))
-          .map(msg => JSON.parse(msg.message)));
+          .filter(msg => msg.message.hasOwnProperty("fileTree")))
+        // .map(msg => msg.message));
       })
       .catch(error =>
         console.log(error)
@@ -72,8 +75,8 @@ const Project = () => {
     socket.on("project-message", newMessage => {
       if (newMessage) {
         setMessages(prev => [...prev, newMessage]);
-        if (newMessage.message.includes(`"fileTree"`)) {
-          setAiGeneratedFiles(prev => [...prev, JSON.parse(newMessage.message)]);
+        if (newMessage.message.hasOwnProperty("fileTree")) {
+          setAiGeneratedFiles(prev => [...prev, newMessage]);
         }
       }
     });
@@ -160,8 +163,12 @@ const Project = () => {
     }
   }, [messages]);
 
+  // console.log("messages : ", messages)
+  // console.log("Ai generated files: ", AiGeneratedFiles)
+  console.log("currentFile: ", currentFile)
+
   return (
-    <main className="h-screen w-screen flex ">
+    <main className={`h-screen w-screen flex bg-cover bg-center`} style={{ backgroundImage: `url(${bgImage})` }}>
       <section className='left relative h-full flex flex-col min-w-96  mr-2'>
         <header className='flex justify-between items-center rounded-tr-xl shadow-md p-2 px-4 w-full bg-[#433bff] text-white backdrop-blur-2xl border-b-2 border-[#433bff]'>
           <button className='flex gap-1' onClick={() => setIsModalOpen(true)}>
@@ -172,7 +179,7 @@ const Project = () => {
             <i className="ri-group-line "></i>
           </button>
         </header>
-        <div className="conversation-area flex flex-grow flex-col relative overflow-hidden bg-[#fbfbfe] " >
+        <div className="conversation-area flex flex-grow flex-col relative overflow-hidden backdrop-blur-sm" >
           <div ref={messageBox}
             className={`message-box flex flex-col ${messages.length > 0 ? "" : "justify-center"} gap-1 overflow-y-auto px-2 py-2 h-full pb-20 rounded-br-xl border-r-2 border-[#433bff]`}>
             {messages.length === 0 &&
@@ -189,7 +196,7 @@ const Project = () => {
                 <div
                   key={index}
                   className={`message flex flex-col p-2 w-fit rounded-md m-1 break-words text-sm
-                      ${isAI ? "max-w-80 bg-[#dedcff] text-gray-800"
+                      ${isAI ? "max-w-80 bg-[#dedcff]/50 backdrop-blur-sm text-black"
                       : isSender
                         ? "ml-auto max-w-80 bg-[#433bff] text-white"
                         : "max-w-80 bg-[#DBDBDB]  text-black"
@@ -206,18 +213,18 @@ const Project = () => {
                   {/* Message Text */}
                   {isAI ? (
                     <p className={`${isSender ? "ml-auto" : ""}`}>
-                      {JSON.parse(msg.message).text}
+                      {msg.message.text}
                     </p>
                   ) : (
                     <p className={`${isSender ? "ml-auto" : ""}`}>
-                      {msg.message}
+                      {msg.message.text}
                     </p>
                   )}
                 </div>
 
               )
             })}
-            <div className="inputField w-full flex p-2 absolute left-0 bottom-0 border-2 border-[#433bff] bg-[#fbfbfe] rounded-br-xl backdrop-blur-2xl">
+            <div className="inputField w-full flex p-2 absolute left-0 bottom-0 border-2 border-[#433bff] rounded-br-xl backdrop-blur-sm">
               <input className='w-full p-3 px-4 border-none outline-none rounded-l-md bg-[#E5EBEE]' type="text" placeholder="Type your message here..."
                 value={message} onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
@@ -257,37 +264,46 @@ const Project = () => {
       </section>
 
       <section className='right flex-grow h-full flex'>
-        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full max-w-64 min-w-52 bg-[#F9F9FB] border-2 border-t-0 border-[#433bff] overflow-y-auto mr-2 rounded-xl`}>
+        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full max-w-64 min-w-52 border-2 border-t-0 border-[#433bff] overflow-y-auto mr-2 rounded-xl`}>
           <div className={`folder  h-[7.8%] p-4 sticky top-0 z-10 flex items-center text-md bg-[#433bff] text-white font-semibold transition-all duration-500`}>Files</div>
-          <div className='w-full h-[92.2%] bg-[#fbfbfe] overflow-y-auto'>
+          <div className='w-full h-[92.2%] backdrop-blur-sm overflow-y-auto'>
             {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile, idx) => (
-              <div className='folder flex flex-col gap-1 m-2 bg-white' key={idx}>
-                <div className='w-full rounded-t-md p-2 px-4 bg-[#dedcff]'>
-                  <p className='text-sm font-medium'>{aiFile.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</p>
+              <div className='folder flex flex-col gap-1 m-2 bg-black/50 rounded-lg' key={idx}>
+                <div className='w-full rounded-t-md p-2 px-4 bg-[#433bff]'>
+                  <p className='text-sm font-medium'>{aiFile.message.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</p>
                 </div>
-                {aiFile.fileTree && Object.keys(aiFile.fileTree).map((fileName, index) => (
+                {Object.keys(aiFile).length > 0 && Object.keys(aiFile.message.fileTree).map((fileName, index) => (
                   <div className='file-tree w-full' key={fileName}>
-                    <div className='tree-element p-1 px-4 flex items-center gap-2 w-full cursor-pointer hover:bg-slate-100'
+                    <div className='tree-element p-1 px-4 flex text-white items-center gap-2 w-full cursor-pointer hover:bg-slate-100'
                       onClick={() => {
-                        setCurrentFile(aiFile.fileTree[fileName]),
-                          setTempSelectedFile(prev => {
-                            const exist = prev.some((file) => Object.keys(file)[0] === fileName);
-                            if (!exist) {
-                              return [...prev, { [fileName]: aiFile.fileTree[fileName] }];
-                            }
-                            return prev;
-                          })
-                      }}>
+                        // console.log("current file : ", aiFile.message.fileTree[fileName]);
+                        setCurrentFile({
+                          content: aiFile.message.fileTree[fileName].content
+                            ? aiFile.message.fileTree[fileName].content
+                            : aiFile.message.fileTree[fileName],
+                          fileId: aiFile._id,
+                          fileName: fileName
+                        })
+                        //   setTempSelectedFile(prev => {
+                        //     const exist = prev.some((file) => Object.keys(file)[0] === fileName);
+                        //     if (!exist) {
+                        //       return [...prev, { [fileName]: aiFile.fileTree[fileName] }];
+                        //     }
+                        //     return prev;
+                        //   })
+                      }}
+                    >
                       <p className='text-sm hover:transform hover:translate-x-1 duration-300'>{fileName}</p>
                     </div>
                   </div>
-                ))}
+                ))
+                }
               </div>
             ))}
           </div>
         </div>
         {currentFile ? (
-          <div className='code-editor w-full h-full overflow-y-auto m-0 '>
+          <div className='code-editor w-full h-full overflow-y-auto m-0'>
             <div className='top flex h-[7.8%] items-center bg-[#433bff] text-white text-md sticky top-0 z-10 w-full rounded-tl-xl border-b-2 border-[#433bff]'>
               {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file) => (
                 Object.keys(file).length > 0 && Object.keys(file).map((fileName, index) => (
@@ -297,10 +313,33 @@ const Project = () => {
                 ))
               ))}
             </div>
-            <div className='bottom p-0 h-[92.2%] border-l-2 overflow-y-auto border-[#433bff] bg-[#FBFBFE] rounded-bl-xl'>
-              {CodeBlock(currentFile.content)}
-            </div>
+            <div className='bottom h-[92.2%]'>
+              {currentFile && (
+                <textarea className='w-full h-full p-4 border-l-2 bg-transparent backdrop-blur-sm border-[#433bff] rounded-bl-xl'
+                  value={currentFile.content}
+                  onChange={(e) => {
+                    const newContent = e.target.value;
 
+                    // Pehle UI update karo
+                    setCurrentFile((prev) => ({
+                      ...prev,
+                      content: newContent,
+                    }));
+
+                    // Fir DB ko update karo
+                    axios.put("/chats/UpdateMessage", {
+                      fileId: currentFile.fileId,
+                      fileName: currentFile.fileName,
+                      content: newContent,
+                    })
+                      .then((res) => console.log("Updated:", res.data))
+                      .catch((err) => console.log(err));
+                  }}>
+                </textarea>
+
+              )}
+              {/* {CodeBlock(currentFile.content)} */}
+            </div>
           </div>
         ) : (
 
@@ -332,50 +371,52 @@ const Project = () => {
       </section>
 
       {/* Modal for user selection */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-2 p-4 flex flex-col">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Select Users</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-800">
-                <i className="ri-close-line text-2xl"></i>
+      {
+        isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-2 p-4 flex flex-col">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Select Users</h2>
+                <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-800">
+                  <i className="ri-close-line text-2xl"></i>
+                </button>
+              </div>
+              <div className="flex flex-col gap-2 max-h-80 overflow-y-auto">
+                {users.length === 0 ? (
+                  <p className='text-center text-gray-500'>No users available</p>) : (
+                  users.map(user => (
+                    <div
+                      key={user._id}
+                      onClick={() => handleToggleUserSelect(user._id)}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg border cursor-pointer hover:bg-blue-100 transition-all ${selectedUserIds.includes(user._id)
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 bg-white'
+                        }`}
+                    >
+                      <div className='w-10 h-10 rounded-full overflow-hidden bg-slate-800 flex-shrink-0'>
+                        <img src={defaultAvatar} alt={user.name} className='w-full h-full object-cover' />
+                      </div>
+                      <div className='flex flex-col items-start'>
+                        <span className='font-medium text-gray-800 text-sm'>{user.name}</span>
+                        <span className='text-xs text-gray-500'>{user.email}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+              <button
+                className="mt-4 bg-[#433bff] text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
+                onClick={handleAddCollaborators}
+                disabled={selectedUserIds.length === 0}
+              >
+                Add Collaborators
               </button>
+              <p className='flex justify-center item-center text-sm text-[#433bff] pt-2'>Total selected : {selectedUserIds.length}</p>
             </div>
-            <div className="flex flex-col gap-2 max-h-80 overflow-y-auto">
-              {users.length === 0 ? (
-                <p className='text-center text-gray-500'>No users available</p>) : (
-                users.map(user => (
-                  <div
-                    key={user._id}
-                    onClick={() => handleToggleUserSelect(user._id)}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg border cursor-pointer hover:bg-blue-100 transition-all ${selectedUserIds.includes(user._id)
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 bg-white'
-                      }`}
-                  >
-                    <div className='w-10 h-10 rounded-full overflow-hidden bg-slate-800 flex-shrink-0'>
-                      <img src={defaultAvatar} alt={user.name} className='w-full h-full object-cover' />
-                    </div>
-                    <div className='flex flex-col items-start'>
-                      <span className='font-medium text-gray-800 text-sm'>{user.name}</span>
-                      <span className='text-xs text-gray-500'>{user.email}</span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            <button
-              className="mt-4 bg-[#433bff] text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
-              onClick={handleAddCollaborators}
-              disabled={selectedUserIds.length === 0}
-            >
-              Add Collaborators
-            </button>
-            <p className='flex justify-center item-center text-sm text-[#433bff] pt-2'>Total selected : {selectedUserIds.length}</p>
           </div>
-        </div>
-      )}
-    </main>
+        )
+      }
+    </main >
   )
 }
 
