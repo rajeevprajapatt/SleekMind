@@ -33,7 +33,7 @@ const imagekit = new ImageKit({
 app.get("/", (req, res) => {
     return res.json({ msg: "Hello World" });
 })
-// app.get("/ping", (req, res) => res.send("Server is alive"));
+app.get("/ping", (req, res) => res.send("Server is alive"));
 
 app.use("/users", userRoutes);
 app.use("/projects", projectRouter);
