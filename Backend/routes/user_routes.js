@@ -17,6 +17,10 @@ router.post("/login",
     userController.loginUserController
 )
 
+router.get("/test",(req,res)=>{
+    res.send("User route is working")
+})
+
 router.get("/profile", authMiddleware.authUser, userController.profileUserController);
 
 router.get("/logout",authMiddleware.authUser,userController.logoutUserController);
