@@ -15,6 +15,7 @@ const Login = () => {
     }
 
     const submitHandler = async (data) => {
+        // console.log(typeof(data.password));
         try {
             const response = await axios.post("/users/login", {
                 email: data.email,
