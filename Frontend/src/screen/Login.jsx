@@ -9,6 +9,7 @@ const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState("");
 
     if(localStorage.getItem("token")) {
         navigate("/");
@@ -30,8 +31,10 @@ const Login = () => {
         } catch (error) {
             if (error.response?.data?.error) {
                 console.log("Wrong email or password");
+                setErrorMessage("Wrong email or password");
             } else {
                 console.log("An error occurred. Please try again.");
+                setErrorMessage("An error occurred. Please try again.");
             }
         }
     }
@@ -73,7 +76,7 @@ const Login = () => {
                                 required: "password is required",
                             })}
                         />
-                        {errors.password && <div className="text-red-500 text-sm mt-1">{errors.password.message}</div>}
+                        {errorMessage && <div className="text-red-500 text-sm mt-1">{errorMessage}</div>}
                     </div>
                     <button
                         type="submit"

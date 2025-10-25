@@ -46,6 +46,7 @@ const Project = () => {
   const [AiGeneratedFiles, setAiGeneratedFiles] = useState(null);
   const [currentFile, setCurrentFile] = useState({});
   const [tempSelectedFile, setTempSelectedFile] = useState([]);
+  const [folder,setFolder] = useState("");
   // console.log("AI Generated Files: ", AiGeneratedFiles);
   // console.log("currentFile: ", currentFile);
 
@@ -166,6 +167,7 @@ const Project = () => {
   // console.log("messages : ", messages)
   // console.log("Ai generated files: ", AiGeneratedFiles)
   console.log("currentFile: ", currentFile)
+  console.log("folder: ", folder)
 
   return (
     <main className={`h-screen w-screen flex bg-cover bg-center`} style={{ backgroundImage: `url(${bgImage})` }}>
@@ -284,6 +286,7 @@ const Project = () => {
                           fileId: aiFile._id,
                           fileName: fileName
                         })
+                        setFolder(aiFile.message.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`);
                         //   setTempSelectedFile(prev => {
                         //     const exist = prev.some((file) => Object.keys(file)[0] === fileName);
                         //     if (!exist) {
@@ -305,6 +308,7 @@ const Project = () => {
         {currentFile ? (
           <div className='code-editor w-full h-full overflow-y-auto m-0'>
             <div className='top flex h-[7.8%] items-center bg-[#433bff] text-white text-md sticky top-0 z-10 w-full rounded-tl-xl border-b-2 border-[#433bff]'>
+            {/* <button>download</button> */}
               {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file) => (
                 Object.keys(file).length > 0 && Object.keys(file).map((fileName, index) => (
                   <div className='file-name flex items-center gap-2 cursor-pointer hover:bg-green-400' key={index}>
@@ -320,11 +324,8 @@ const Project = () => {
                   onChange={(e) => {
                     const newContent = e.target.value;
 
-                    // Pehle UI update karo
-                    setCurrentFile((prev) => ({
-                      ...prev,
-                      content: newContent,
-                    }));
+                    currentFile.content = newContent;
+                    setCurrentFile({ ...currentFile });
 
                     // Fir DB ko update karo
                     axios.put("/chats/UpdateMessage", {
@@ -332,17 +333,19 @@ const Project = () => {
                       fileName: currentFile.fileName,
                       content: newContent,
                     })
-                      .then((res) => console.log("Updated:", res.data))
-                      .catch((err) => console.log(err));
+                      .then((res) => {
+                        console.log("error then block me aaya");
+                        console.log("Updated:", res.data)})
+                      .catch((err) => {
+                        console.log("error catch block me aaya");
+                        console.log(err)});
                   }}>
                 </textarea>
-
               )}
               {/* {CodeBlock(currentFile.content)} */}
             </div>
           </div>
         ) : (
-
           <div className='flex flex-col items-center justify-center w-full h-full text-gray-500'>
             {/* <p className='text-lg'>Use AI assistant to generate files and start coding</p> */}
             <div className=''><SplitText
