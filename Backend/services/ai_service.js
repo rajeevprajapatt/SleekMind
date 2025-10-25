@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY);
 const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-2.5-flash",
     systemInstruction: `
 Always return a JSON object as the output, even for simple text responses. 
 The JSON must always contain at least the "text" key. 
@@ -33,6 +33,9 @@ Response: {
     "fileTree": {
         "app.js": {
             "content": "const express = require('express');\\n\\nconst app = express();\\n\\napp.get('/', (req, res) => {\\n  res.send('Hello World!');\\n});\\n\\napp.listen(3000, () => {\\n  console.log('Server is running on port 3000');\\n});"
+        }
+        "server.js": {
+            "content": "// src/server.js\\nrequire('dotenv').config(); // Load environment variables from .env file\\nconst app = require('./app');\\nconst PORT = process.env.PORT || 3000;\\n\\n// Start the server\\napp.listen(3000, () => {\\n  console.log(\\'Server is running on port \\3000\\);\\n  console.log(\\'Access it at http://localhost:\\3000\\');\\n});\\n"
         },
         "package.json": {
             "content": "{\\n  \\"name\\": \\"express-server\\",\\n  \\"version\\": \\"1.0.0\\",\\n  \\"description\\": \\"Simple Express server\\",\\n  \\"main\\": \\"app.js\\",\\n  \\"type\\": \\"commonjs\\",\\n  \\"scripts\\": {\\n    \\"start\\": \\"node app.js\\"\\n  },\\n  \\"dependencies\\": {\\n    \\"express\\": \\"^5.1.0\\"\\n  }\\n}"
@@ -75,3 +78,10 @@ export const generateResult = async (prompt) => {
 
     return result.response.text();
 }
+
+// async function listModels() {
+//   for await (const model of genAI.listModels()) {
+//     console.log("MODEL:", model.name, " | supported:", model.supportedMethods || model.methods || "(check payload)");
+//   }
+// }
+// listModels().catch(console.error);

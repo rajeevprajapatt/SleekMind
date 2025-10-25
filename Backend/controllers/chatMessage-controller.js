@@ -17,24 +17,31 @@ export const getAllChatMessages = async (req, res) => {
 export const getMessage = async (req, res) => {
     const { fileId, fileName, content } = req.body;
 
+    // console.log("content : ", content);
 
     try {
-        const msg = await ChatMessage.findOneAndUpdate(
-            { fileId },
-            {
-                $set: { [`message.fileTree.${fileName}.content`]: content }
-            },
-            { new: true } 
-        );
-        console.log("message aaya", msg);
-        console.log("yha tak chal gya")
-        if (!msg) {
+        const doc = await ChatMessage.findById(fileId);
+        if (!doc) return res.status(404).json({ error: "Message not found" });
+
+        // Update content safely (even if filename has dots)
+        if (
+            doc.message &&
+            doc.message.fileTree &&
+            doc.message.fileTree[fileName]
+        ) {
+            console.log("coming content : ", content);
+            doc.message.fileTree[fileName].content = content;
+        } else {
             return res.status(404).json({ error: "File not found in fileTree" });
         }
-        console.log("hello get message");
-        return res.status(200).json(msg);
+
+        doc.markModified('message.fileTree');
+        await doc.save();
+        return res.status(200).json(doc);
     } catch (error) {
-        console.error(error);
+        console.error("❌ Error updating file:", error);
         return res.status(500).json({ error: error.message });
     }
 }
+
+
