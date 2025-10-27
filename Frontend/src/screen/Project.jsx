@@ -5,29 +5,12 @@ import axios from '../config/axios';
 import { initializeSocket, sendMessage } from '../config/socket';
 import { UserContext } from '../context/user-context'
 import { useRef } from 'react';
-import Markdown from 'markdown-to-jsx'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import chatBotImage from '../assets/Chat bot.gif';
 import SplitText from '../animations/SplitText';
 import Conversation from '../assets/Conversation.gif';
 import bgImage from '../assets/5072612.jpg'
-
-const CodeBlock = (current) => {
-  // console.log("current file s: ", `${current}`);
-
-  return (
-    <SyntaxHighlighter
-      language={"javascript"}
-      // style={vscDarkPlus}   // theme
-      wrapLongLines={true}
-      customStyle={{ background: "none", margin: 0, paddingTop: "8px" }}
-      PreTag="div"  // default <pre> ke jagah <div>
-      CodeTag="span" // default <code> ke jagah <span>
-    >
-      {current}
-    </SyntaxHighlighter>
-  );
-}
+import Editor from "@monaco-editor/react";
+// import { set } from 'mongoose';
 
 const Project = () => {
   const location = useLocation();
@@ -46,13 +29,11 @@ const Project = () => {
   const [AiGeneratedFiles, setAiGeneratedFiles] = useState(null);
   const [currentFile, setCurrentFile] = useState({});
   const [tempSelectedFile, setTempSelectedFile] = useState([]);
-  const [folder,setFolder] = useState("");
-  // console.log("AI Generated Files: ", AiGeneratedFiles);
-  // console.log("currentFile: ", currentFile);
+  const [folder, setFolder] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
 
   const userId = JSON.parse(localStorage.getItem("user"))?._id;
-
-  //Initialize socket & Fetch messages
+  //Initialize socket & Fetch messages                      
   useEffect(() => {
     const socket = initializeSocket(project._id);
     socketRef.current = socket;
@@ -67,6 +48,7 @@ const Project = () => {
         setAiGeneratedFiles(response.data
           .filter(msg => msg.message.hasOwnProperty("fileTree")))
         // .map(msg => msg.message));
+        setAiLoading(false);
       })
       .catch(error =>
         console.log(error)
@@ -79,6 +61,7 @@ const Project = () => {
         if (newMessage.message.hasOwnProperty("fileTree")) {
           setAiGeneratedFiles(prev => [...prev, newMessage]);
         }
+        setAiLoading(false);
       }
     });
 
@@ -142,6 +125,14 @@ const Project = () => {
   const send = () => {
     if (!socketRef.current) return;
 
+    if (message.includes("@ai")) {
+      setAiLoading(true);
+      console.log("AI message detected");
+    }
+    else {
+      console.log("Normal message");
+    }
+
     if (message.length > 0) {
       socketRef.current.emit("project-message", {
         message,
@@ -164,10 +155,65 @@ const Project = () => {
     }
   }, [messages]);
 
-  // console.log("messages : ", messages)
-  // console.log("Ai generated files: ", AiGeneratedFiles)
-  console.log("currentFile: ", currentFile)
-  console.log("folder: ", folder)
+  // Monaco Editor Theme
+  const handleEditorMount = (editor, monaco) => {
+    monaco.editor.defineTheme("vscode-dark-modern", {
+      base: "vs-dark",
+      inherit: true,
+      rules: [
+        { token: "", background: "1e1e1e" },
+        { token: "comment", foreground: "6A9955" },
+        { token: "keyword", foreground: "C586C0" },
+        { token: "string", foreground: "CE9178" },
+        { token: "number", foreground: "B5CEA8" },
+        { token: "function", foreground: "DCDCAA" },
+        { token: "type", foreground: "4EC9B0" },
+      ],
+      colors: {
+        "editor.background": "#1E1E1E",
+        "editor.foreground": "#D4D4D4",
+        "editorLineNumber.foreground": "#858585",
+        "editorCursor.foreground": "#AEAFAD",
+        "editor.selectionBackground": "#264F78",
+        "editor.inactiveSelectionBackground": "#3A3D41",
+        "editor.lineHighlightBackground": "#2A2D2E",
+        "editorWidget.background": "#252526",
+        "editorHoverWidget.background": "#252526",
+        "editorSuggestWidget.background": "#252526",
+        "editorSuggestWidget.border": "#454545",
+        "editorIndentGuide.background": "#404040",
+        "editorIndentGuide.activeBackground": "#707070",
+        "sideBar.background": "#252526",
+        "statusBar.background": "#007ACC",
+        "panel.background": "#1E1E1E",
+      },
+    });
+
+    // Apply it AFTER defining
+    monaco.editor.setTheme("vscode-dark-modern");
+  };
+
+  //Update file content
+  const contentUpdated = (value) => {
+    const newContent = value || "";
+
+    currentFile.content = newContent;
+    setCurrentFile({ ...currentFile });
+
+    axios.put("/chats/UpdateMessage", {
+      fileId: currentFile.fileId,
+      fileName: currentFile.fileName,
+      content: newContent,
+    })
+      .then((res) => {
+        console.log("error then block me aaya");
+        console.log("Updated:", res.data)
+      })
+      .catch((err) => {
+        console.log("error catch block me aaya");
+        console.log(err)
+      });
+  }
 
   return (
     <main className={`h-screen w-screen flex bg-cover bg-center`} style={{ backgroundImage: `url(${bgImage})` }}>
@@ -191,6 +237,7 @@ const Project = () => {
                 <p className='text-center text-sm text-gray-500'>Type a message with @ai to chat with AI assistant</p>
               </div>
             }
+
             {messages.map((msg, index) => {
               const isSender = msg.sender._id === userId;
               const isAI = msg.sender._id === "000000000000000000000001";
@@ -223,9 +270,17 @@ const Project = () => {
                     </p>
                   )}
                 </div>
-
               )
             })}
+
+            {aiLoading &&
+              <div className={`max-w-80 flex flex-col p-3 px-4 bg-[#dedcff]/50 backdrop-blur-sm w-fit rounded-md m-1 break-words text-sm`}>
+                <p className={`text-white`}>
+                  <TypingIndicator />
+                </p>
+              </div>
+            }
+
             <div className="inputField w-full flex p-2 absolute left-0 bottom-0 border-2 border-[#433bff] rounded-br-xl backdrop-blur-sm">
               <input className='w-full p-3 px-4 border-none outline-none rounded-l-md bg-[#E5EBEE]' type="text" placeholder="Type your message here..."
                 value={message} onChange={(e) => setMessage(e.target.value)}
@@ -272,28 +327,30 @@ const Project = () => {
             {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile, idx) => (
               <div className='folder flex flex-col gap-1 m-2 bg-black/50 rounded-lg' key={idx}>
                 <div className='w-full rounded-t-md p-2 px-4 bg-[#433bff]'>
-                  <p className='text-sm font-medium'>{aiFile.message.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</p>
+                  <p className='text-sm font-medium'>{aiFile.message[`folder-name`] || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</p>
                 </div>
                 {Object.keys(aiFile).length > 0 && Object.keys(aiFile.message.fileTree).map((fileName, index) => (
                   <div className='file-tree w-full' key={fileName}>
                     <div className='tree-element p-1 px-4 flex text-white items-center gap-2 w-full cursor-pointer hover:bg-slate-100'
                       onClick={() => {
-                        // console.log("current file : ", aiFile.message.fileTree[fileName]);
-                        setCurrentFile({
-                          content: aiFile.message.fileTree[fileName].content
-                            ? aiFile.message.fileTree[fileName].content
-                            : aiFile.message.fileTree[fileName],
-                          fileId: aiFile._id,
-                          fileName: fileName
-                        })
+                        if (fileName === 'buildCommand' || fileName === 'runCommand' || fileName === 'startCommand' || fileName === 'testCommand') {
+                          setCurrentFile({
+                            content: JSON.stringify(aiFile.message.fileTree[fileName]),
+                            fileId: aiFile._id,
+                            fileName: fileName
+                          })
+                        }
+                        else {
+                          setCurrentFile({
+                            content: aiFile.message.fileTree[fileName].content
+                              ? aiFile.message.fileTree[fileName].content
+                              : aiFile.message.fileTree[fileName],
+                            fileId: aiFile._id,
+                            fileName: fileName
+                          })
+                        }
+
                         setFolder(aiFile.message.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`);
-                        //   setTempSelectedFile(prev => {
-                        //     const exist = prev.some((file) => Object.keys(file)[0] === fileName);
-                        //     if (!exist) {
-                        //       return [...prev, { [fileName]: aiFile.fileTree[fileName] }];
-                        //     }
-                        //     return prev;
-                        //   })
                       }}
                     >
                       <p className='text-sm hover:transform hover:translate-x-1 duration-300'>{fileName}</p>
@@ -305,10 +362,10 @@ const Project = () => {
             ))}
           </div>
         </div>
-        {currentFile ? (
-          <div className='code-editor w-full h-full overflow-y-auto m-0'>
+        {currentFile && Object.keys(currentFile).length > 0 ? (
+          <div className='code-editor w-full h-full overflow-y-auto m-0 backdrop-blur-sm bg-white/10 rounded-bl-xl rounded-br-xl'>
             <div className='top flex h-[7.8%] items-center bg-[#433bff] text-white text-md sticky top-0 z-10 w-full rounded-tl-xl border-b-2 border-[#433bff]'>
-            {/* <button>download</button> */}
+              {/* <button>download</button> */}
               {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file) => (
                 Object.keys(file).length > 0 && Object.keys(file).map((fileName, index) => (
                   <div className='file-name flex items-center gap-2 cursor-pointer hover:bg-green-400' key={index}>
@@ -317,37 +374,32 @@ const Project = () => {
                 ))
               ))}
             </div>
-            <div className='bottom h-[92.2%]'>
+            <div className='bottom h-[92.2%] w-full bg-gray-900/40 backdrop-blur-md border border-white/10  overflow-hidden shadow-lg'>
               {currentFile && (
-                <textarea className='w-full h-full p-4 border-l-2 bg-transparent backdrop-blur-sm border-[#433bff] rounded-bl-xl'
+                <Editor
+                  height="100%"
+                  width="100%"
+                  onMount={handleEditorMount}
+                  defaultLanguage="cpp"
                   value={currentFile.content}
-                  onChange={(e) => {
-                    const newContent = e.target.value;
-
-                    currentFile.content = newContent;
-                    setCurrentFile({ ...currentFile });
-
-                    // Fir DB ko update karo
-                    axios.put("/chats/UpdateMessage", {
-                      fileId: currentFile.fileId,
-                      fileName: currentFile.fileName,
-                      content: newContent,
-                    })
-                      .then((res) => {
-                        console.log("error then block me aaya");
-                        console.log("Updated:", res.data)})
-                      .catch((err) => {
-                        console.log("error catch block me aaya");
-                        console.log(err)});
-                  }}>
-                </textarea>
+                  onChange={contentUpdated}
+                  options={{
+                    minimap: { enabled: true },
+                    fontSize: 14,
+                    wordWrap: "on",
+                    automaticLayout: true,
+                    smoothScrolling: true,
+                    cursorBlinking: "phase",
+                    lineNumbers: "on",
+                    renderWhitespace: "none",
+                    renderLineHighlight: "line",
+                  }}
+                />
               )}
-              {/* {CodeBlock(currentFile.content)} */}
             </div>
           </div>
         ) : (
           <div className='flex flex-col items-center justify-center w-full h-full text-gray-500'>
-            {/* <p className='text-lg'>Use AI assistant to generate files and start coding</p> */}
             <div className=''><SplitText
               text={
                 <>
@@ -419,8 +471,19 @@ const Project = () => {
           </div>
         )
       }
-    </main >
+    </main>
   )
 }
+
+const TypingIndicator = () => {
+  return (
+    <div className="flex items-center justify-center gap-1">
+      <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:-0.38s]"></span>
+      <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:-0.20s]"></span>
+      <span className="w-2 h-2 bg-black rounded-full animate-bounce"></span>
+    </div>
+  );
+};
+
 
 export default Project
