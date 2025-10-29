@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { useLocation, NavLink } from 'react-router-dom'
+import { useEffect, useState, useContext } from 'react'
+import { useLocation } from 'react-router-dom'
 import defaultAvatar from '../assets/defaultAvatar.jpg';
 import axios from '../config/axios';
 import { initializeSocket, sendMessage } from '../config/socket';
@@ -25,14 +25,16 @@ const Project = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
-  const [project, setProject] = useState(location.state.project);
-  const [AiGeneratedFiles, setAiGeneratedFiles] = useState(null);
+  const [project] = useState(location.state.project);
+  const [AiGeneratedFiles, setAiGeneratedFiles] = useState([]);
   const [currentFile, setCurrentFile] = useState({});
   const [tempSelectedFile, setTempSelectedFile] = useState([]);
-  const [folder, setFolder] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
 
   const userId = JSON.parse(localStorage.getItem("user"))?._id;
+
+  console.log("Current File:", currentFile);
+
   //Initialize socket & Fetch messages                      
   useEffect(() => {
     const socket = initializeSocket(project._id);
@@ -48,7 +50,7 @@ const Project = () => {
         setAiGeneratedFiles(response.data
           .filter(msg => msg.message.hasOwnProperty("fileTree")))
         // .map(msg => msg.message));
-        setAiLoading(false);
+        // setAiLoading(false);
       })
       .catch(error =>
         console.log(error)
@@ -94,6 +96,18 @@ const Project = () => {
     }
   }, [users.length, projectUsers.length]);
 
+  //Scroll chat message to bottom
+  useEffect(() => {
+    if (messageBox.current) {
+      setTimeout(() => {
+        messageBox.current.scrollTo({
+          top: messageBox.current.scrollHeight,
+          behavior: 'smooth',
+        });
+      }, 100);
+    }
+  }, [messages]);
+
   //Select users
   const handleToggleUserSelect = (userId) => {
     setSelectedUserIds((prev) =>
@@ -121,39 +135,21 @@ const Project = () => {
     window.location.reload();
   };
 
-  //Send message
-  const send = () => {
+  const handleSendMessage = () => {
     if (!socketRef.current) return;
+    if (!message.trim()) return;
 
     if (message.includes("@ai")) {
       setAiLoading(true);
-      console.log("AI message detected");
-    }
-    else {
-      console.log("Normal message");
     }
 
-    if (message.length > 0) {
-      socketRef.current.emit("project-message", {
-        message,
-        sender: user._id,
-        projectId: project._id
-      });
-      setMessage("");
-    }
+    socketRef.current.emit("project-message", {
+      message,
+      sender: user._id,
+      projectId: project._id
+    });
+    setMessage("");
   }
-
-  //Scroll chat message to bottom
-  useEffect(() => {
-    if (messageBox.current) {
-      setTimeout(() => {
-        messageBox.current.scrollTo({
-          top: messageBox.current.scrollHeight,
-          behavior: 'smooth',
-        });
-      }, 100);
-    }
-  }, [messages]);
 
   // Monaco Editor Theme
   const handleEditorMount = (editor, monaco) => {
@@ -193,31 +189,30 @@ const Project = () => {
     monaco.editor.setTheme("vscode-dark-modern");
   };
 
-  //Update file content
-  const contentUpdated = (value) => {
-    const newContent = value || "";
+  const handleContentUpdate = (value = "") => {
+    if (!currentFile?.fileId) return;
 
-    currentFile.content = newContent;
-    setCurrentFile({ ...currentFile });
+    setCurrentFile(prev => ({
+      ...prev,
+      content: value
+    }));
 
     axios.put("/chats/UpdateMessage", {
       fileId: currentFile.fileId,
       fileName: currentFile.fileName,
-      content: newContent,
+      content: value,
     })
       .then((res) => {
-        console.log("error then block me aaya");
-        console.log("Updated:", res.data)
+        console.log("Updated:", res.data);
       })
       .catch((err) => {
-        console.log("error catch block me aaya");
-        console.log(err)
+        console.error("Failed to update file:", err);
       });
   }
 
   return (
     <main className={`h-screen w-screen flex bg-cover bg-center`} style={{ backgroundImage: `url(${bgImage})` }}>
-      <section className='left relative h-full flex flex-col min-w-96  mr-2'>
+      <section className='left relative h-full flex flex-col min-w-96 mr-2'>
         <header className='flex justify-between items-center rounded-tr-xl shadow-md p-2 px-4 w-full bg-[#433bff] text-white backdrop-blur-2xl border-b-2 border-[#433bff]'>
           <button className='flex gap-1' onClick={() => setIsModalOpen(true)}>
             <i className="ri-user-add-line mr-1 "></i>
@@ -287,11 +282,14 @@ const Project = () => {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey && message.trim()) {
                     e.preventDefault();
-                    send()
+                    handleSendMessage();
                   }
                 }}
               />
-              <button onClick={send} className='flex-grow px-3 bg-[#E5EBEE] rounded-r-md'
+              <button
+                onClick={handleSendMessage}
+                className='flex-grow px-3 bg-[#E5EBEE] rounded-r-md hover:bg-gray-200 transition-colors'
+                aria-label="Send message"
               >
                 <i className="ri-send-plane-2-fill text-xl"></i>
               </button>
@@ -321,17 +319,17 @@ const Project = () => {
       </section>
 
       <section className='right flex-grow h-full flex'>
-        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full max-w-64 min-w-52 border-2 border-t-0 border-[#433bff] overflow-y-auto mr-2 rounded-xl`}>
-          <div className={`folder  h-[7.8%] p-4 sticky top-0 z-10 flex items-center text-md bg-[#433bff] text-white font-semibold transition-all duration-500`}>Files</div>
-          <div className='w-full h-[92.2%] backdrop-blur-sm overflow-y-auto'>
+        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-[#181818] max-w-64 min-w-52 border-[#433bff] overflow-y-auto border border-white/10 rounded-tl-xl rounded-bl-xl`}>
+          <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center text-md bg-[#4ade33] text-white font-semibold transition-all duration-500`}>Files</div>
+          <div className='w-full h-[92.2%] backdrop-blur-sm overflow-y-auto no-scrollbar'>
             {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile, idx) => (
-              <div className='folder flex flex-col gap-1 m-2 bg-black/50 rounded-lg' key={idx}>
-                <div className='w-full rounded-t-md p-2 px-4 bg-[#433bff]'>
-                  <p className='text-sm font-medium'>{aiFile.message[`folder-name`] || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</p>
+              <div className='folder flex flex-col  bg-[#181818] border-b border-white/10' key={idx}>
+                <div className='w-full p-2 px-4 bg-[#181818] border-b border-white/10 text-white '>
+                  <p className='text-sm font-medium'><i className="ri-folder-5-line"></i><span className='capitalize'> {aiFile.message[`folder-name`] || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</span></p>
                 </div>
                 {Object.keys(aiFile).length > 0 && Object.keys(aiFile.message.fileTree).map((fileName, index) => (
                   <div className='file-tree w-full' key={fileName}>
-                    <div className='tree-element p-1 px-4 flex text-white items-center gap-2 w-full cursor-pointer hover:bg-slate-100'
+                    <div className='tree-element p-1.5 px-9 flex text-white items-center gap-2 w-full cursor-pointer hover:bg-[#37373d] hover:transform hover:translate-x-1 duration-300 overflow-y-auto '
                       onClick={() => {
                         if (fileName === 'buildCommand' || fileName === 'runCommand' || fileName === 'startCommand' || fileName === 'testCommand') {
                           setCurrentFile({
@@ -353,7 +351,7 @@ const Project = () => {
                         setFolder(aiFile.message.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`);
                       }}
                     >
-                      <p className='text-sm hover:transform hover:translate-x-1 duration-300'>{fileName}</p>
+                      <p className='text-sm '>{fileName}</p>
                     </div>
                   </div>
                 ))
@@ -363,8 +361,8 @@ const Project = () => {
           </div>
         </div>
         {currentFile && Object.keys(currentFile).length > 0 ? (
-          <div className='code-editor w-full h-full overflow-y-auto m-0 backdrop-blur-sm bg-white/10 rounded-bl-xl rounded-br-xl'>
-            <div className='top flex h-[7.8%] items-center bg-[#433bff] text-white text-md sticky top-0 z-10 w-full rounded-tl-xl border-b-2 border-[#433bff]'>
+          <div className='code-editor w-full h-full overflow-y-auto m-0 backdrop-blur-sm bg-white/10'>
+            <div className='top flex h-[7.8%] items-center bg-[#433bff] text-white text-md sticky top-0 z-10 w-full border-b-2 border-[#433bff]'>
               {/* <button>download</button> */}
               {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file) => (
                 Object.keys(file).length > 0 && Object.keys(file).map((fileName, index) => (
@@ -380,26 +378,21 @@ const Project = () => {
                   height="100%"
                   width="100%"
                   onMount={handleEditorMount}
-                  defaultLanguage="cpp"
+                  defaultLanguage="javascript"
                   value={currentFile.content}
-                  onChange={contentUpdated}
+                  onChange={handleContentUpdate}
                   options={{
                     minimap: { enabled: true },
                     fontSize: 14,
                     wordWrap: "on",
-                    automaticLayout: true,
-                    smoothScrolling: true,
-                    cursorBlinking: "phase",
-                    lineNumbers: "on",
-                    renderWhitespace: "none",
-                    renderLineHighlight: "line",
+                    automaticLayout: true
                   }}
                 />
               )}
             </div>
           </div>
         ) : (
-          <div className='flex flex-col items-center justify-center w-full h-full text-gray-500'>
+          <div className='flex flex-col bg-[#181818] items-center justify-center w-full h-full text-gray-500'>
             <div className=''><SplitText
               text={
                 <>
@@ -422,7 +415,6 @@ const Project = () => {
             <div className='mt-4 flex justify-center items-center'><img width='80%' src={chatBotImage}></img></div>
           </div>
         )}
-
       </section>
 
       {/* Modal for user selection */}
