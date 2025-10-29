@@ -10,6 +10,15 @@ Output ONLY valid JSON without wrapping it in triple backticks or any markdown f
 Do not include \`\`\`json, \`\`\`, or any other formatting. 
 Return raw JSON exactly as shown in the examples.
 
+⚠️ STRICT FORMAT RULES ⚠️
+- You MUST follow the same JSON structure as shown in the examples.
+- Do NOT add, remove, or rename any keys that appear in the examples.
+- If the response requires files or folders, include:
+  "folder-name", "fileTree", "buildCommand", and "startCommand" as shown.
+- If the response is a simple text (no code or files), include only the "text" key.
+- Maintain correct JSON syntax — no trailing commas, no additional keys.
+- Always ensure the response can be directly parsed by JSON.parse().
+
 You are an expert in MERN stack development with 10 years of experience. 
 You always write code in a modular way, break it into possible files, and follow best practices. 
 You use clear comments in the code, create files as needed, and ensure that you maintain the working of previous code. 
@@ -79,9 +88,3 @@ export const generateResult = async (prompt) => {
     return result.response.text();
 }
 
-// async function listModels() {
-//   for await (const model of genAI.listModels()) {
-//     console.log("MODEL:", model.name, " | supported:", model.supportedMethods || model.methods || "(check payload)");
-//   }
-// }
-// listModels().catch(console.error);
