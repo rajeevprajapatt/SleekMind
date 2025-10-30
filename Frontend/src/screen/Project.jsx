@@ -10,7 +10,6 @@ import SplitText from '../animations/SplitText';
 import Conversation from '../assets/Conversation.gif';
 import bgImage from '../assets/5072612.jpg'
 import Editor from "@monaco-editor/react";
-// import { set } from 'mongoose';
 
 const Project = () => {
   const location = useLocation();
@@ -33,7 +32,7 @@ const Project = () => {
 
   const userId = JSON.parse(localStorage.getItem("user"))?._id;
 
-  console.log("Current File:", currentFile);
+  console.log(AiGeneratedFiles)
 
   //Initialize socket & Fetch messages                      
   useEffect(() => {
@@ -320,12 +319,12 @@ const Project = () => {
 
       <section className='right flex-grow h-full flex'>
         <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-[#181818] max-w-64 min-w-52 border-[#433bff] overflow-y-auto border border-white/10 rounded-tl-xl rounded-bl-xl`}>
-          <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center text-md bg-[#4ade33] text-white font-semibold transition-all duration-500`}>Files</div>
+          <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center text-md bg-[#181818] border-b border-white/10 text-white font-semibold transition-all duration-500`}>Files</div>
           <div className='w-full h-[92.2%] backdrop-blur-sm overflow-y-auto no-scrollbar'>
             {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile, idx) => (
               <div className='folder flex flex-col  bg-[#181818] border-b border-white/10' key={idx}>
-                <div className='w-full p-2 px-4 bg-[#181818] border-b border-white/10 text-white '>
-                  <p className='text-sm font-medium'><i className="ri-folder-5-line"></i><span className='capitalize'> {aiFile.message[`folder-name`] || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</span></p>
+                <div className='w-full p-2 px-4 bg-[#181818] border-b border-white/10 text-white flex justify-between items-center '>
+                  <p className='text-sm font-medium'><i className="ri-folder-5-line"></i><span className='capitalize'> {aiFile.message[`folder-name`] || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</span></p><i className="ri-download-2-line cursor-pointer"></i>
                 </div>
                 {Object.keys(aiFile).length > 0 && Object.keys(aiFile.message.fileTree).map((fileName, index) => (
                   <div className='file-tree w-full' key={fileName}>
@@ -336,7 +335,18 @@ const Project = () => {
                             content: JSON.stringify(aiFile.message.fileTree[fileName]),
                             fileId: aiFile._id,
                             fileName: fileName
-                          })
+                          });
+
+                          // add to tempSelectedFile uniquely
+                          setTempSelectedFile(prev => {
+                            const exists = prev.some(f => f.fileName === fileName);
+                            if (exists) return prev;
+                            return [...prev, {
+                              content: JSON.stringify(aiFile.message.fileTree[fileName]),
+                              fileId: aiFile._id,
+                              fileName: fileName
+                            }];
+                          });
                         }
                         else {
                           setCurrentFile({
@@ -345,10 +355,21 @@ const Project = () => {
                               : aiFile.message.fileTree[fileName],
                             fileId: aiFile._id,
                             fileName: fileName
-                          })
-                        }
+                          });
 
-                        setFolder(aiFile.message.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`);
+                          // add to tempSelectedFile uniquely
+                          setTempSelectedFile(prev => {
+                            const exists = prev.some(f => f.fileName === fileName);
+                            if (exists) return prev;
+                            return [...prev, {
+                              content: aiFile.message.fileTree[fileName].content
+                                ? aiFile.message.fileTree[fileName].content
+                                : aiFile.message.fileTree[fileName],
+                              fileId: aiFile._id,
+                              fileName: fileName
+                            }];
+                          });
+                        }
                       }}
                     >
                       <p className='text-sm '>{fileName}</p>
@@ -361,24 +382,24 @@ const Project = () => {
           </div>
         </div>
         {currentFile && Object.keys(currentFile).length > 0 ? (
-          <div className='code-editor w-full h-full overflow-y-auto m-0 backdrop-blur-sm bg-white/10'>
-            <div className='top flex h-[7.8%] items-center bg-[#433bff] text-white text-md sticky top-0 z-10 w-full border-b-2 border-[#433bff]'>
+          <div className='code-editor w-full h-full overflow-y-auto bg-white/10'>
+            <div className='top flex h-[7.9%] items-center bg-[#181818] text-white text-md sticky z-10 w-full border-b border-white/10'>
               {/* <button>download</button> */}
               {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file) => (
-                Object.keys(file).length > 0 && Object.keys(file).map((fileName, index) => (
-                  <div className='file-name flex items-center gap-2 cursor-pointer hover:bg-green-400' key={index}>
-                    <p className='text-md cursor-pointer p-4' onClick={() => setCurrentFile(file[fileName])} key={index}>{fileName}</p>
-                  </div>
-                ))
-              ))}
+                <div className='file-name flex items-center gap-2 cursor-pointer hover:bg-[#37373d] transition-all duration-500 '>
+                  <p className='text-md cursor-pointer p-4' onClick={() => setCurrentFile(file)}>{file.fileName}</p>
+                </div>
+              )
+              )}
             </div>
-            <div className='bottom h-[92.2%] w-full bg-gray-900/40 backdrop-blur-md border border-white/10  overflow-hidden shadow-lg'>
+            <div className='bottom h-[92.2%] w-full overflow-hidden shadow-lg'>
               {currentFile && (
                 <Editor
                   height="100%"
                   width="100%"
+                  theme="vscode-dark-modern"
                   onMount={handleEditorMount}
-                  defaultLanguage="javascript"
+                  defaultLanguage="cpp"
                   value={currentFile.content}
                   onChange={handleContentUpdate}
                   options={{
@@ -392,14 +413,15 @@ const Project = () => {
             </div>
           </div>
         ) : (
-          <div className='flex flex-col bg-[#181818] items-center justify-center w-full h-full text-gray-500'>
+          <div className='flex flex-col bg-[#1E1E1E] items-center w-full h-full text-gray-500'>
+            <div className='flex h-[7.9%] items-center bg-[#181818] text-white text-md sticky z-10 w-full border-b border-white/10 mb-10'></div>
             <div className=''><SplitText
               text={
                 <>
                   <span className="text-[#433bff]">Use AI Assistant to generate files <br /> and start coding</span>
                 </>
               }
-              className="pt-16 pb-5 text-2xl md:text-4xl"
+              className=" pb-5 text-2xl md:text-4xl"
               delay={80}
               duration={0.6}
               ease="power3.out"
