@@ -10,6 +10,11 @@ router.get("/:projectId",
     chatsController.getAllChatMessages
 )
 
+router.get("/getFileTree/:projectId",
+    authMiddleware.authUser,
+    chatsController.getFileTree
+)
+
 router.put("/UpdateMessage",
     authMiddleware.authUser,
     chatsController.getMessage

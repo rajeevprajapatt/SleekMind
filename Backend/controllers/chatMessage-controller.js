@@ -14,6 +14,22 @@ export const getAllChatMessages = async (req, res) => {
         return res.status(400).send(error);
     }
 }
+
+export const getFileTree = async (req, res) => {
+    try {
+        const projectId = req.params.projectId;
+        const fileTree = await ChatMessage.findOne({ _id: projectId });
+        if (!fileTree) {
+            return res.status(404).json({ error: "File tree not found" });
+        }
+        return res.status(200).json(fileTree.message.fileTree);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(400).send(error);
+    }
+}
+
 export const getMessage = async (req, res) => {
     const { fileId, fileName, content } = req.body;
 
