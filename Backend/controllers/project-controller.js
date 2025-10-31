@@ -32,6 +32,7 @@ export const getAllProject = async (req, res) => {
         const loggedInUser = await User.findOne({
             email: req.user.email
         })
+        console.log("Running");
 
         const allProjects = await projectService.getAllProjectByUserId({ userId: loggedInUser._id })
 
