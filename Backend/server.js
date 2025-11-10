@@ -14,7 +14,8 @@ const Port = process.env.PORT || 3000;
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*"
+        origin:"https://sleekmind.vercel.app",
+        credentials: true
     }
 });
 
