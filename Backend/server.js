@@ -11,10 +11,14 @@ import { generateResult } from "./services/ai_service.js";
 
 const Port = process.env.PORT || 3000;
 
+const allowedOrigins = [
+  "https://sleekmind.vercel.app",
+  "https://sleekmind-kfrkwn6ol-rajeevprajapat43-gmailcoms-projects.vercel.app"  // Vercel preview URL
+];
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["https://sleekmind.vercel.app"],
+    origin:allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
     allowedHeaders: ["Authorization"]
