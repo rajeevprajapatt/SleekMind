@@ -1,21 +1,21 @@
-import socket from 'socket.io-client';
+import { io } from "socket.io-client";
 
-// variable that represent the connection of socket
 let socketInstance = null;
 
-
 export const initializeSocket = (projectId) => {
-    socketInstance = socket(import.meta.env.VITE_API_URL, {
+    socketInstance = io(import.meta.env.VITE_API_URL, {
+        transports: ["websocket", "polling"], // IMPORTANT
+        withCredentials: true,               // CORS FIX
         auth: {
-            token: localStorage.getItem('token')
+            token: localStorage.getItem("token"),
         },
-        query:{
-            projectId
+        query: {
+            projectId,   // allowed
         }
-    })
+    });
 
     return socketInstance;
-}
+};
 
 export const receiveMessage = (eventName, cb) => {
     if (!socketInstance) {
