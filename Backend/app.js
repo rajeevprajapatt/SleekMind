@@ -16,19 +16,17 @@ connect();
 
 app.use(cors());
 app.use(cors({
-  origin:"https://sleekmind.vercel.app",
+  origin: "https://sleekmind.vercel.app",
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
-// app.use(morgan("dev"));
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
  
-const imagekit = new ImageKit({
-  urlEndpoint: process.env.URL_ENDPOINT, 
-  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY
-});
 
 app.get("/", (req, res) => {
     return res.json({ msg: "Hello World" });
@@ -39,6 +37,13 @@ app.use("/users", userRoutes);
 app.use("/projects", projectRouter);
 app.use("/chats",chatRouter);
 app.use("/ai", aiRouter);
+
+
+const imagekit = new ImageKit({
+  urlEndpoint: process.env.URL_ENDPOINT, 
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY
+});
 
 app.get("/imagekitAuth", (req, res) => {
   const {token,expire, signature} = imagekit.getAuthenticationParameters();

@@ -13,11 +13,15 @@ const Port = process.env.PORT || 3000;
 
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: {
-        origin:"https://sleekmind.vercel.app",
-        credentials: true
-    }
+  cors: {
+    origin: ["https://sleekmind.vercel.app"],
+    methods: ["GET", "POST"],
+    credentials: true,
+    allowedHeaders: ["Authorization"]
+  },
+  transports: ["websocket", "polling"],
 });
+
 
 io.use(async (socket, next) => {
     try {
