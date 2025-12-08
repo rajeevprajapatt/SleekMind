@@ -1,5 +1,5 @@
-import { useEffect, useState, useContext } from 'react'
-import { useLocation } from 'react-router-dom'
+import React, { useEffect, useState, useContext } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import defaultAvatar from '../assets/defaultAvatar.jpg';
 import axios from '../config/axios';
 import { initializeSocket, sendMessage } from '../config/socket';
@@ -13,6 +13,7 @@ import Editor from "@monaco-editor/react";
 
 const Project = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const messageBox = useRef();
   const socketRef = useRef(null);
   const { user } = useContext(UserContext);
@@ -32,7 +33,7 @@ const Project = () => {
 
   const userId = JSON.parse(localStorage.getItem("user"))?._id;
 
-  console.log(AiGeneratedFiles)
+  // console.log(AiGeneratedFiles)
 
   //Initialize socket & Fetch messages                      
   useEffect(() => {
@@ -88,6 +89,7 @@ const Project = () => {
     axios.get("/users/all").then(res => setUsers(res.data.users)).catch(console.log);
   }, [location.state.project._id]);
 
+
   // Remove project users from all users
   useEffect(() => {
     if (users.length > 0 && projectUsers.length > 0) {
@@ -134,22 +136,6 @@ const Project = () => {
     window.location.reload();
   };
 
-  const handleSendMessage = () => {
-    if (!socketRef.current) return;
-    if (!message.trim()) return;
-
-    if (message.includes("@ai")) {
-      setAiLoading(true);
-    }
-
-    socketRef.current.emit("project-message", {
-      message,
-      sender: user._id,
-      projectId: project._id
-    });
-    setMessage("");
-  }
-
   // Monaco Editor Theme
   const handleEditorMount = (editor, monaco) => {
     monaco.editor.defineTheme("vscode-dark-modern", {
@@ -187,6 +173,22 @@ const Project = () => {
     // Apply it AFTER defining
     monaco.editor.setTheme("vscode-dark-modern");
   };
+
+  const handleSendMessage = () => {
+    if (!socketRef.current) return;
+    if (!message.trim()) return;
+
+    if (message.includes("@ai")) {
+      setAiLoading(true);
+    }
+
+    socketRef.current.emit("project-message", {
+      message,
+      sender: user._id,
+      projectId: project._id
+    });
+    setMessage("");
+  }
 
   const handleContentUpdate = (value = "") => {
     if (!currentFile?.fileId) return;
@@ -267,13 +269,13 @@ const Project = () => {
               )
             })}
 
-            {aiLoading &&
+            {/* {aiLoading &&
               <div className={`max-w-80 flex flex-col p-3 px-4 bg-[#dedcff]/50 backdrop-blur-sm w-fit rounded-md m-1 break-words text-sm`}>
                 <p className={`text-white`}>
                   <TypingIndicator />
                 </p>
               </div>
-            }
+            } */}
 
             <div className="inputField w-full flex p-2 absolute left-0 bottom-0 border-2 border-[#433bff] rounded-br-xl backdrop-blur-sm">
               <input className='w-full p-3 px-4 border-none outline-none rounded-l-md bg-[#E5EBEE]' type="text" placeholder="Type your message here..."
@@ -439,7 +441,6 @@ const Project = () => {
         )}
       </section>
 
-      {/* Modal for user selection */}
       {
         isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -501,3 +502,4 @@ const TypingIndicator = () => {
 
 
 export default Project
+

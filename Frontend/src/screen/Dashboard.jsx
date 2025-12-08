@@ -63,7 +63,7 @@ const Dashboard = () => {
     if (user) {
       axios.get("/projects/all").then(response => {
         const sorted = sortProjects(response.data.projects, "new");
-        console.log(sorted);
+        // console.log(sorted);
         // const sorted = sortProjects(response.data.projects, "new");
         // console.log("Projects fetched:", sorted);
         setProjects(sorted);

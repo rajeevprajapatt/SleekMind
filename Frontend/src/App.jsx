@@ -6,7 +6,7 @@ import './index.css'
 const App = () => {
   return (
     <UserProvider>
-      <AppRoutes />
+      <AppRoutes/>
     </UserProvider>
   )
 }
