@@ -14,22 +14,22 @@ import ImageKit from "imagekit";
 const app = express();
 connect();
 
-app.use(cors());
-// const allowedOrigins = [
-//   "https://sleekmind.vercel.app",
-//   "https://sleekmind-kfrkwn6ol-rajeevprajapat43-gmailcoms-projects.vercel.app"  // Vercel preview URL
-// ];
+// app.use(cors());
+const allowedOrigins = [
+  "https://sleekmind.vercel.app",
+  "https://sleekmind-kfrkwn6ol-rajeevprajapat43-gmailcoms-projects.vercel.app"  // Vercel preview URL
+];
 
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-//   credentials: true
-// }));
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
 
 
 

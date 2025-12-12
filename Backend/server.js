@@ -11,16 +11,16 @@ import { generateResult } from "./services/ai_service.js";
 
 const Port = process.env.PORT || 3000;
 
-// const allowedOrigins = [
-//   "https://sleekmind.vercel.app",
-//   "https://sleekmind-kfrkwn6ol-rajeevprajapat43-gmailcoms-projects.vercel.app"  // Vercel preview URL
-// ];
 const allowedOrigins = [
-  "http://localhost:5173",  // Vite frontend
-  "http://localhost:3000",  // CRA or Next.js local
-  "http://127.0.0.1:5173",
-  "http://127.0.0.1:3000"
+  "https://sleekmind.vercel.app",
+  "https://sleekmind-kfrkwn6ol-rajeevprajapat43-gmailcoms-projects.vercel.app"  // Vercel preview URL
 ];
+// const allowedOrigins = [
+//   "http://localhost:5173",  // Vite frontend
+//   "http://localhost:3000",  // CRA or Next.js local
+//   "http://127.0.0.1:5173",
+//   "http://127.0.0.1:3000"
+// ];
 
 const server = http.createServer(app);
 const io = new Server(server, {
