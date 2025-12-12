@@ -33,7 +33,7 @@ const Register = () => {
             localStorage.setItem("user", JSON.stringify(response.data.user));
             setUser(response.data.user);
 
-            window.location.href = "/projects";
+            window.location.href = "/dashboard";
         } catch (error) {
             console.log(error.response?.data || "Registration failed");
         }

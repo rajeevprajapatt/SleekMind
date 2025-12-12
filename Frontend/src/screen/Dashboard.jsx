@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar'
 import DeveloperImage from '../assets/Developer activity.gif'
 import SplitText from '../animations/SplitText';
 import Footer from '../components/Footer'
+import bgImage from '../assets/BG_Image.jpg';
 
 
 const sortOptions = [
@@ -30,6 +31,22 @@ const Dashboard = () => {
       setFontsReady(true);
     });
   }, []);
+
+  useEffect(() => {
+    document.body.style.backgroundImage = `url(${bgImage})`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.backgroundAttachment = 'fixed';
+
+    return () => {
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundSize = '';
+      document.body.style.backgroundPosition = '';
+      document.body.style.backgroundRepeat = '';
+      document.body.style.backgroundAttachment = '';
+    };
+  }, [bgImage]);
 
   function createProject(e) {
     e.preventDefault();
@@ -63,9 +80,6 @@ const Dashboard = () => {
     if (user) {
       axios.get("/projects/all").then(response => {
         const sorted = sortProjects(response.data.projects, "new");
-        // console.log(sorted);
-        // const sorted = sortProjects(response.data.projects, "new");
-        // console.log("Projects fetched:", sorted);
         setProjects(sorted);
       }).catch(err => {
         console.error("Error fetching projects:", err);
@@ -109,14 +123,12 @@ const Dashboard = () => {
     ));
   }
 
-
-
   return (
     <main className=''>
       <Navbar />
       <div className="pt-16 w-full" />
-      <div className='w-[80%] flex justify-between items-center m-auto text-[#050315]'>
-        <div className='w-2/3 h-full p-16'>
+      <div className='md:w-[80%] w-[96%] md:flex md:flex-row-reverse flex-col justify-between items-center mx-[3%] md:m-auto text-[#050315]'>
+        <div className='md:w-2/3 w-full h-full md:p-16 p-4'>
           {fontsReady && (
             <SplitText
               text={
@@ -124,7 +136,7 @@ const Dashboard = () => {
                   Welcome, <span className='text-[#2f27ce]'>{user.fullName}</span> 👋
                 </>
               }
-              className="text-4xl font-semibold text-black"
+              className="text-4xl font-semibold text-white"
               delay={70}
               duration={0.6}
               ease="power3.out"
@@ -137,25 +149,25 @@ const Dashboard = () => {
             />
           )}
 
-          <p className="text-black mt-2 text-xl leading-relaxed opacity-70">
+          <p className="text-slate-100 mt-2 text-xl leading-relaxed opacity-70">
             Ready to build something amazing today? <br />
             You can <span className="font-medium text-[#2f27ce]">create a new project</span> or
             <span className="font-medium text-[#2f27ce]"> join your existing teams</span> to collaborate in real-time.
           </p>
         </div>
-        <div className='w-1/3 flex justify-end items-center'>
+        <div className='md:w-1/3 w-full flex md:justify-end justify-center items-center'>
           <img src={DeveloperImage} width='80%'></img>
         </div>
       </div>
-      <div className="pt-12  h-0" />
+      <div className="md:pt-12 pt-8 h-0" />
 
-      <div className='text-slate-800 w-[80%] m-auto mt-10 mb-5'>
-        <div className="projects text-lg bg-[#433bff] flex justify-between items-center p-3 rounded-md shadow-md">
-          <button onClick={() => setIsModalOpen(true)} className="project bg-white py-3 px-8 border border-slate-300 ml-5 rounded-md">
+      <div className='text-slate-800 md:w-[80%] w-[90%] mx-[5%] md:m-auto md:mt-10 mt-1 mb-5'>
+        <div className="projects md:text-lg text-md bg-[#433bff] flex justify-between items-center md:p-3 p-3 rounded-md shadow-md">
+          <button onClick={() => setIsModalOpen(true)} className="bg-white md:py-3 md:px-8 py-1 px-3 border border-slate-300 md:ml-5 ml-1 rounded-md">
             <i className="ri-link mr-2" ></i>New Project
           </button>
           <select
-            className="project-select py-3 px-8 border border-slate-300 rounded-md mr-5 "
+            className="project-select md:py-3 md:px-8 px-3 py-1 border border-slate-300 rounded-md md:mr-5 mr-2"
             onChange={handleSortChange}
             value={selectedSort}
           >
@@ -167,27 +179,44 @@ const Dashboard = () => {
             projects.map((project, idx) => (
               <div
                 key={project._id}
-                className={`project p-4 border border-slate-300 rounded-md mb-2 cursor-pointer min-w-xl hover:bg-slate-100 transition-colors duration-200`}
+                className={`project md:p-4 p-2 border border-slate-300 rounded-md mb-2 cursor-pointer min-w-sm hover:bg-black/30 transition-colors duration-200`}
                 onClick={() => navigate(`/project`, {
                   state: { project }
                 })}
               >
-                <div className="flex flex-wrap justify-between items-center gap-2">
-                  <h2 className="text-3xl font-semibold opacity-90 flex-1 min-w-[200px] capitalize">
+                <div className="hidden md:flex flex-wrap justify-between items-center gap-2 text-white">
+                  <h2 className="md:text-3xl text-2xl font-semibold opacity-90 flex-1 min-w-[200px] capitalize">
                     {project.name}
                   </h2>
 
-                  <div className="flex-1 min-w-[150px] text-center text-sm text-gray-500">
-                    <i className="ri-team-line font-normal text-lg "></i>
+                  <div className="flex-1 min-w-[150px] text-right text-sm text-gray-200">
+                    <i className="ri-team-line font-normal md:text-lg"></i>
                     {" "}Collaborators: {project.users ? project.users.length : 0}
                   </div>
 
-                  <span className="flex-1 min-w-[150px] text-right text-xs text-gray-500">
+                  <span className="flex-1 min-w-[150px] text-right text-xs text-gray-200">
                     {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : '2025-01-01'}
                   </span>
                 </div>
-                <div className="mt-1 text-sm text-gray-600 font-semibold">
-                  <span className="text-sm text-gray-500">{project.description ? project.description : 'No description'}</span>
+
+                <div className="flex md:hidden flex-wrap justify-between items-center gap-2 pl-2">
+                  <h2 className="md:text-3xl text-white text-2xl font-semibold opacity-90 flex-1 min-w-[200px] capitalize">
+                    {project.name}
+                  </h2>
+
+                 <span className="flex-1 min-w-[150px] text-right pr-2 text-xs text-gray-200">
+                    {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : '2025-01-01'}
+                  </span>
+
+                  <div className="flex-1 min-w-[150px] text-left text-sm text-gray-200">
+                    <i className="ri-team-line font-normal md:text-lg"></i>
+                    {" "}Collaborators: {project.users ? project.users.length : 0}
+                  </div>
+
+                  
+                </div>
+                <div className="mt-1 pl-2 font-semibold">
+                  <span className="text-sm text-gray-200">{project.description ? project.description : 'No description'}</span>
                 </div>
               </div>
             ))

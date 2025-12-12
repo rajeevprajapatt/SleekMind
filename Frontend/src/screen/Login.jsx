@@ -27,7 +27,7 @@ const Login = () => {
             localStorage.setItem("user", JSON.stringify(response.data.user));
             setUser(response.data.user);
 
-            window.location.href = "/projects";
+            window.location.href = "/dashboard";
         } catch (error) {
             if (error.response?.data?.error) {
                 console.log("Wrong email or password");
