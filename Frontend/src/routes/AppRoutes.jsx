@@ -8,12 +8,18 @@ import Dashboard from '../screen/Dashboard'
 import Project from '../screen/Project'
 import UploadExample from '../screen/UploadExample'
 import UserAuth from '../auth/UserAuth'
+import Temp from '../screen/Temp'
 
 
 const router = createBrowserRouter([
   {
     path: "/", element: <div>
       <Home />
+    </div>
+  },
+  {
+    path: "/temp", element: <div>
+      <Temp />
     </div>
   },
   {

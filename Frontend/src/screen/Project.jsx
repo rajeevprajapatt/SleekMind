@@ -10,6 +10,7 @@ import SplitText from '../animations/SplitText';
 import Conversation from '../assets/Conversation.gif';
 import bgImage from '../assets/5072612.jpg'
 import Editor from "@monaco-editor/react";
+import { X, Menu } from 'lucide-react'
 
 const Project = () => {
   const location = useLocation();
@@ -212,18 +213,23 @@ const Project = () => {
   }
 
   return (
-    <main className={`h-screen w-screen flex bg-cover bg-center`} style={{ backgroundImage: `url(${bgImage})` }}>
-      <section className='left relative h-full flex flex-col min-w-96 mr-2'>
+    <main className={`h-[100dvh] w-screen flex flex-col md:flex-row bg-cover bg-center overflow-hidden`} style={{ backgroundImage: `url(${bgImage})` }}>
+      <section className='left hidden relative md:flex flex-col flex h-full min-w-full md:min-w-96 mr-0 md:mr-2'>
         <header className='flex justify-between items-center rounded-tr-xl shadow-md p-2 px-4 w-full bg-[#433bff] text-white backdrop-blur-2xl border-b-2 border-[#433bff]'>
-          <button className='flex gap-1' onClick={() => setIsModalOpen(true)}>
+          <button className='flex gap-1 cursor-pointer' onClick={() => setIsModalOpen(true)}>
             <i className="ri-user-add-line mr-1 "></i>
             <p>Add Collaborator</p>
           </button>
-          <button className='p-2' onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}>
-            <i className="ri-group-line "></i>
-          </button>
+          <div className='p-2 flex justify-center items-center gap-2'>
+            <button className='cursor-pointer' onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}>
+              <i className="ri-group-line"></i>
+            </button>
+            <button className='cursor-pointer' onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}>
+              <Menu className="md:hidden" size={20} />
+            </button>
+          </div>
         </header>
-        <div className="conversation-area flex flex-grow flex-col relative overflow-hidden backdrop-blur-sm" >
+        <div className="conversation-area flex flex-col flex-grow relative overflow-hidden backdrop-blur-sm" >
           <div ref={messageBox}
             className={`message-box flex flex-col ${messages.length > 0 ? "" : "justify-center"} gap-1 overflow-y-auto px-2 py-2 h-full pb-20 rounded-br-xl border-r-2 border-[#433bff]`}>
             {messages.length === 0 &&
@@ -233,7 +239,6 @@ const Project = () => {
                 <p className='text-center text-sm text-gray-500'>Type a message with @ai to chat with AI assistant</p>
               </div>
             }
-
             {messages.map((msg, index) => {
               const isSender = msg.sender._id === userId;
               const isAI = msg.sender._id === "000000000000000000000001";
@@ -268,14 +273,6 @@ const Project = () => {
                 </div>
               )
             })}
-
-            {/* {aiLoading &&
-              <div className={`max-w-80 flex flex-col p-3 px-4 bg-[#dedcff]/50 backdrop-blur-sm w-fit rounded-md m-1 break-words text-sm`}>
-                <p className={`text-white`}>
-                  <TypingIndicator />
-                </p>
-              </div>
-            } */}
 
             <div className="inputField w-full flex p-2 absolute left-0 bottom-0 border-2 border-[#433bff] rounded-br-xl backdrop-blur-sm">
               <input className='w-full p-3 px-4 border-none outline-none rounded-l-md bg-[#E5EBEE]' type="text" placeholder="Type your message here..."
@@ -319,7 +316,7 @@ const Project = () => {
         </div>
       </section>
 
-      <section className='right flex-grow h-full flex'>
+      <section className='right md:flex flex flex-row flex-grow h-full overflow-y-auto over'>
         <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-[#181818] max-w-64 min-w-52 border-[#433bff] overflow-y-auto border border-white/10 rounded-tl-xl rounded-bl-xl`}>
           <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center text-md bg-[#181818] border-b border-white/10 text-white font-semibold transition-all duration-500`}>Files</div>
           <div className='w-full h-[92.2%] backdrop-blur-sm overflow-y-auto no-scrollbar'>
@@ -384,17 +381,17 @@ const Project = () => {
           </div>
         </div>
         {currentFile && Object.keys(currentFile).length > 0 ? (
-          <div className='code-editor w-full h-full overflow-y-auto bg-white/10'>
+          <div className='code-editor w-full h-full overflow-y-auto overflow-x-auto bg-white/10'>
             <div className='top flex h-[7.9%] items-center bg-[#181818] text-white text-md sticky z-10 w-full border-b border-white/10'>
               {/* <button>download</button> */}
-              {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file) => (
-                <div className='file-name flex items-center gap-2 cursor-pointer hover:bg-[#37373d] transition-all duration-500 '>
+              {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file,index) => (
+                <div className='file-name flex items-center gap-2 cursor-pointer hover:bg-[#37373d] transition-all duration-500' key={index}>
                   <p className='text-md cursor-pointer p-4' onClick={() => setCurrentFile(file)}>{file.fileName}</p>
                 </div>
               )
               )}
             </div>
-            <div className='bottom h-[92.2%] w-full overflow-hidden shadow-lg'>
+            <div className="bottom h-[92.2%] min-w-[600px] w-max md:w-full overflow-x-auto overflow-y-auto shadow-lg">
               {currentFile && (
                 <Editor
                   height="100%"
@@ -405,9 +402,10 @@ const Project = () => {
                   value={currentFile.content}
                   onChange={handleContentUpdate}
                   options={{
-                    minimap: { enabled: true },
+                    minimap: { enabled: false },
                     fontSize: 14,
-                    wordWrap: "on",
+                    wordWrap: "off",
+                    scrollBeyondLastLine: false,
                     automaticLayout: true
                   }}
                 />
