@@ -8,7 +8,7 @@ import Dashboard from '../screen/Dashboard'
 import Project from '../screen/Project'
 import UploadExample from '../screen/UploadExample'
 import UserAuth from '../auth/UserAuth'
-import Temp from '../screen/Temp'
+
 
 
 const router = createBrowserRouter([
@@ -18,14 +18,8 @@ const router = createBrowserRouter([
     </div>
   },
   {
-    path: "/temp", element: <div>
-      <Temp />
-    </div>
-  },
-  {
     path: "/dashboard", element: <div>
       <UserAuth><Dashboard /></UserAuth>
-      {/* <Dashboard /> */}
     </div>
   },
   {
@@ -41,7 +35,6 @@ const router = createBrowserRouter([
   {
     path: "/project", element: <div>
       <UserAuth><Project /></UserAuth>
-
     </div>
   },
   {
