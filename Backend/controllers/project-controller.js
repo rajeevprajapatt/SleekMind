@@ -32,9 +32,11 @@ export const getAllProject = async (req, res) => {
         const loggedInUser = await User.findOne({
             email: req.user.email
         })
-        console.log("Running");
+        console.log("User Find : ", loggedInUser);
 
-        const allProjects = await projectService.getAllProjectByUserId({ userId: loggedInUser._id })
+        const allProjects = await projectService.getAllProjectByUserId({ userId: loggedInUser._id });
+
+        console.log("All Projects: ", allProjects);
 
         return res.status(200).json({ projects: allProjects })
     } catch (error) {
