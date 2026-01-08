@@ -1,17 +1,58 @@
-
-
 @import url("https://fonts.googleapis.com/css2?family=Ga+Maamli&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geom:ital,wght@0,300..900;1,300..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300..700&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Ga+Maamli&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Signika+Negative:wght@300..700&display=swap');
 
 @import "tailwindcss";
 
+:root {
+  --logoColor: #ffffff;
+  --primaryColor: #4f46e5;
+  --secondaryColor: #6d28d9;
+  --backgroundColor: #f3f4f6;
+  --textColor: #111827;
+  --borderColor: #e5e7eb;
+  --hoverColor: #4338ca;
+  --glitchFont: "Rubik Glitch", cursive;
+  --mainFont: "Nunito", sans-serif;
+  --maamliFont: "Ga Maamli", cursive;
+  --geomFont: "Geom", sans-serif;
+  --interFont: "Inter", sans-serif;
+  --latoFont: "Lato", sans-serif;
+  --montserratFont: "Montserrat", sans-serif;
+  --openSansFont: "Open Sans", sans-serif;
+  --poppinsFont: "Poppins", sans-serif;
+  --robotoFont: "Roboto", sans-serif;
+  --signikaFont: "Signika Negative", sans-serif;
+}
+
+@theme {
+  --color-logo: var(--logoColor);
+  --color-primary: var(--primaryColor);
+  --color-secondary: var(--secondaryColor);
+  --color-bg: var(--backgroundColor);
+  --color-text-default: var(--textColor);
+  --color-border-default: var(--borderColor);
+  --color-hover: var(--hoverColor);
+  --font-glitch: var(--glitchFont);
+  --font-main: var(--mainFont);
+  --font-maamli: var(--maamliFont);
+  --font-geom: var(--geomFont);
+  --font-inter: var(--interFont);
+  --font-lato: var(--latoFont);
+  --font-montserrat: var(--montserratFont);
+  --font-openSans: var(--openSansFont);
+  --font-poppins: var(--poppinsFont);
+  --font-roboto: var(--robotoFont);
+  --font-signika: var(--signikaFont);
+}
 
 * {
   box-sizing: border-box;
@@ -23,7 +64,24 @@ body {
   width: 100%;
   scroll-behavior: smooth;
   font-family: "Nunito", sans-serif;
+  background-blend-mode: normal;
 }
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+
+  background-image: url("./assets/BG_Image.jpg");
+  background-size: cover;
+  background-repeat: repeat-y;
+  background-position: center;
+
+  /* transform: scaleY(-1); */
+  pointer-events: none;
+  z-index: -1;
+}
+
 /* Hide scrollbar but allow scrolling */
 .message-box::-webkit-scrollbar {
   display: none;
@@ -59,3 +117,21 @@ body {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* 
+.animate-marquee:hover {
+  animation-play-state: paused;
+}  */

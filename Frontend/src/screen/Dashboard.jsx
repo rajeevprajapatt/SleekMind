@@ -75,6 +75,7 @@ const Dashboard = () => {
     }
 
   }, [navigate, setUser])
+  console.log(user);
 
   useEffect(() => {
     if (user) {

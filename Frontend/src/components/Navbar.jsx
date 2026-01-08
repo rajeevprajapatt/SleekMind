@@ -2,11 +2,29 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom';
 import axios from '../config/axios';
 import { Menu, X } from "lucide-react"
+import logo from '../assets/Logo Image.png'
+import Marquee from "react-fast-marquee";
+import AvatarImage from '../assets/defaultAvatar.jpg';
 
 const Navbar = () => {
     const navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(true);
+
+    useEffect(() => {
+        const onScroll = () => {
+            if (window.scrollY > 20) {
+                setScrolled(false);   // hide on minor scroll
+            } else {
+                setScrolled(true);    // show when back to top
+            }
+        };
+
+        window.addEventListener("scroll", onScroll);
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
 
     useEffect(() => {
         if (localStorage.getItem("token")) {
@@ -25,50 +43,82 @@ const Navbar = () => {
         navigate("/")
         window.location.reload();
     }
-    // bg-white/20 backdrop-blur-sm text-slate-900 p-2 w-full border-black flex justify-between
-    //                          text-center items-center fixed top-0 border-b z-50
     return (
-        <div className="flex justify-between items-center fixed top-0 w-full bg-white/20 backdrop-blur-sm text-slate-900 p-2 border-b z-50">
-            <div className='flex justify-center items-center'>
-                <h1 className="text-xl md:text-3xl font-bold text-[#2f27ce] pl-1 md:pl-4 pr-4"><Link to="/">Sleek Mind</Link></h1>
-                <ul className="flex gap-4 opacity-70 text-md font-semibold md:flex hidden">
-                    <li className=""><Link to="/dashboard">Projects</Link></li>
-                </ul>
-            </div>
-            <div className='flex items-center gap-2'>
-                {isLoggedIn ?
-                    <div className='flex items-center gap-3 md:gap-6 text-sm md:text-md  font-semibold mr-3'>
-                        <button onClick={handleLogOut} className='bg-black text-white flex justify-center gap-1 text-md md:p-2 md:px-3 p-1 px-2 rounded-md'>Log Out</button>
-                    </div> :
-                    <div className='flex items-center gap-3 md:gap-6 text-sm md:text-md font-semibold md:mr-3'>
-                        <p className='text-slate-900 opacity-70 md:flex hidden'><Link to="/login">Log In</Link></p>
-                        <button onClick={() => navigate("/register")} className='bg-black text-white flex justify-center gap-1 md:p-2 md:px-3 p-1 px-2 rounded-sm'>Get Started</button>
-                    </div>
-                }
-                <button className="md:hidden z-50" onClick={() => setIsOpen(!isOpen)}>
-                    {isOpen ? <X size={28} /> : <Menu size={28} />}
-                </button>
+        <>
+            {
+                window.scrollY < 20 &&
+                <Marquee
+                    className={`bg-black text-white transition-all duration-1000 ease-in-out top-1`}
+                    speed={30}
+                    gradient={false}
+                    pauseOnHover={true}
+                    pauseOnClick={false}
+                    direction="left"
+                    loop={0}
+                >
+                    Welcome to Sleek Mind - Your Ultimate Project Management & AI Collaboration Platform! &nbsp; &nbsp; &nbsp;
+                </Marquee>
+            }
+            <div className={`fixed w-full bg-black/20 backdrop-blur-xl text-white z-50 transition-all duration-300 ease-out ${scrolled ? "top-8" : "top-2"}`}>
+                <div className="flex items-center w-full gap-3 md:gap-6 px-4 md:px-8 py-2">
 
+                    {/* LEFT */}
+                    <div className="hidden flex-1 md:flex justify-end items-center">
+                        <ul className="hidden md:flex gap-8 mr-6 text-md opacity-90">
+                            <li className=""><Link to="/">Features</Link></li>
+                            <li className=""><Link to="/">Solutions</Link></li>
+                            <li><Link to="/">Pricing</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* CENTER */}
+                    <div className="flex justify-center">
+                        <h1 className="text-3xl md:text-4xl text-primary whitespace-nowrap font-geom font-bold">
+                            <Link to="/">Sleek Mind</Link>
+                        </h1>
+                    </div>
+
+                    {/* RIGHT */}
+                    <div className="flex-1 flex md:justify-start justify-end items-center">
+                        <ul className="hidden md:flex gap-8 ml-6 text-md opacity-90">
+                            {isLoggedIn && <li className=""><Link to="/">Projects</Link></li>}
+                            {!isLoggedIn && <li className=""><Link to="/login">Login</Link></li>}
+                        </ul>
+                        {isLoggedIn && <img src={AvatarImage} alt="User Avatar" className="w-8 h-8 rounded-full object-cover md:ml-6 hidden md:flex" />}
+
+                        {!isLoggedIn && <button className="bg-black md:flex ml-8 hidden text-white px-3 py-2 rounded-sm" >
+                            Get Started
+                        </button>}
+
+                        <button className="md:hidden bg-black/20 backdrop-blur-2xl border-2 border-[#433bff]/60 p-2 rounded-full" onClick={() => setIsOpen(!isOpen)}>
+                            {/* {isOpen ? <X size={22} /> : <Menu size={22} />} */}
+                            <Menu size={22} />
+                        </button>
+
+                        {/* SIDEBAR */}
+
+                    </div>
+
+                </div>
             </div>
-            <div
-                id="mobile-menu"
-                className={`md:hidden fixed top-0 right-0 h-screen w-2/4 bg-white backdrop-blur-xl border-l border-slate-700 z-50 flex flex-col 
-                ${isOpen ? "translate-x-0 pointer-events-auto opacity-100" : "translate-x-full pointer-events-none opacity-0"} transform transition-transform duration-300 ease-in-out
-          `}
-            >
-                <button className="self-end text-slate-300 hover:text-[#FAC918] px-3 py-2" onClick={() => setIsOpen(!isOpen)}>
-                    {isOpen ? <X className='black' size={28} /> : <Menu size={28} />}
+
+            <div className={`md:hidden fixed top-0 right-0 h-screen w-64 bg-black/20 backdrop-blur-lg border-l border-slate-700 z-50 flex flex-col transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
+                <button className={`self-end mt-10 mr-4 border-2 border-[#433bff]/60 p-2 rounded-full text-white  ${scrolled ? "top-8" : "top-2"}`} onClick={() => setIsOpen(false)}>
+                    <X size={22} />
                 </button>
-                <div className='border-t w-full'></div>
-                <ul className="flex flex-col pt-3 gap-4 ml-4 text-lg font-semibold items-center justify-center">
-                    <li className=""><Link to="/projects">Projects</Link></li>
-                    {isLoggedIn ?
-                        <li className="" onClick={handleLogOut}>Log Out</li> :
-                        <li className=""><Link to="/login">Log In</Link></li>
-                    }
+                <ul className="flex flex-col gap-2 mt-8 px-6 text-lg font-semibold text-white">
+                    {isLoggedIn && <li className='w-full text-left hover:bg-white/10 p-2 rounded'><Link to="/" onClick={() => setIsOpen(false)}>Profile</Link></li>}
+                    {isLoggedIn && <li className='w-full text-left hover:bg-white/10 p-2 rounded'><Link to="/" onClick={() => setIsOpen(false)}>Projects</Link></li>}
+                    <li className='w-full text-left hover:bg-white/10 p-2 rounded'><Link to="/" onClick={() => setIsOpen(false)}>Features</Link></li>
+                    <li className='w-full text-left hover:bg-white/10 p-2 rounded'><Link to="/" onClick={() => setIsOpen(false)}>Solutions</Link></li>
+                    <li className='w-full text-left hover:bg-white/10 p-2 rounded'><Link to="/" onClick={() => setIsOpen(false)}>Pricing</Link></li>
+                    {!isLoggedIn && <li className='w-full text-left hover:bg-white/10 p-2 rounded'><Link to="/login" onClick={() => setIsOpen(false)}>Get Started</Link></li>}
+                    {isLoggedIn && <li className='w-full text-left hover:bg-white/10 p-2 rounded'><button onClick={handleLogOut} className="text-red-500">Logout</button></li>}
                 </ul>
             </div>
-        </div>
+
+
+        </>
     )
 }
 

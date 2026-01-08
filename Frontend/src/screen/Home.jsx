@@ -8,11 +8,24 @@ import SplitText from '../animations/SplitText';
 import team_chat from '../assets/team_chat.jpg';
 import bgImage from '../assets/BG_Image.jpg';
 import Footer from '../components/Footer';
+import exBg from '../assets/exBg.png';
+import Marquee from "react-fast-marquee";
 
 const Home = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const [fontsReady, setFontsReady] = useState(false);
+
+  // const [scrolled, setScrolled] = useState(false);
+
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     setScrolled(window.scrollY > 30);
+  //   };
+
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
 
   useEffect(() => {
     document.fonts.ready.then(() => {
@@ -20,21 +33,21 @@ const Home = () => {
     });
   }, []);
 
-  useEffect(() => {
-    document.body.style.backgroundImage = `url(${bgImage})`;
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundPosition = 'center';
-    document.body.style.backgroundRepeat = 'no-repeat';
-    document.body.style.backgroundAttachment = 'fixed';
+  // useEffect(() => {
+  //   document.body.style.backgroundImage = `url(${bgImage})`;
+  //   document.body.style.backgroundSize = 'cover';
+  //   document.body.style.backgroundPosition = 'center';
+  //   document.body.style.backgroundRepeat = 'no-repeat';
+  //   document.body.style.backgroundAttachment = 'fixed';
 
-    return () => {
-      document.body.style.backgroundImage = '';
-      document.body.style.backgroundSize = '';
-      document.body.style.backgroundPosition = '';
-      document.body.style.backgroundRepeat = '';
-      document.body.style.backgroundAttachment = '';
-    };
-  }, [bgImage]);
+  //   return () => {
+  //     document.body.style.backgroundImage = '';
+  //     document.body.style.backgroundSize = '';
+  //     document.body.style.backgroundPosition = '';
+  //     document.body.style.backgroundRepeat = '';
+  //     document.body.style.backgroundAttachment = '';
+  //   };
+  // }, [bgImage]);
 
   const tiredCommunication = [
     "Project updates scattered across chats, emails, and docs",
@@ -89,12 +102,10 @@ const Home = () => {
 
 
   return (
-
-    <main className='min-h-screen'>
-      <Navbar />
-      <div className="pt-12" />
-
-      <div className="home-banner w-full">
+    <main className='min-h-screen' >
+      <div className="home-banner w-full" >
+        <Navbar />
+        <div className='pt-16' />
         <div className='flex flex-col items-center justify-center text-center gap-4 text-white'>
           {fontsReady && (
             <SplitText
@@ -103,7 +114,7 @@ const Home = () => {
                   Where your teams and <br /><span className='text-[#2f27ce]'>AI</span> <br />coordinate work together
                 </>
               }
-              className="md:pt-16 pt-8 pb-5 text-4xl md:text-7xl"
+              className="md:pt-16 pt-8 pb-5 text-4xl md:text-7xl "
               delay={80}
               duration={0.6}
               ease="power3.out"
@@ -121,7 +132,7 @@ const Home = () => {
             {user ? <button onClick={() => navigate("/dashboard")} className='bg-[#2f27ce] text-white flex justify-center gap-1 md:p-4 md:px-7 p-2 px-4 rounded-md'>Dashboard</button>
               : <button onClick={() => navigate("/register")} className='bg-[#2f27ce] text-white flex justify-center gap-1 md:p-4 md:px-7 p-2 px-4 rounded-md'>Get Started</button>
             }
-            <button onClick={() => navigate("#")} className='bg-[#dedcff] text-black flex justify-center gap-1 md:p-4 md:px-7 p-2 px-4 rounded-md'>See how it works</button>
+            <button onClick={() => navigate("#")} className='backdrop-blur-xl border border-[#2f27ce] text-white flex justify-center gap-1 md:p-4 md:px-7 p-2 px-4 rounded-md'>See how it works</button>
           </div>
           <div className='flex md:flex-row flex-col justify-center items-center gap-4 '>
             <div className='md:w-[42%] w-[90%] mx-[5%] md:m-0 rounded-xl'>
@@ -135,7 +146,7 @@ const Home = () => {
       </div>
 
       <div className="pt-24 h-0" />
-      <div className='flex flex-col items-center justify-center text-center w-[90%] mx-[5%] rounded-xl bg-black/70 gap-4 text-white '>
+      <div className='flex flex-col items-center justify-center text-center w-[90%] mx-[5%] rounded-xl bg-black/40 backdrop-blur-2xl gap-4 text-white ' >
         <h1 className='md:pt-16 pt-8 pb-5 md:text-5xl text-4xl font-semibold'>Done with scattered communication?</h1>
         <div className='flex flex-col md:items-start items-start justify-center gap-4 text-white px-2 pb-5 md:text-xl text-md text-left'>
           {tiredCommunication.map((item, index) => {
@@ -152,7 +163,7 @@ const Home = () => {
 
       <div className="pt-24 h-0" />
 
-      <div className='flex flex-col pb-1 items-center justify-center text-center px-2 gap-4 text-white bg-black/70 w-[90%] mx-[5%] rounded-xl'>
+      <div className='flex flex-col pb-1 items-center justify-center text-center px-2 gap-4 text-white  bg-black/40 backdrop-blur-2xl w-[90%] mx-[5%] rounded-xl'>
         <h1 className='md:pt-16 pt-8 md:pb-10 md:text-5xl text-4xl font-semibold'>Chat that suits your team</h1>
         {chatSuitsData.map((chat, idx) => {
           return (
@@ -172,12 +183,12 @@ const Home = () => {
 
       <div className="pt-24  h-0" />
 
-      <div className='flex flex-col items-center justify-center text-center md:gap-4 gap-2 text-white md:w-[85%] md:mx-[7.5%] w-[94%] mx-[3%] rounded-xl bg-black/70'>
+      <div className='flex flex-col items-center justify-center text-center md:gap-4 gap-2 text-white md:w-[85%] md:mx-[7.5%] w-[94%] mx-[3%] rounded-xl  bg-black/40 backdrop-blur-2xl'>
         <h1 className='md:pt-16 pt-8 pb-5 text-4xl font-semibold'>Why your project tool needs chat</h1>
         <div className="overflow-x-auto md:px-4 md:py-6 px-2">
           <table className="min-w-full table-auto border-collapse text-sm md:text-base border-3 border-[#dedcff]">
             <thead>
-              <tr className="bg-black/70 text-left text-white">
+              <tr className="bg-black/40 backdrop-blur-2xl text-left text-white">
                 <th className="p-4 font-semibold text-white w-1/3"> </th>
                 <th className="p-4 font-semibold text-white text-center">Sleek Mind</th>
                 <th className="p-4 font-semibold text-white text-center">Others</th>

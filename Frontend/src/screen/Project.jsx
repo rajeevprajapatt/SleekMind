@@ -11,6 +11,19 @@ import Conversation from '../assets/Conversation.gif';
 import bgImage from '../assets/5072612.jpg'
 import Editor from "@monaco-editor/react";
 import { X, Menu } from 'lucide-react'
+import {Link} from 'react-router-dom'
+
+const rightSideBarItems = [
+  {
+    icon: "ri-user-add-line", label: "Add Collaborator", action: "isModalOpen"
+  },
+  {
+    icon: "ri-group-line", label: "Project Users", action: "isSidePanelOpen"
+  },
+  {
+    icon: "ri-file-ai-line", label: "AI Files", action: "messageScreen"
+  },
+]
 
 const Project = () => {
   const location = useLocation();
@@ -26,11 +39,13 @@ const Project = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [project] = useState(location.state.project);
   const [AiGeneratedFiles, setAiGeneratedFiles] = useState([]);
   const [currentFile, setCurrentFile] = useState({});
   const [tempSelectedFile, setTempSelectedFile] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
+  const [messageScreen, setMessageScreen] = useState(true);
 
   const userId = JSON.parse(localStorage.getItem("user"))?._id;
 
@@ -214,17 +229,20 @@ const Project = () => {
 
   return (
     <main className={`h-[100dvh] w-screen flex flex-col md:flex-row bg-cover bg-center overflow-hidden`} style={{ backgroundImage: `url(${bgImage})` }}>
-      <section className='left hidden relative md:flex flex-col flex h-full min-w-full md:min-w-96 mr-0 md:mr-2'>
+      <section className={`left relative md:flex flex-col flex h-full min-w-full md:min-w-96 mr-0 md:mr-2 ${messageScreen ? 'flex' : 'hidden'}`}>
         <header className='flex justify-between items-center rounded-tr-xl shadow-md p-2 px-4 w-full bg-[#433bff] text-white backdrop-blur-2xl border-b-2 border-[#433bff]'>
-          <button className='flex gap-1 cursor-pointer' onClick={() => setIsModalOpen(true)}>
+          {/* <button className='flex gap-1 cursor-pointer' onClick={() => setIsModalOpen(true)}>
             <i className="ri-user-add-line mr-1 "></i>
             <p>Add Collaborator</p>
-          </button>
+          </button> */}
+          <h1 className="text-3xl md:text-4xl text-primary whitespace-nowrap font-geom font-bold">
+            <Link to="/">Sleek Mind</Link>
+          </h1>
           <div className='p-2 flex justify-center items-center gap-2'>
-            <button className='cursor-pointer' onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}>
+            {/* <button className='cursor-pointer' onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}>
               <i className="ri-group-line"></i>
-            </button>
-            <button className='cursor-pointer' onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}>
+            </button> */}
+            <button className='cursor-pointer' onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}>
               <Menu className="md:hidden" size={20} />
             </button>
           </div>
@@ -316,7 +334,7 @@ const Project = () => {
         </div>
       </section>
 
-      <section className='right md:flex flex flex-row flex-grow h-full overflow-y-auto over'>
+      <section className={`right hidden md:flex flex flex-row grow h-full overflow-y-auto over ${messageScreen ? 'hidden' : 'flex'}`}>
         <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-[#181818] max-w-64 min-w-52 border-[#433bff] overflow-y-auto border border-white/10 rounded-tl-xl rounded-bl-xl`}>
           <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center text-md bg-[#181818] border-b border-white/10 text-white font-semibold transition-all duration-500`}>Files</div>
           <div className='w-full h-[92.2%] backdrop-blur-sm overflow-y-auto no-scrollbar'>
@@ -327,7 +345,7 @@ const Project = () => {
                 </div>
                 {Object.keys(aiFile).length > 0 && Object.keys(aiFile.message.fileTree).map((fileName, index) => (
                   <div className='file-tree w-full' key={fileName}>
-                    <div className='tree-element p-1.5 px-9 flex text-white items-center gap-2 w-full cursor-pointer hover:bg-[#37373d] hover:transform hover:translate-x-1 duration-300 overflow-y-auto '
+                    <div className='tree-element p-1.5 px-9 flex text-white items-center gap-2 w-full cursor-pointer hover:bg-[#37373d] hover:transform hover:translate-x-1 duration-300 overflow-y-auto no-scrollbar'
                       onClick={() => {
                         if (fileName === 'buildCommand' || fileName === 'runCommand' || fileName === 'startCommand' || fileName === 'testCommand') {
                           setCurrentFile({
@@ -384,7 +402,7 @@ const Project = () => {
           <div className='code-editor w-full h-full overflow-y-auto overflow-x-auto bg-white/10'>
             <div className='top flex h-[7.9%] items-center bg-[#181818] text-white text-md sticky z-10 w-full border-b border-white/10'>
               {/* <button>download</button> */}
-              {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file,index) => (
+              {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file, index) => (
                 <div className='file-name flex items-center gap-2 cursor-pointer hover:bg-[#37373d] transition-all duration-500' key={index}>
                   <p className='text-md cursor-pointer p-4' onClick={() => setCurrentFile(file)}>{file.fileName}</p>
                 </div>
@@ -484,6 +502,22 @@ const Project = () => {
           </div>
         )
       }
+
+      {/* Right Sidebar */}
+      <div className={`fixed top-0 right-0 h-screen w-14 bg-black/20 backdrop-blur-lg border-l border-slate-700 z-50 flex flex-col transform transition-transform duration-300 ease-in-out ${isRightSidebarOpen ? "translate-x-0" : "translate-x-full"}`}>
+        <button className="self-end mt-4 mr-4 text-white hover:text-gray-300 cursor-pointer" onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}>
+          <X size={22} />
+        </button>
+        <ul className="flex flex-col items-center justify-center gap-2 mt-8 px-1 text-white">
+          {rightSideBarItems.map((item, index) => (
+            <li key={index}>
+              <button className="w-full text-lg hover:bg-white/10 p-2 rounded cursor-pointer" title={item.label}>
+                <i className={item.icon}></i>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </main>
   )
 }
