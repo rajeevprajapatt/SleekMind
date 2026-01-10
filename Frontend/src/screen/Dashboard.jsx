@@ -107,7 +107,6 @@ const Dashboard = () => {
 
   const handleSortChange = (e) => {
     const selectedValue = e.target.value;
-    // console.log(selectedValue);
     setSelectedSort(selectedValue);
     const sortedProjects = sortProjects(projects, selectedValue);
     setProjects(sortedProjects);
@@ -127,7 +126,7 @@ const Dashboard = () => {
   return (
     <main className=''>
       <Navbar />
-      <div className="pt-16 w-full" />
+      <div className="pt-32 w-full" />
       <div className='md:w-[80%] w-[96%] md:flex md:flex-row-reverse flex-col justify-between items-center mx-[3%] md:m-auto text-[#050315]'>
         <div className='md:w-2/3 w-full h-full md:p-16 p-4'>
           {fontsReady && (
@@ -205,7 +204,7 @@ const Dashboard = () => {
                     {project.name}
                   </h2>
 
-                 <span className="flex-1 min-w-[150px] text-right pr-2 text-xs text-gray-200">
+                  <span className="flex-1 min-w-[150px] text-right pr-2 text-xs text-gray-200">
                     {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : '2025-01-01'}
                   </span>
 
@@ -214,7 +213,7 @@ const Dashboard = () => {
                     {" "}Collaborators: {project.users ? project.users.length : 0}
                   </div>
 
-                  
+
                 </div>
                 <div className="mt-1 pl-2 font-semibold">
                   <span className="text-sm text-gray-200">{project.description ? project.description : 'No description'}</span>
@@ -229,13 +228,10 @@ const Dashboard = () => {
           )}
 
         </div>
-
       </div>
       <div className="pt-2 h-0" />
 
       <Footer />
-
-
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
