@@ -11,95 +11,67 @@ import Footer from '../components/Footer';
 import exBg from '../assets/exBg.png';
 import Marquee from "react-fast-marquee";
 
+const tiredCommunication = [
+  "Project updates scattered across chats, emails, and docs",
+  "Important decisions delayed while waiting for replies",
+  "Teams working in silos without visibility into each other's work",
+  "Too many apps just to stay in sync",
+];
+
+const chatSuitsData = [
+  {
+    title: "Team chat", description: "Chat across the whole team", details: "Team chat gives you a simple way to talk to everyone in your company, not just those on the same project. Create chat rooms for different teams, goals, or topics. Whether it's a quick question or a broader team discussion, you can stay connected without adding another tool to your stack.",
+    image: team_chat
+  },
+  {
+    title: "Project-specific chat", description: "Conversations tied to work", details: "Project-specific chat keeps all discussions related to a project in one place. Team members can easily reference tasks, share updates, and collaborate without losing context. This focused communication helps reduce noise and ensures everyone is aligned on project goals.",
+    image: team_chat
+  },
+]
+
+const TableData = [
+  {
+    feature: "Built-in project chat in one place",
+    breeze: true,
+    others: false,
+    othersNote: "Most tools depend on separate chat apps",
+  },
+  {
+    feature: "Messages and tasks in one timeline",
+    breeze: true,
+    others: false,
+    othersNote: "Others make you jump between multiple apps",
+  },
+  {
+    feature: "Team chat across all your projects",
+    breeze: true,
+    others: false,
+    othersNote: "Others need tools like Slack for team chat",
+  },
+  {
+    feature: "Conversations linked to actual work",
+    breeze: true,
+    others: false,
+    othersNote: "Others keep chat and tasks unrelated",
+  },
+  {
+    feature: "Everything stays organized in one place",
+    breeze: true,
+    others: false,
+    othersNote: "Others scatter chats across different tools",
+  },
+];
+
 const Home = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const [fontsReady, setFontsReady] = useState(false);
-
-  // const [scrolled, setScrolled] = useState(false);
-
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     setScrolled(window.scrollY > 30);
-  //   };
-
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, []);
 
   useEffect(() => {
     document.fonts.ready.then(() => {
       setFontsReady(true);
     });
   }, []);
-
-  // useEffect(() => {
-  //   document.body.style.backgroundImage = `url(${bgImage})`;
-  //   document.body.style.backgroundSize = 'cover';
-  //   document.body.style.backgroundPosition = 'center';
-  //   document.body.style.backgroundRepeat = 'no-repeat';
-  //   document.body.style.backgroundAttachment = 'fixed';
-
-  //   return () => {
-  //     document.body.style.backgroundImage = '';
-  //     document.body.style.backgroundSize = '';
-  //     document.body.style.backgroundPosition = '';
-  //     document.body.style.backgroundRepeat = '';
-  //     document.body.style.backgroundAttachment = '';
-  //   };
-  // }, [bgImage]);
-
-  const tiredCommunication = [
-    "Project updates scattered across chats, emails, and docs",
-    "Important decisions delayed while waiting for replies",
-    "Teams working in silos without visibility into each other's work",
-    "Too many apps just to stay in sync",
-  ];
-
-  const chatSuitsData = [
-    {
-      title: "Team chat", description: "Chat across the whole team", details: "Team chat gives you a simple way to talk to everyone in your company, not just those on the same project. Create chat rooms for different teams, goals, or topics. Whether it's a quick question or a broader team discussion, you can stay connected without adding another tool to your stack.",
-      image: team_chat
-    },
-    {
-      title: "Project-specific chat", description: "Conversations tied to work", details: "Project-specific chat keeps all discussions related to a project in one place. Team members can easily reference tasks, share updates, and collaborate without losing context. This focused communication helps reduce noise and ensures everyone is aligned on project goals.",
-      image: team_chat
-    },
-  ]
-
-  const TableData = [
-    {
-      feature: "Built-in project chat in one place",
-      breeze: true,
-      others: false,
-      othersNote: "Most tools depend on separate chat apps",
-    },
-    {
-      feature: "Messages and tasks in one timeline",
-      breeze: true,
-      others: false,
-      othersNote: "Others make you jump between multiple apps",
-    },
-    {
-      feature: "Team chat across all your projects",
-      breeze: true,
-      others: false,
-      othersNote: "Others need tools like Slack for team chat",
-    },
-    {
-      feature: "Conversations linked to actual work",
-      breeze: true,
-      others: false,
-      othersNote: "Others keep chat and tasks unrelated",
-    },
-    {
-      feature: "Everything stays organized in one place",
-      breeze: true,
-      others: false,
-      othersNote: "Others scatter chats across different tools",
-    },
-  ];
-
 
   return (
     <main className='min-h-screen' >
@@ -234,6 +206,6 @@ export default Home;
 
 function X() {
   return (
-    <span className="text-red-500 text-xl flex-shrink-0">✘</span>
+    <span className="text-red-500 text-xl shrink-0">✘</span>
   )
 }
