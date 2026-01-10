@@ -228,26 +228,19 @@ const Project = () => {
   }
 
   return (
-    <main className={`h-[100dvh] w-screen flex flex-col md:flex-row bg-cover bg-center overflow-hidden`} style={{ backgroundImage: `url(${bgImage})` }}>
+    <main className={`h-dvh w-screen flex flex-col md:flex-row bg-cover bg-center overflow-hidden`} style={{ backgroundImage: `url(${bgImage})` }}>
       <section className={`left relative md:flex flex-col flex h-full min-w-full md:min-w-96 mr-0 md:mr-2 ${messageScreen ? 'flex' : 'hidden'}`}>
         <header className='flex justify-between items-center rounded-tr-xl shadow-md p-2 px-4 w-full bg-[#433bff] text-white backdrop-blur-2xl border-b-2 border-[#433bff]'>
-          {/* <button className='flex gap-1 cursor-pointer' onClick={() => setIsModalOpen(true)}>
-            <i className="ri-user-add-line mr-1 "></i>
-            <p>Add Collaborator</p>
-          </button> */}
           <h1 className="text-3xl md:text-4xl text-primary whitespace-nowrap font-geom font-bold">
             <Link to="/">Sleek Mind</Link>
           </h1>
           <div className='p-2 flex justify-center items-center gap-2'>
-            {/* <button className='cursor-pointer' onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}>
-              <i className="ri-group-line"></i>
-            </button> */}
             <button className='cursor-pointer' onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}>
               <Menu className="md:hidden" size={20} />
             </button>
           </div>
-        </header>
-        <div className="conversation-area flex flex-col flex-grow relative overflow-hidden backdrop-blur-sm" >
+        </header> 
+        <div className="conversation-area flex flex-col grow relative overflow-hidden backdrop-blur-sm" >
           <div ref={messageBox}
             className={`message-box flex flex-col ${messages.length > 0 ? "" : "justify-center"} gap-1 overflow-y-auto px-2 py-2 h-full pb-20 rounded-br-xl border-r-2 border-[#433bff]`}>
             {messages.length === 0 &&
@@ -263,7 +256,7 @@ const Project = () => {
               return (
                 <div
                   key={index}
-                  className={`message flex flex-col p-2 w-fit rounded-md m-1 break-words text-sm
+                  className={`message flex flex-col p-2 w-fit rounded-md m-1 wrap-break-words text-sm
                       ${isAI ? "max-w-80 bg-[#dedcff]/50 backdrop-blur-sm text-black"
                       : isSender
                         ? "ml-auto max-w-80 bg-[#433bff] text-white"
@@ -304,7 +297,7 @@ const Project = () => {
               />
               <button
                 onClick={handleSendMessage}
-                className='flex-grow px-3 bg-[#E5EBEE] rounded-r-md hover:bg-gray-200 transition-colors'
+                className='grow px-3 bg-[#E5EBEE] rounded-r-md hover:bg-gray-200 transition-colors'
                 aria-label="Send message"
               >
                 <i className="ri-send-plane-2-fill text-xl"></i>
@@ -312,7 +305,7 @@ const Project = () => {
             </div>
           </div>
         </div>
-        <div className={`sidePanel w-full h-full flex flex-col gap-2 bg-transparent rounded-tr-xl backdrop-blur-md duration-500 transition-all absolute ${isSidePanelOpen ? '-translate-x-0' : '-translate-x-full'} top-0`}>
+        <div className={`sidePanel w-full h-full flex flex-col gap-2 bg-transparent rounded-tr-xl backdrop-blur-md duration-500 transition-all absolute ${isSidePanelOpen ? 'translate-x-0' : '-translate-x-full'} top-0`}>
           <header className='flex justify-end p-2 px-4 bg-[#433bff] rounded-tr-xl text-white'>
             <button className='p-2' onClick={() => setIsSidePanelOpen(false)}>
               <i className="ri-close-line text-xl" ></i>
@@ -321,7 +314,7 @@ const Project = () => {
           <div className='users flex flex-col gap-1 p-2'>
             {projectUsers.map((user) => (
               <div key={user._id} className='user flex items-center gap-3 bg-white/80 border border-slate-400 rounded-lg px-2 py-1 mb-1 shadow-sm cursor-pointer hover:shadow-lg hover:translate-x-1 duration-700 hover:transition-all'>
-                <div className='w-12 h-12 rounded-full overflow-hidden bg-slate-800 flex-shrink-0'>
+                <div className='w-12 h-12 rounded-full overflow-hidden bg-slate-800 shrink-0'>
                   <img src={defaultAvatar} alt='user' className='w-full h-full object-cover' />
                 </div>
                 <div className='flex flex-col'>
@@ -335,8 +328,13 @@ const Project = () => {
       </section>
 
       <section className={`right md:flex flex-row grow h-full overflow-y-auto over ${messageScreen ? 'hidden' : 'flex'}`}>
-        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-[#181818] max-w-64 min-w-52 border-[#433bff] overflow-y-auto border border-white/10 rounded-tl-xl rounded-bl-xl`}>
-          <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center text-md bg-[#181818] border-b border-white/10 text-white font-semibold transition-all duration-500`}>Files</div>
+        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-[#181818] max-w-64 min-w-38 overflow-y-auto border rounded-tl-xl rounded-bl-xl`}>
+          <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center justify-between text-md bg-[#181818] border-b border-white/10 text-white  transition-all duration-500`}>
+            <span className='font-semibold'>Files</span>
+            <i className="ri-arrow-left-box-line text-lg md:hidden" onClick={()=>{
+              setMessageScreen(true);
+            }}></i>
+          </div>
           <div className='w-full h-[92.2%] backdrop-blur-sm overflow-y-auto no-scrollbar'>
             {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile, idx) => (
               <div className='folder flex flex-col  bg-[#181818] border-b border-white/10' key={idx}>
@@ -400,7 +398,7 @@ const Project = () => {
         </div>
         {currentFile && Object.keys(currentFile).length > 0 ? (
           <div className='code-editor w-full h-full overflow-hidden bg-white/10'>
-            <div className='top flex h-[7.9%] items-center bg-[#181818] text-white text-md sticky z-10 w-full border-b border-white/10'>
+            <div className='top flex h-[7.9%] items-center bg-[#181818] text-white text-md overflow-x-scroll no-scrollbar sticky z-10 w-full border-b border-white/10'>
               {/* <button>download</button> */}
               {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file, index) => (
                 <div className='file-name flex items-center gap-2 cursor-pointer hover:bg-[#37373d] transition-all duration-500' key={index}>
@@ -409,7 +407,7 @@ const Project = () => {
               )
               )}
             </div>
-            <div className="bottom h-[92.2%] w-full overflow-x-auto overflow-y-auto shadow-lg">
+            <div className="bottom h-[92.2%] w-full overflow-x-auto overflow-y-auto shadow-lg no-scrollbar">
               {currentFile && (
                 <Editor
                   height="100%"
@@ -532,17 +530,6 @@ const Project = () => {
     </main>
   )
 }
-
-const TypingIndicator = () => {
-  return (
-    <div className="flex items-center justify-center gap-1">
-      <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:-0.38s]"></span>
-      <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:-0.20s]"></span>
-      <span className="w-2 h-2 bg-black rounded-full animate-bounce"></span>
-    </div>
-  );
-};
-
 
 export default Project
 
