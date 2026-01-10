@@ -399,7 +399,7 @@ const Project = () => {
           </div>
         </div>
         {currentFile && Object.keys(currentFile).length > 0 ? (
-          <div className='code-editor w-full h-full overflow-y-auto overflow-x-auto bg-white/10'>
+          <div className='code-editor w-full h-full overflow-hidden bg-white/10'>
             <div className='top flex h-[7.9%] items-center bg-[#181818] text-white text-md sticky z-10 w-full border-b border-white/10'>
               {/* <button>download</button> */}
               {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file, index) => (
@@ -409,7 +409,7 @@ const Project = () => {
               )
               )}
             </div>
-            <div className="bottom h-[92.2%] min-w-[600px] w-max md:w-full overflow-x-auto overflow-y-auto shadow-lg">
+            <div className="bottom h-[92.2%] w-full overflow-x-auto overflow-y-auto shadow-lg">
               {currentFile && (
                 <Editor
                   height="100%"
