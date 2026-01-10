@@ -11,7 +11,7 @@ import Conversation from '../assets/Conversation.gif';
 import bgImage from '../assets/5072612.jpg'
 import Editor from "@monaco-editor/react";
 import { X, Menu } from 'lucide-react'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const rightSideBarItems = [
   {
@@ -334,7 +334,7 @@ const Project = () => {
         </div>
       </section>
 
-      <section className={`right hidden md:flex flex flex-row grow h-full overflow-y-auto over ${messageScreen ? 'hidden' : 'flex'}`}>
+      <section className={`right md:flex flex-row grow h-full overflow-y-auto over ${messageScreen ? 'hidden' : 'flex'}`}>
         <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-[#181818] max-w-64 min-w-52 border-[#433bff] overflow-y-auto border border-white/10 rounded-tl-xl rounded-bl-xl`}>
           <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center text-md bg-[#181818] border-b border-white/10 text-white font-semibold transition-all duration-500`}>Files</div>
           <div className='w-full h-[92.2%] backdrop-blur-sm overflow-y-auto no-scrollbar'>
@@ -511,7 +511,18 @@ const Project = () => {
         <ul className="flex flex-col items-center justify-center gap-2 mt-8 px-1 text-white">
           {rightSideBarItems.map((item, index) => (
             <li key={index}>
-              <button className="w-full text-lg hover:bg-white/10 p-2 rounded cursor-pointer" title={item.label}>
+              <button className="w-full text-lg hover:bg-white/10 p-2 rounded cursor-pointer" title={item.label} onClick={() => {
+                if (item.action === "isModalOpen") {
+                  setIsModalOpen(true);
+                  setIsRightSidebarOpen(false);
+                } else if (item.action === "isSidePanelOpen") {
+                  setIsSidePanelOpen(true);
+                  setIsRightSidebarOpen(false);
+                } else if (item.action === "messageScreen") {
+                  setMessageScreen(!messageScreen);
+                  setIsRightSidebarOpen(false);
+                }
+              }}>
                 <i className={item.icon}></i>
               </button>
             </li>
