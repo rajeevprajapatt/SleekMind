@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import defaultAvatar from '../assets/defaultAvatar.jpg';
 import axios from '../config/axios';
-import { initializeSocket, sendMessage } from '../config/socket';
+import { initializeSocket } from '../config/socket';
 import { UserContext } from '../context/user-context'
 import { useRef } from 'react';
 import chatBotImage from '../assets/Chat bot.gif';
@@ -45,12 +45,9 @@ const Project = () => {
   const [currentFile, setCurrentFile] = useState({});
   const [tempSelectedFile, setTempSelectedFile] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
-  const [messageScreen, setMessageScreen] = useState(true);
-
+  const [messageScreen, setMessageScreen] = useState(false);
   const userId = JSON.parse(localStorage.getItem("user"))?._id;
-
-  // console.log(AiGeneratedFiles)
-
+  
   //Initialize socket & Fetch messages                      
   useEffect(() => {
     const socket = initializeSocket(project._id);
@@ -65,8 +62,6 @@ const Project = () => {
         setMessages(response.data)
         setAiGeneratedFiles(response.data
           .filter(msg => msg.message.hasOwnProperty("fileTree")))
-        // .map(msg => msg.message));
-        // setAiLoading(false);
       })
       .catch(error =>
         console.log(error)
@@ -104,7 +99,6 @@ const Project = () => {
     //Fetch all users
     axios.get("/users/all").then(res => setUsers(res.data.users)).catch(console.log);
   }, [location.state.project._id]);
-
 
   // Remove project users from all users
   useEffect(() => {
@@ -239,7 +233,7 @@ const Project = () => {
               <Menu className="md:hidden" size={20} />
             </button>
           </div>
-        </header> 
+        </header>
         <div className="conversation-area flex flex-col grow relative overflow-hidden backdrop-blur-sm" >
           <div ref={messageBox}
             className={`message-box flex flex-col ${messages.length > 0 ? "" : "justify-center"} gap-1 overflow-y-auto px-2 py-2 h-full pb-20 rounded-br-xl border-r-2 border-[#433bff]`}>
@@ -327,25 +321,30 @@ const Project = () => {
         </div>
       </section>
 
-      <section className={`right md:flex flex-row grow h-full overflow-y-auto over ${messageScreen ? 'hidden' : 'flex'}`}>
-        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-[#181818] max-w-64 min-w-38 overflow-y-auto border rounded-tl-xl rounded-bl-xl`}>
-          <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center justify-between text-md bg-[#181818] border-b border-white/10 text-white  transition-all duration-500`}>
+      <section className={`right md:flex flex-row grow h-full bg-linear-to-b from-[#181818] to-[#1E1E1E] overflow-y-auto ${messageScreen ? 'hidden' : 'flex'}`}>
+        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-linear-to-b from-[#2D3436] to-[#181818] max-w-64 min-w-38 overflow-y-auto border rounded-2xl md:rounded-tl-xl md:rounded-bl-xl`}>
+          <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center justify-between text-md text-white  transition-all duration-500`}>
             <span className='font-semibold'>Files</span>
-            <i className="ri-arrow-left-box-line text-lg md:hidden" onClick={()=>{
-              setMessageScreen(true);
-            }}></i>
+            <i className="ri-arrow-left-box-line text-lg md:hidden"
+              onClick={() => {
+                setMessageScreen(true);
+              }}>
+            </i>
           </div>
           <div className='w-full h-[92.2%] backdrop-blur-sm overflow-y-auto no-scrollbar'>
             {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile, idx) => (
-              <div className='folder flex flex-col  bg-[#181818] border-b border-white/10' key={idx}>
-                <div className='w-full p-2 px-4 bg-[#181818] border-b border-white/10 text-white flex justify-between items-center '>
-                  <p className='text-sm font-medium'><i className="ri-folder-5-line"></i><span className='capitalize'> {aiFile.message[`folder-name`] || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}</span></p><i className="ri-download-2-line cursor-pointer"></i>
+              <div className='folder flex flex-col border-white/10' key={idx}>
+                <div className='w-auto p-2 px-2 md:px-4 mx-1 bg-linear-to-b from-[#212526] to-[#232323] rounded-lg text-white flex justify-between items-center'>
+                  <p className='text-sm font-medium capitalize'>
+                    {aiFile.message[`folder-name`] || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}
+                  </p>
+                  <i className="ri-download-2-line cursor-pointer"></i>
                 </div>
                 {Object.keys(aiFile).length > 0 && Object.keys(aiFile.message.fileTree).map((fileName, index) => (
-                  <div className='file-tree w-full' key={fileName}>
-                    <div className='tree-element p-1.5 px-9 flex text-white items-center gap-2 w-full cursor-pointer hover:bg-[#37373d] hover:transform hover:translate-x-1 duration-300 overflow-y-auto no-scrollbar'
+                  <div className='file-tree w-full' key={index}>
+                    <div className={`tree-element p-1.5 px-6 flex items-center gap-2 w-full cursor-pointer hover:bg-[#37373d] hover:transform hover:translate-x-1 duration-300 overflow-y-auto no-scrollbar ${currentFile.fileName === fileName ? 'px-8 text-blue-400' : 'text-white'}`}
                       onClick={() => {
-                        if (fileName === 'buildCommand' || fileName === 'runCommand' || fileName === 'startCommand' || fileName === 'testCommand') {
+                        if (fileName === 'buildCommand' || fileName === 'runCommand' || fileName === 'startCommand' || fileName === 'testCommand' || fileName.includes('.txt')) {
                           setCurrentFile({
                             content: JSON.stringify(aiFile.message.fileTree[fileName]),
                             fileId: aiFile._id,
@@ -387,7 +386,7 @@ const Project = () => {
                         }
                       }}
                     >
-                      <p className='text-sm '>{fileName}</p>
+                      <p className={`text-sm `}>{fileName}</p>
                     </div>
                   </div>
                 ))
@@ -399,10 +398,24 @@ const Project = () => {
         {currentFile && Object.keys(currentFile).length > 0 ? (
           <div className='code-editor w-full h-full overflow-hidden bg-white/10'>
             <div className='top flex h-[7.9%] items-center bg-[#181818] text-white text-md overflow-x-scroll no-scrollbar sticky z-10 w-full border-b border-white/10'>
-              {/* <button>download</button> */}
               {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file, index) => (
-                <div className='file-name flex items-center gap-2 cursor-pointer hover:bg-[#37373d] transition-all duration-500' key={index}>
-                  <p className='text-md cursor-pointer p-4' onClick={() => setCurrentFile(file)}>{file.fileName}</p>
+                <div className={`file-name flex items-center gap-0 cursor-pointer hover:bg-[#37373d] transition-all duration-500 ${currentFile.fileName === file.fileName ? 'text-blue-400 bg-linear-to-b from-[#212526] to-[#232323] rounded-lg m-1 w-auto' : ''}`} key={index}>
+                  <p className={`text-sm cursor-pointer py-3 px-2`} onClick={() => setCurrentFile(file)}>
+                    {file.fileName}
+                  </p>
+                  <i className="ri-close-line mr-1 cursor-pointer hover:text-red-500 transition-all duration-500"
+                    onClick={() => {
+                      // If the closed file is the current file, reset currentFile
+                      if (tempSelectedFile.length < 0) {
+                        setCurrentFile({});
+                      }
+                      else if (currentFile.fileName === file.fileName) {
+                        const remainingFiles = tempSelectedFile.filter(f => f.fileName !== file.fileName);
+                        setCurrentFile(remainingFiles.length > 0 ? remainingFiles[0] : {});
+                      }
+                      setTempSelectedFile(prev => prev.filter(f => f.fileName !== file.fileName))
+                    }}>
+                  </i>
                 </div>
               )
               )}
@@ -430,7 +443,7 @@ const Project = () => {
           </div>
         ) : (
           <div className='flex flex-col bg-[#1E1E1E] items-center w-full h-full text-gray-500'>
-            <div className='flex h-[7.9%] items-center bg-[#181818] text-white text-md sticky z-10 w-full border-b border-white/10 mb-10'></div>
+          
             <div className=''><SplitText
               text={
                 <>
