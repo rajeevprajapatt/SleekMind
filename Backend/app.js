@@ -14,6 +14,10 @@ import ImageKit from "imagekit";
 const app = express();
 connect();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
 // app.use(cors());
 const allowedOrigins = [
   "https://sleekmind.vercel.app",
@@ -31,11 +35,11 @@ app.use(cors({
   credentials: true
 }));
 
+app.options("*", cors());
 
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+
+
  
 
 app.get("/", (req, res) => {
