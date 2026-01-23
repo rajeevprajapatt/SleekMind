@@ -45,7 +45,7 @@ const Project = () => {
   const [currentFile, setCurrentFile] = useState({});
   const [tempSelectedFile, setTempSelectedFile] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
-  const [messageScreen, setMessageScreen] = useState(false);
+  const [messageScreen, setMessageScreen] = useState(true);
   const userId = JSON.parse(localStorage.getItem("user"))?._id;
   
   //Initialize socket & Fetch messages                      
@@ -530,6 +530,9 @@ const Project = () => {
                   setIsSidePanelOpen(true);
                   setIsRightSidebarOpen(false);
                 } else if (item.action === "messageScreen") {
+                  if (AiGeneratedFiles && AiGeneratedFiles.length === 0) {
+                    return;
+                  }
                   setMessageScreen(!messageScreen);
                   setIsRightSidebarOpen(false);
                 }
