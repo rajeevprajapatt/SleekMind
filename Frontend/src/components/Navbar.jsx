@@ -13,7 +13,7 @@ const leftNavItems = [
 ];
 const rightNavItems = [
     { title: "Pricing", link: "/" },
-    { title: "Projects", link: "/" },
+    { title: "Projects", link: "/dashboard" },
     { title: "Login", link: "/login" },
 ];
 const marqueeTexts = [
