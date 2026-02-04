@@ -7,7 +7,7 @@ import { SplitText as GSAPSplitText } from "gsap/SplitText";
 gsap.registerPlugin(ScrollTrigger, GSAPSplitText);
 
 const SplitText = ({
-    text,
+    children,
     className = "",
     delay = 100,
     duration = 0.6,
@@ -25,7 +25,7 @@ const SplitText = ({
     const scrollTriggerRef = useRef(null);
 
     useEffect(() => {
-        if (typeof window === "undefined" || !ref.current || !text) return;
+        if (typeof window === "undefined" || !ref.current) return;
 
         const el = ref.current;
 
@@ -37,10 +37,10 @@ const SplitText = ({
         let splitter;
         try {
             splitter = new GSAPSplitText(el, {
-                type: splitType,
-                absolute: absoluteLines,
-                linesClass: "split-line",
+                type: "words, chars",   // 🔥 FORCE WORD WRAPPER
+                absolute: false,
             });
+
         } catch (error) {
             console.error("Failed to create SplitText:", error);
             return;
@@ -59,6 +59,27 @@ const SplitText = ({
                 break;
             default:
                 targets = splitter.chars;
+        }
+
+        // ✅ FIX: allow responsive wrapping
+        // 🔥 FINAL WORD-BREAK FIX
+        if (splitType === "chars") {
+            splitter.words.forEach((word) => {
+                word.style.display = "inline-block"; // ✅ word = atomic unit
+                word.style.whiteSpace = "nowrap";    // ✅ NO MID-WORD BREAK
+            });
+
+            splitter.chars.forEach((char) => {
+                char.style.display = "inline-block"; // chars animate safely
+            });
+        }
+
+
+        if (splitType === "lines") {
+            splitter.lines.forEach((line) => {
+                line.style.display = "block";
+                line.style.overflow = "hidden";
+            });
         }
 
         if (!targets || targets.length === 0) {
@@ -128,13 +149,12 @@ const SplitText = ({
             className={`split-parent ${className}`}
             style={{
                 textAlign,
-                overflow: "hidden",
-                display: "inline-block",
+                display: "block",
                 whiteSpace: "normal",
-                wordWrap: "break-word",
+                overflowWrap: "normal", // ✅ important
             }}
         >
-            {text}
+            {children}
         </p>
     );
 };
