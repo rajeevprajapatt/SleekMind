@@ -8,7 +8,7 @@ const App = () => {
   return (
     <UserProvider>
       <AppBackground>
-        <AppRoutes />
+        <AppRoutes/>
       </AppBackground>
     </UserProvider>
   )
