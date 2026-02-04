@@ -3,10 +3,11 @@ import { useNavigate, Link } from 'react-router-dom'
 import { UserContext } from '../context/user-context'
 import axios from "../config/axios"
 import Navbar from '../components/Navbar'
-import DeveloperImage from '../assets/Developer activity.gif'
+import DeveloperImage from '../assets/Gemini_Generated_Image_nc6jxfnc6jxfnc6j.png'
 import SplitText from '../animations/SplitText';
 import Footer from '../components/Footer'
 import bgImage from '../assets/BG_Image.jpg';
+import AnimatedList from '../animations/AnimatedList'
 
 
 const sortOptions = [
@@ -25,6 +26,51 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [fontsReady, setFontsReady] = useState(false);
   const [selectedSort, setSelectedSort] = useState("new");
+  const items = projects.map((project) => (
+    <div
+      key={project._id}
+      className="project border border-slate-300 rounded-md mb-2 cursor-pointer p-2 md:p-4 hover:bg-black/40 transition-all ease-in-out duration-200"
+      onClick={() => navigate(`/project`, { state: { project } })}
+    >
+      {/* Desktop layout */}
+      <div className="hidden md:flex justify-between items-center text-white">
+        <h2 className="md:text-3xl text-2xl font-semibold opacity-90 flex-1 capitalize">
+          {project.name}
+        </h2>
+
+        <div className="flex items-center gap-4 text-sm text-gray-200">
+          <span>
+            <i className="ri-team-line font-normal md:text-lg"></i>{" "}
+            Collaborators: {project.users ? project.users.length : 0}
+          </span>
+          <span className="text-xs">
+            {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : "2025-01-01"}
+          </span>
+        </div>
+      </div>
+
+      {/* Mobile layout */}
+      <div className="flex flex-col md:hidden gap-2">
+        <h2 className="text-white text-2xl font-semibold opacity-90 capitalize">
+          {project.name}
+        </h2>
+        <div className="flex justify-between text-sm text-gray-200">
+          <span>
+            <i className="ri-team-line font-normal"></i>{" "}
+            Collaborators: {project.users ? project.users.length : 0}
+          </span>
+          <span className="text-xs">
+            {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : "2025-01-01"}
+          </span>
+        </div>
+      </div>
+
+      {/* Description (common) */}
+      <div className="mt-1 font-semibold text-sm text-gray-200">
+        {project.description ? project.description : "No description"}
+      </div>
+    </div>
+  ));
 
   useEffect(() => {
     document.fonts.ready.then(() => {
@@ -75,7 +121,6 @@ const Dashboard = () => {
     }
 
   }, [navigate, setUser])
-  console.log(user);
 
   useEffect(() => {
     if (user) {
@@ -124,10 +169,10 @@ const Dashboard = () => {
   }
 
   return (
-    <main className=''>
+    <main className='' >
       <Navbar />
-      <div className="pt-32 w-full" />
-      <div className='md:w-[80%] w-[96%] md:flex md:flex-row-reverse flex-col justify-between items-center mx-[3%] md:m-auto text-[#050315]'>
+      <div className="md:pt-32 pt-20 w-full" />
+      <div className='md:w-[80%] w-[96%] md:flex md:flex-row-reverse  justify-between items-center mx-[3%] md:m-auto text-[#050315]'>
         <div className='md:w-2/3 w-full h-full md:p-16 p-4'>
           {fontsReady && (
             <SplitText
@@ -148,7 +193,6 @@ const Dashboard = () => {
               textAlign="center"
             />
           )}
-
           <p className="text-slate-100 mt-2 text-xl leading-relaxed opacity-70">
             Ready to build something amazing today? <br />
             You can <span className="font-medium text-[#2f27ce]">create a new project</span> or
@@ -160,6 +204,7 @@ const Dashboard = () => {
         </div>
       </div>
       <div className="md:pt-12 pt-8 h-0" />
+
 
       <div className='text-slate-800 md:w-[80%] w-[90%] mx-[5%] md:m-auto md:mt-10 mt-1 mb-5'>
         <div className="projects md:text-lg text-md bg-[#433bff] flex justify-between items-center md:p-3 p-3 rounded-md shadow-md">
@@ -174,61 +219,17 @@ const Dashboard = () => {
             {renderSortOptions()}
           </select>
         </div>
-        <div className="projects-list flex flex-col mt-4 pb-5">
-          {projects.length > 0 ? (
-            projects.map((project, idx) => (
-              <div
-                key={project._id}
-                className={`project md:p-4 p-2 border border-slate-300 rounded-md mb-2 cursor-pointer min-w-sm hover:bg-black/30 transition-colors duration-200`}
-                onClick={() => navigate(`/project`, {
-                  state: { project }
-                })}
-              >
-                <div className="hidden md:flex flex-wrap justify-between items-center gap-2 text-white">
-                  <h2 className="md:text-3xl text-2xl font-semibold opacity-90 flex-1 min-w-[200px] capitalize">
-                    {project.name}
-                  </h2>
 
-                  <div className="flex-1 min-w-[150px] text-right text-sm text-gray-200">
-                    <i className="ri-team-line font-normal md:text-lg"></i>
-                    {" "}Collaborators: {project.users ? project.users.length : 0}
-                  </div>
-
-                  <span className="flex-1 min-w-[150px] text-right text-xs text-gray-200">
-                    {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : '2025-01-01'}
-                  </span>
-                </div>
-
-                <div className="flex md:hidden flex-wrap justify-between items-center gap-2 pl-2">
-                  <h2 className="md:text-3xl text-white text-2xl font-semibold opacity-90 flex-1 min-w-[200px] capitalize">
-                    {project.name}
-                  </h2>
-
-                  <span className="flex-1 min-w-[150px] text-right pr-2 text-xs text-gray-200">
-                    {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : '2025-01-01'}
-                  </span>
-
-                  <div className="flex-1 min-w-[150px] text-left text-sm text-gray-200">
-                    <i className="ri-team-line font-normal md:text-lg"></i>
-                    {" "}Collaborators: {project.users ? project.users.length : 0}
-                  </div>
-
-
-                </div>
-                <div className="mt-1 pl-2 font-semibold">
-                  <span className="text-sm text-gray-200">{project.description ? project.description : 'No description'}</span>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center text-gray-500">
-              <p className="text-lg">No projects found.</p>
-              <p className="text-sm">Create a new project to get started!</p>
-            </div>
-          )}
-
-        </div>
+        <div className="pt-4 h-0" />
+        <AnimatedList
+          items={items}
+          onItemSelect={(item, index) => console.log(item, index)}
+          showGradients
+          enableArrowNavigation
+          displayScrollbar
+        />
       </div>
+
       <div className="pt-2 h-0" />
 
       <Footer />

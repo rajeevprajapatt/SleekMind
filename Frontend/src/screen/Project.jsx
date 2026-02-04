@@ -5,9 +5,9 @@ import axios from '../config/axios';
 import { initializeSocket } from '../config/socket';
 import { UserContext } from '../context/user-context'
 import { useRef } from 'react';
-import chatBotImage from '../assets/Chat bot.gif';
+import chatBotImage from '../assets/Chat bot.png';
 import SplitText from '../animations/SplitText';
-import Conversation from '../assets/Conversation.gif';
+import Conversation from '../assets/ChatConversation.png';
 import bgImage from '../assets/5072612.jpg'
 import Editor from "@monaco-editor/react";
 import { X, Menu } from 'lucide-react'
@@ -15,15 +15,19 @@ import { Link } from 'react-router-dom'
 
 const rightSideBarItems = [
   {
-    icon: "ri-user-add-line", label: "Add Collaborator", action: "isModalOpen"
+    icon: "ri-user-add-line", label: "Add Collaborator", action: "isModalOpen", isMd: true
   },
   {
-    icon: "ri-group-line", label: "Project Users", action: "isSidePanelOpen"
+    icon: "ri-group-line", label: "Project Users", action: "isSidePanelOpen", isMd: true
   },
   {
-    icon: "ri-file-ai-line", label: "AI Files", action: "messageScreen"
+    icon: "ri-file-ai-line", label: "AI Files", action: "messageScreen", isMd: false
   },
+  {
+    icon: "ri-information-2-line", label: "Project Info", action: "projectInfoScreen", isMd: true
+  }
 ]
+const avatarUrl = "https://i.pravatar.cc/150?img=68";
 
 const Project = () => {
   const location = useLocation();
@@ -46,8 +50,9 @@ const Project = () => {
   const [tempSelectedFile, setTempSelectedFile] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
   const [messageScreen, setMessageScreen] = useState(true);
+  const [projectInfoScreen, setProjectInfoScreen] = useState(false);
   const userId = JSON.parse(localStorage.getItem("user"))?._id;
-  
+
   //Initialize socket & Fetch messages                      
   useEffect(() => {
     const socket = initializeSocket(project._id);
@@ -69,14 +74,18 @@ const Project = () => {
 
     //Receive message
     socket.on("project-message", newMessage => {
-      if (newMessage) {
-        setMessages(prev => [...prev, newMessage]);
-        if (newMessage.message.hasOwnProperty("fileTree")) {
-          setAiGeneratedFiles(prev => [...prev, newMessage]);
-        }
-        setAiLoading(false);
+      if (!newMessage) return;
+
+      setMessages(prev => [...prev, newMessage]);
+
+      const isAI =
+        newMessage.sender._id === "000000000000000000000001";
+
+      if (isAI) {
+        setAiLoading(false); // ✅ stop ONLY when AI replies
       }
     });
+
 
     return () => {
       socket.off("project-message");
@@ -190,6 +199,9 @@ const Project = () => {
 
     if (message.includes("@ai")) {
       setAiLoading(true);
+      setTimeout(() => {
+        setAiLoading(false);
+      }, 20000); // 20 sec fallback
     }
 
     socketRef.current.emit("project-message", {
@@ -224,13 +236,13 @@ const Project = () => {
   return (
     <main className={`h-dvh w-screen flex flex-col md:flex-row bg-cover bg-center overflow-hidden`} style={{ backgroundImage: `url(${bgImage})` }}>
       <section className={`left relative md:flex flex-col flex h-full min-w-full md:min-w-96 mr-0 md:mr-2 ${messageScreen ? 'flex' : 'hidden'}`}>
-        <header className='flex justify-between items-center rounded-tr-xl shadow-md p-2 px-4 w-full bg-[#433bff] text-white backdrop-blur-2xl border-b-2 border-[#433bff]'>
-          <h1 className="text-3xl md:text-4xl text-primary whitespace-nowrap font-geom font-bold">
+        <header className='flex justify-between items-center md:rounded-tr-xl shadow-md p-2 px-4 w-full bg-[#433bff] text-white backdrop-blur-2xl border-b-2 border-[#433bff]'>
+          <h1 className="text-3xl md:text-4xl text-logoColor whitespace-nowrap font-geom font-bold">
             <Link to="/">Sleek Mind</Link>
           </h1>
           <div className='p-2 flex justify-center items-center gap-2'>
             <button className='cursor-pointer' onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}>
-              <Menu className="md:hidden" size={20} />
+              <Menu className="" size={20} />
             </button>
           </div>
         </header>
@@ -238,10 +250,10 @@ const Project = () => {
           <div ref={messageBox}
             className={`message-box flex flex-col ${messages.length > 0 ? "" : "justify-center"} gap-1 overflow-y-auto px-2 py-2 h-full pb-20 rounded-br-xl border-r-2 border-[#433bff]`}>
             {messages.length === 0 &&
-              <div className='flex flex-col justify-center items-center'>
-                <p className="text-center text-xl text-gray-500">Start conversation now with<br /> your team & AI</p>
+              <div className='flex flex-col justify-center items-center w-full'>
+                {/* <p className="text-center text-xl text-gray-500">Start conversation now with<br /> your team & AI</p> */}
                 <img src={Conversation} width="300"></img>
-                <p className='text-center text-sm text-gray-500'>Type a message with @ai to chat with AI assistant</p>
+                {/* <p className='text-center text-sm text-gray-500'>Type a message with @ai to chat with AI assistant</p> */}
               </div>
             }
             {messages.map((msg, index) => {
@@ -278,6 +290,22 @@ const Project = () => {
                 </div>
               )
             })}
+
+            {aiLoading && (
+              <div className="message flex flex-col p-2 w-fit rounded-md m-1 bg-[#dedcff]/50 backdrop-blur-sm text-black">
+                <small className="opacity-65 text-xs mb-1">
+                  AI Assistant
+                </small>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm">AI is responding</p>
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 bg-black rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                    <span className="w-2 h-2 bg-black rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                    <span className="w-2 h-2 bg-black rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="inputField w-full flex p-2 absolute left-0 bottom-0 border-2 border-[#433bff] rounded-br-xl backdrop-blur-sm">
               <input className='w-full p-3 px-4 border-none outline-none rounded-l-md bg-[#E5EBEE]' type="text" placeholder="Type your message here..."
@@ -322,7 +350,7 @@ const Project = () => {
       </section>
 
       <section className={`right md:flex flex-row grow h-full bg-linear-to-b from-[#181818] to-[#1E1E1E] overflow-y-auto ${messageScreen ? 'hidden' : 'flex'}`}>
-        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-linear-to-b from-[#2D3436] to-[#181818] max-w-64 min-w-38 overflow-y-auto border rounded-2xl md:rounded-tl-xl md:rounded-bl-xl`}>
+        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-linear-to-b from-[#2D3436] to-[#181818] md:min-w-48 max-w-64 min-w-38 overflow-y-auto border rounded-2xl md:rounded-tl-xl md:rounded-bl-xl`}>
           <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center justify-between text-md text-white  transition-all duration-500`}>
             <span className='font-semibold'>Files</span>
             <i className="ri-arrow-left-box-line text-lg md:hidden"
@@ -442,87 +470,191 @@ const Project = () => {
             </div>
           </div>
         ) : (
-          <div className='flex flex-col bg-[#1E1E1E] items-center w-full h-full text-gray-500'>
-          
-            <div className=''><SplitText
-              text={
-                <>
-                  <span className="text-[#433bff]">Use AI Assistant to generate files <br /> and start coding</span>
-                </>
-              }
-              className=" pb-5 text-2xl md:text-4xl"
-              delay={80}
-              duration={0.6}
-              ease="power3.out"
-              splitType="chars"
-              from={{ opacity: -6, y: -40 }}
-              to={{ opacity: 1, y: 0 }}
-              threshold={0.1}
-              rootMargin="-100px"
-              textAlign="center"
-            /></div>
-            <div><button onClick={() => navigate("#")} className='bg-[#433bff] text-white flex justify-center gap-1 p-3 px-7 rounded-md delay-200'>See how it works</button>
+          <div className='flex flex-col bg-[#1E1E1E] justify-center gap-3 items-center w-full h-full text-gray-500'>
+            <div className='mt-12'>
+              <SplitText
+                className="pb-1 text-2xl md:text-4xl"
+                delay={80}
+                duration={0.6}
+                ease="power3.out"
+                splitType="chars"
+                from={{ opacity: -6, y: -40 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0.1}
+                rootMargin="-100px"
+                textAlign="center"
+              >
+                <span className="text-[#433bff]">Use AI Assistant to generate files <br /> and start coding</span>
+              </SplitText>
             </div>
-            <div className='mt-4 flex justify-center items-center'><img width='80%' src={chatBotImage}></img></div>
+            <div className='mt-0 flex justify-center items-center'><img width='60%' src={chatBotImage}></img></div>
+            <div>
+              <button onClick={() => navigate("#")} className='bg-[#433bff] text-white flex justify-center gap-1 p-3 px-7 rounded-md delay-200'>See how it works</button>
+            </div>
           </div>
         )}
       </section>
 
-      {
-        isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-2 p-4 flex flex-col">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">Select Users</h2>
-                <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-800">
-                  <i className="ri-close-line text-2xl"></i>
-                </button>
-              </div>
-              <div className="flex flex-col gap-2 max-h-80 overflow-y-auto">
-                {users.length === 0 ? (
-                  <p className='text-center text-gray-500'>No users available</p>) : (
-                  users.map(user => (
-                    <div
-                      key={user._id}
-                      onClick={() => handleToggleUserSelect(user._id)}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg border cursor-pointer hover:bg-blue-100 transition-all ${selectedUserIds.includes(user._id)
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 bg-white'
-                        }`}
-                    >
-                      <div className='w-10 h-10 rounded-full overflow-hidden bg-slate-800 flex-shrink-0'>
-                        <img src={defaultAvatar} alt={user.name} className='w-full h-full object-cover' />
-                      </div>
-                      <div className='flex flex-col items-start'>
-                        <span className='font-medium text-gray-800 text-sm'>{user.name}</span>
-                        <span className='text-xs text-gray-500'>{user.email}</span>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-              <button
-                className="mt-4 bg-[#433bff] text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
-                onClick={handleAddCollaborators}
-                disabled={selectedUserIds.length === 0}
-              >
-                Add Collaborators
+
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-2 p-4 flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Select Users</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-800">
+                <i className="ri-close-line text-2xl"></i>
               </button>
-              <p className='flex justify-center item-center text-sm text-[#433bff] pt-2'>Total selected : {selectedUserIds.length}</p>
             </div>
+            <div className="flex flex-col gap-2 max-h-80 overflow-y-auto">
+              {users.length === 0 ? (
+                <p className='text-center text-gray-500'>No users available</p>) : (
+                users.map(user => (
+                  <div
+                    key={user._id}
+                    onClick={() => handleToggleUserSelect(user._id)}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg border cursor-pointer hover:bg-blue-100 transition-all ${selectedUserIds.includes(user._id)
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 bg-white'
+                      }`}
+                  >
+                    <div className='w-10 h-10 rounded-full overflow-hidden bg-slate-800 flex-shrink-0'>
+                      <img src={defaultAvatar} alt={user.name} className='w-full h-full object-cover' />
+                    </div>
+                    <div className='flex flex-col items-start'>
+                      <span className='font-medium text-gray-800 text-sm'>{user.name}</span>
+                      <span className='text-xs text-gray-500'>{user.email}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <button
+              className="mt-4 bg-[#433bff] text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
+              onClick={handleAddCollaborators}
+              disabled={selectedUserIds.length === 0}
+            >
+              Add Collaborators
+            </button>
+            <p className='flex justify-center item-center text-sm text-[#433bff] pt-2'>Total selected : {selectedUserIds.length}</p>
           </div>
-        )
-      }
+        </div>
+      )}
+
+      {projectInfoScreen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-xl bg-opacity-40">
+
+          {/* Main Modal Card */}
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-2 p-4 flex flex-col">
+            {/* Header Section */}
+            <div className="flex justify-between">
+              <h1 className="text-3xl md:text-4xl leading-tight font-black text-gray-900">
+                Project Information
+              </h1>
+              {/* Close Button */}
+              <button onClick={() => setProjectInfoScreen(false)} className="text-gray-500 hover:text-gray-800 cursor-pointer">
+                <i className="ri-close-line text-2xl"></i>
+              </button>
+            </div>
+            {/* Content Section */}
+            <div className="p-2 pt-2">
+              <div className="flex gap-3 items-center mb-3">
+                <i className="ri-folder-5-line text-2xl text-gray-500 shrink-0 mt-1" />
+                <div>
+                  <span className="block text-sm font-medium text-gray-500">
+                    Name
+                  </span>
+                  <h2 className="text-lg leading-tight font-semibold text-gray-900">
+                    {project.name}
+                  </h2>
+                </div>
+              </div>
+
+              {/* Item: Description */}
+              <div className="flex gap-3 items-center mb-3">
+                <i className="ri-align-left text-2xl text-gray-500 shrink-0 mt-1" />
+                <div>
+                  <span className="block text-sm font-medium text-gray-500">
+                    Description
+                  </span>
+                  <p className="text-md leading-snug text-gray-900">
+                    {project.description || "No description provided."}
+                  </p>
+                </div>
+              </div>
+
+              {/* Item: Collaborators (Special styled block) */}
+              <div className="flex gap-3 items-center mb-3  p-1 rounded-[28px]">
+                <i className="ri-group-line text-2xl text-gray-500 shrink-0 mt-1" />
+                <div>
+                  <span className="block text-sm font-medium text-gray-500 leading-tight">
+                    Collaborators: <span className='text-gray-900'>{projectUsers.length}</span>
+                  </span>
+                  {/* Avatar */}
+                  <div className="flex -space-x-3">
+                    {projectUsers.map((user) => (
+                      <img
+                        src={user.avatar || defaultAvatar}
+                        alt={user.fullName || user.email}
+                        className="w-8 h-8 rounded-full border-2 border-white"
+                      />
+                    ))}
+                    {/* <img
+                      src={avatarUrl}
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full border-2 border-white"
+                    />
+                    <img
+                      src={avatarUrl}
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full border-2 border-white"
+                    /> */}
+                  </div>
+                </div>
+              </div>
+
+              {/* Item: Created On */}
+              <div className="flex gap-3 items-center mb-3">
+                <i className="ri-calendar-line text-2xl text-gray-500 shrink-0 mt-1" />
+                <div>
+                  <span className="block text-sm font-medium text-gray-500">
+                    Created On
+                  </span>
+                  <p className="text-md leading-snug text-gray-900">
+                    {new Date(project.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Item: Last Update */}
+              <div className="flex gap-3 items-center mb-3">
+                <i className="ri-time-line text-2xl text-gray-500 shrink-0 mt-1" />
+                <div>
+                  <span className="block text-sm font-medium text-gray-500">
+                    Last Update
+                  </span>
+                  <p className="text-md leading-snug text-gray-900">
+                    {new Date(project.updatedAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* Right Sidebar */}
-      <div className={`fixed top-0 right-0 h-screen w-14 bg-black/20 backdrop-blur-lg border-l border-slate-700 z-50 flex flex-col transform transition-transform duration-300 ease-in-out ${isRightSidebarOpen ? "translate-x-0" : "translate-x-full"}`}>
+      <div className={`fixed top-0 h-screen w-14 bg-black/20 backdrop-blur-lg border-slate-700 z-50 flex flex-col transition-transform duration-300 ease-in-out right-0
+        ${isRightSidebarOpen ? "translate-x-0" : "translate-x-full"} md:left-0 md:right-auto md:-translate-x-full ${isRightSidebarOpen ? "md:translate-x-0" : "md:-translate-x-full"}`}>
         <button className="self-end mt-4 mr-4 text-white hover:text-gray-300 cursor-pointer" onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}>
           <X size={22} />
         </button>
         <ul className="flex flex-col items-center justify-center gap-2 mt-8 px-1 text-white">
           {rightSideBarItems.map((item, index) => (
             <li key={index}>
-              <button className="w-full text-lg hover:bg-white/10 p-2 rounded cursor-pointer" title={item.label} onClick={() => {
+              <button className={`w-full text-lg hover:bg-white/10 p-2 rounded cursor-pointer ${!item.isMd ? "md:hidden" : "md:block"}`} title={item.label} onClick={() => {
                 if (item.action === "isModalOpen") {
                   setIsModalOpen(true);
                   setIsRightSidebarOpen(false);
@@ -536,6 +668,10 @@ const Project = () => {
                   setMessageScreen(!messageScreen);
                   setIsRightSidebarOpen(false);
                 }
+                else if (item.action === "projectInfoScreen") {
+                  setProjectInfoScreen(true);
+                  setIsRightSidebarOpen(false);
+                }
               }}>
                 <i className={item.icon}></i>
               </button>
@@ -543,6 +679,7 @@ const Project = () => {
           ))}
         </ul>
       </div>
+
     </main>
   )
 }

@@ -6,10 +6,8 @@ import image1 from '../assets/Image1.jpg';
 import image2 from '../assets/Image2.jpg';
 import SplitText from '../animations/SplitText';
 import team_chat from '../assets/team_chat.jpg';
-import bgImage from '../assets/BG_Image.jpg';
 import Footer from '../components/Footer';
-import exBg from '../assets/exBg.png';
-import Marquee from "react-fast-marquee";
+import Magnet from '../animations/Magnet';
 
 const tiredCommunication = [
   "Project updates scattered across chats, emails, and docs",
@@ -81,12 +79,7 @@ const Home = () => {
         <div className='flex flex-col items-center justify-center text-center gap-4 text-white'>
           {fontsReady && (
             <SplitText
-              text={
-                <>
-                  Where your teams and <br /><span className='text-[#2f27ce]'>AI</span> <br />coordinate work together
-                </>
-              }
-              className="md:pt-16 pt-8 pb-5 text-4xl md:text-7xl "
+              className="md:pt-16 pt-8 pb-5 text-4xl md:text-7xl"
               delay={80}
               duration={0.6}
               ease="power3.out"
@@ -96,12 +89,17 @@ const Home = () => {
               threshold={0.1}
               rootMargin="-100px"
               textAlign="center"
-            />
+            >
+              Where your teams and <br />
+              <span className="text-[#2f27ce]">AI</span> <br />
+              coordinate work together
+            </SplitText>
           )}
-
           <p className='pb-5 opacity-70 text-sm md:text-2xl'>See how your work connects to goals while working alongside AI that understands your business.</p>
           <div className='flex items-center gap-6 text-lg font-semibold pb-5'>
-            {user ? <button onClick={() => navigate("/dashboard")} className='bg-[#2f27ce] text-white flex justify-center gap-1 md:p-4 md:px-7 p-2 px-4 rounded-md'>Dashboard</button>
+            {user ? <Magnet padding={50} disabled={false} magnetStrength={50}>
+              <button onClick={() => navigate("/dashboard")} className='bg-[#2f27ce] text-white flex justify-center gap-1 md:p-4 md:px-7 p-2 px-4 rounded-md cursor-pointer'>Dashboard</button>
+            </Magnet>
               : <button onClick={() => navigate("/register")} className='bg-[#2f27ce] text-white flex justify-center gap-1 md:p-4 md:px-7 p-2 px-4 rounded-md'>Get Started</button>
             }
             <button onClick={() => navigate("#")} className='backdrop-blur-xl border border-[#2f27ce] text-white flex justify-center gap-1 md:p-4 md:px-7 p-2 px-4 rounded-md'>See how it works</button>
@@ -118,7 +116,7 @@ const Home = () => {
       </div>
 
       <div className="pt-24 h-0" />
-      <div className='flex flex-col items-center justify-center text-center w-[90%] mx-[5%] rounded-xl bg-black/40 backdrop-blur-2xl gap-4 text-white ' >
+      <div className='flex flex-col items-center justify-center text-center w-[90%] mx-[5%] rounded-xl gap-4 text-white ' >
         <h1 className='md:pt-16 pt-8 pb-5 md:text-5xl text-4xl font-semibold'>Done with scattered communication?</h1>
         <div className='flex flex-col md:items-start items-start justify-center gap-4 text-white px-2 pb-5 md:text-xl text-md text-left'>
           {tiredCommunication.map((item, index) => {
@@ -135,11 +133,11 @@ const Home = () => {
 
       <div className="pt-24 h-0" />
 
-      <div className='flex flex-col pb-1 items-center justify-center text-center px-2 gap-4 text-white  bg-black/40 backdrop-blur-2xl w-[90%] mx-[5%] rounded-xl'>
+      <div className='flex flex-col pb-1 items-center justify-center text-center px-2 gap-4 text-white w-[90%] mx-[5%] rounded-xl'>
         <h1 className='md:pt-16 pt-8 md:pb-10 md:text-5xl text-4xl font-semibold'>Chat that suits your team</h1>
         {chatSuitsData.map((chat, idx) => {
           return (
-            <div className={`flex ${idx % 2 == 0 ? 'md:flex-row' : 'md:flex-row-reverse'} md:flex-row flex-col justify-center w-full text-white pb-10 text-xl md:gap-24 gap-5 md:items-center`}>
+            <div key={idx} className={`flex ${idx % 2 == 0 ? 'md:flex-row' : 'md:flex-row-reverse'} md:flex-row flex-col justify-center w-full text-white pb-10 text-xl md:gap-24 gap-5 md:items-center`}>
               <div className='md:w-1/3 px-2 flex flex-col items-start justify-center gap-2 text-start'>
                 <p className='pt-5 text-md'>{chat.title}</p>
                 <h1 className='pt-1 pb-1 md:text-4xl text-2xl font-semibold'>{chat.description}</h1>
@@ -155,7 +153,7 @@ const Home = () => {
 
       <div className="pt-24  h-0" />
 
-      <div className='flex flex-col items-center justify-center text-center md:gap-4 gap-2 text-white md:w-[85%] md:mx-[7.5%] w-[94%] mx-[3%] rounded-xl  bg-black/40 backdrop-blur-2xl'>
+      <div className='flex flex-col items-center justify-center text-center md:gap-4 gap-2 text-white md:w-[85%] md:mx-[7.5%] w-[94%] mx-[3%] rounded-xl'>
         <h1 className='md:pt-16 pt-8 pb-5 text-4xl font-semibold'>Why your project tool needs chat</h1>
         <div className="overflow-x-auto md:px-4 md:py-6 px-2">
           <table className="min-w-full table-auto border-collapse text-sm md:text-base border-3 border-[#dedcff]">
