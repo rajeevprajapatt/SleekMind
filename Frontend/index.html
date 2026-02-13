@@ -8,9 +8,211 @@
   <title>Sleek Mind</title>
   <link rel="stylesheet" href="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/styles/nord.min.css" />
   <script src="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      background: black;
+    }
+
+    .skeleton-page {
+      min-height: 100vh;
+      color: white;
+      background: black;
+      font-family: system-ui, sans-serif;
+    }
+
+    /* Shared skeleton */
+    .sk {
+      background: #334155;
+      border-radius: 8px;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 0.4;
+      }
+
+      50% {
+        opacity: 0.8;
+      }
+    }
+
+    /* Navbar */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+    }
+
+    .sk-logo {
+      width: 112px;
+      height: 24px;
+    }
+
+    .nav-links {
+      display: none;
+      gap: 24px;
+    }
+
+    .sk-link {
+      width: 64px;
+      height: 16px;
+    }
+
+    .sk-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    /* Hero */
+    .hero {
+      margin-top: 64px;
+      padding: 0 24px;
+      text-align: center;
+    }
+
+    .title {
+      max-width: 896px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sk-title {
+      height: 56px;
+    }
+
+    .full {
+      width: 100%;
+    }
+
+    .three-fourth {
+      width: 75%;
+      margin: auto;
+    }
+
+    .subtitle {
+      max-width: 768px;
+      margin: 24px auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sk-text {
+      height: 16px;
+    }
+
+    .five-sixth {
+      width: 83%;
+      margin: auto;
+    }
+
+    .buttons {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .sk-btn {
+      height: 48px;
+      width: 144px;
+      border-radius: 12px;
+    }
+
+    .sk-btn.wide {
+      width: 160px;
+    }
+
+    /* Cards */
+    .cards {
+      margin-top: 64px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .sk-card {
+      height: 224px;
+      border-radius: 16px;
+    }
+
+    /* Responsive */
+    @media (min-width: 768px) {
+      .nav-links {
+        display: flex;
+      }
+
+      .cards {
+        grid-template-columns: repeat(3, 1fr);
+        padding: 0 48px;
+      }
+
+      .hero {
+        padding: 0 48px;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div id="preloader">
+    <div class="skeleton-page">
+
+      <!-- Navbar -->
+      <div class="nav">
+        <div class="sk sk-logo"></div>
+
+        <div class="nav-links">
+          <div class="sk sk-link"></div>
+          <div class="sk sk-link"></div>
+          <div class="sk sk-link"></div>
+          <div class="sk sk-link"></div>
+        </div>
+
+        <div class="sk sk-avatar"></div>
+      </div>
+
+      <!-- Hero Content -->
+      <div class="hero">
+        <!-- Title -->
+        <div class="title">
+          <div class="sk sk-title full"></div>
+          <div class="sk sk-title three-fourth"></div>
+        </div>
+
+        <!-- Subtitle -->
+        <div class="subtitle">
+          <div class="sk sk-text full"></div>
+          <div class="sk sk-text five-sixth"></div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="buttons">
+          <div class="sk sk-btn"></div>
+          <div class="sk sk-btn wide"></div>
+        </div>
+      </div>
+
+      <!-- Bottom Cards -->
+      <div class="cards">
+        <div class="sk sk-card"></div>
+        <div class="sk sk-card"></div>
+        <div class="sk sk-card"></div>
+      </div>
+
+    </div>
+  </div>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
