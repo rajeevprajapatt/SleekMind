@@ -5,7 +5,7 @@ const AppBackground = ({ children }) => {
     return (
         <>
             {/* Fixed animated background */}
-            <div className="fixed inset-0 -z-10 bg-black">
+            <div className="fixed inset-0 z-0 bg-black">
                 <div style={{ width: '100%', height: '100%', position: 'relative' }}>
                     <LightRays
                         raysOrigin="top-center"
