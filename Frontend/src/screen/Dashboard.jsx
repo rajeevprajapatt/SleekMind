@@ -26,6 +26,9 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [fontsReady, setFontsReady] = useState(false);
   const [selectedSort, setSelectedSort] = useState("new");
+  const [projectDescription, setProjectDescription] = useState("");
+
+
   const items = projects.map((project) => (
     <div
       key={project._id}
@@ -66,7 +69,7 @@ const Dashboard = () => {
       </div>
 
       {/* Description (common) */}
-      <div className="mt-1 font-semibold text-sm text-gray-200">
+      <div className="mt-1 max-w-64 truncate overflow-hidden font-semibold text-sm text-gray-200">
         {project.description ? project.description : "No description"}
       </div>
     </div>
@@ -98,9 +101,11 @@ const Dashboard = () => {
     e.preventDefault();
     axios.post("/projects/create", {
       name: projectName,
+      description: projectDescription
     }).then((res) => {
       setIsModalOpen(false);
       setProjectName("");
+      setProjectDescription("");
       window.location.reload();
     })
       .catch((err) => {
@@ -223,7 +228,7 @@ const Dashboard = () => {
         <div className="pt-4 h-0" />
         <AnimatedList
           items={items}
-          onItemSelect={(item, index) => console.log(item, index)}
+          // onItemSelect={(item, index) => console.log(item, index)}
           showGradients
           enableArrowNavigation
           displayScrollbar
@@ -234,7 +239,7 @@ const Dashboard = () => {
 
       <Footer />
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-2xl bg-opacity-40 z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">Create New Project</h2>
             <form onSubmit={createProject}>
@@ -247,6 +252,17 @@ const Dashboard = () => {
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter project name"
+                required
+              />
+              <label className="block mb-2 text-sm font-medium text-gray-700">
+                Description (optional)
+              </label>
+              <textarea rows={5}
+                onChange={(e) => setProjectDescription(e.target.value)}
+                value={projectDescription}
+                type="text"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter project description"
                 required
               />
               <div className="flex justify-end space-x-2">

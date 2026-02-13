@@ -50,8 +50,15 @@ const Project = () => {
   const [tempSelectedFile, setTempSelectedFile] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
   const [messageScreen, setMessageScreen] = useState(true);
-  const [projectInfoScreen, setProjectInfoScreen] = useState(false);
+  const [projectInfoScreen, setProjectInfoScreen] = useState(true);
   const userId = JSON.parse(localStorage.getItem("user"))?._id;
+  const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+
+  function handleDeleteProject() {
+    axios.delete(`/projects/deleteProject/${location.state.project._id}`).then(() => {
+      navigate("/dashboard");
+    }).catch(console.log);
+  }
 
   //Initialize socket & Fetch messages                      
   useEffect(() => {
@@ -59,7 +66,7 @@ const Project = () => {
     socketRef.current = socket;
 
     socket.on("connect", () => {
-      console.log("Socket connected!", socket.id);
+      // console.log("Socket connected!", socket.id);
     });
 
     axios.get(`/chats/${location.state.project._id}`)
@@ -76,10 +83,22 @@ const Project = () => {
     socket.on("project-message", newMessage => {
       if (!newMessage) return;
 
-      setMessages(prev => [...prev, newMessage]);
+      setMessages(prev => {
+        const updated = [...prev, newMessage];
 
-      const isAI =
-        newMessage.sender._id === "000000000000000000000001";
+        // If incoming message contains generated files, append to AiGeneratedFiles
+        if (newMessage?.message && Object.prototype.hasOwnProperty.call(newMessage.message, 'fileTree')) {
+          setAiGeneratedFiles(prevFiles => {
+            // avoid duplicates
+            if (prevFiles.some(f => f._id === newMessage._id)) return prevFiles;
+            return [...prevFiles, newMessage];
+          });
+        }
+
+        return updated;
+      });
+
+      const isAI = String(newMessage.sender._id) === "000000000000000000000001";
 
       if (isAI) {
         setAiLoading(false); // ✅ stop ONLY when AI replies
@@ -198,7 +217,9 @@ const Project = () => {
     if (!message.trim()) return;
 
     if (message.includes("@ai")) {
-      setAiLoading(true);
+      setTimeout(() => {
+        setAiLoading(true);
+      }, 1000); // show loading after 1.5 sec of sending message
       setTimeout(() => {
         setAiLoading(false);
       }, 20000); // 20 sec fallback
@@ -297,7 +318,7 @@ const Project = () => {
                   AI Assistant
                 </small>
                 <div className="flex items-center gap-2">
-                  <p className="text-sm">AI is responding</p>
+                  {/* <p className="text-sm">AI is responding</p> */}
                   <div className="flex gap-1">
                     <span className="w-2 h-2 bg-black rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
                     <span className="w-2 h-2 bg-black rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
@@ -518,7 +539,7 @@ const Project = () => {
                       : 'border-gray-200 bg-white'
                       }`}
                   >
-                    <div className='w-10 h-10 rounded-full overflow-hidden bg-slate-800 flex-shrink-0'>
+                    <div className='w-10 h-10 rounded-full overflow-hidden bg-slate-800 shrink-0'>
                       <img src={defaultAvatar} alt={user.name} className='w-full h-full object-cover' />
                     </div>
                     <div className='flex flex-col items-start'>
@@ -571,13 +592,15 @@ const Project = () => {
               </div>
 
               {/* Item: Description */}
-              <div className="flex gap-3 items-center mb-3">
+              <div className="flex gap-3 items-start mb-3">
                 <i className="ri-align-left text-2xl text-gray-500 shrink-0 mt-1" />
-                <div>
+
+                <div className="min-w-0">
                   <span className="block text-sm font-medium text-gray-500">
                     Description
                   </span>
-                  <p className="text-md leading-snug text-gray-900">
+
+                  <p className="text-md leading-tight text-gray-900 wrap-break-words">
                     {project.description || "No description provided."}
                   </p>
                 </div>
@@ -592,23 +615,14 @@ const Project = () => {
                   </span>
                   {/* Avatar */}
                   <div className="flex -space-x-3">
-                    {projectUsers.map((user) => (
+                    {projectUsers.map((user, index) => (
                       <img
+                        key={index}
                         src={user.avatar || defaultAvatar}
                         alt={user.fullName || user.email}
                         className="w-8 h-8 rounded-full border-2 border-white"
                       />
                     ))}
-                    {/* <img
-                      src={avatarUrl}
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full border-2 border-white"
-                    />
-                    <img
-                      src={avatarUrl}
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full border-2 border-white"
-                    /> */}
                   </div>
                 </div>
               </div>
@@ -639,8 +653,29 @@ const Project = () => {
                 </div>
               </div>
 
+              <button className="mt-2 ml-8 cursor-pointer bg-[#ff3b3b] text-white px-4 py-2 rounded-lg font-semibold" onClick={() => setDeleteConfirmation(true)}>
+                Delete Project
+              </button>
+
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {deleteConfirmation && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/30 backdrop-blur-xl bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-sm mx-2 p-4 flex flex-col items-center">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Confirm Deletion</h2>
+            <p className="text-gray-700 mb-6">Are you sure you want to delete this project? This action cannot be undone.</p>
+            <div className="flex gap-4">
+              <button className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold cursor-pointer" onClick={handleDeleteProject}>
+                Confirm
+              </button>
+              <button className="bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold cursor-pointer" onClick={() => setDeleteConfirmation(false)}>
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
