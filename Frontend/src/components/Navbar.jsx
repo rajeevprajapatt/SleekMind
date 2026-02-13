@@ -104,7 +104,18 @@ const Navbar = () => {
                                 )
                             })}
                         </ul>
-                        {isLoggedIn && <img src={AvatarImage} alt="User Avatar" className="w-8 h-8 rounded-full object-cover md:ml-6 hidden md:flex" />}
+                        {isLoggedIn && (
+                            <div className="hidden md:flex md:ml-6 items-center">
+                                <div className="relative group">
+                                    <img src={AvatarImage} alt="User Avatar" className="w-8 h-8 rounded-full object-cover cursor-pointer" />
+
+                                    <div className="absolute right-0 mt-3 w-32 bg-white text-black rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transform translate-y-1 group-hover:translate-y-0 transition-all">
+                                        <p className="px-3 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => navigate('#')}>Profile</p>
+                                        <p className="px-3 py-2 text-red-600 hover:bg-gray-100 cursor-pointer" onClick={handleLogOut}>Logout</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         {!isLoggedIn && <button className="bg-black md:flex ml-8 hidden text-white px-3 py-2 rounded-sm" >
                             Get Started
                         </button>}
