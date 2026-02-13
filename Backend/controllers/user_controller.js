@@ -19,7 +19,7 @@ export const createUserController = async (req, res) => {
         delete user._doc.password;
         res.status(200).json({ user, token });
     } catch (error) {
-        res.status(400).send(error.message)
+        res.status(400).send("User already exists");
     }
 }
 
