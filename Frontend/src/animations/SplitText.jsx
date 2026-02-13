@@ -83,7 +83,7 @@ const SplitText = ({
         }
 
         if (!targets || targets.length === 0) {
-            console.warn("No targets found for SplitText animation");
+            // console.warn("No targets found for SplitText animation");
             splitter.revert();
             return;
         }

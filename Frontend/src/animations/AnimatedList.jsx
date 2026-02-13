@@ -160,14 +160,14 @@ const AnimatedList = ({
 
             {showGradients && (
                 <>
-                    <div
+                    {/* <div
                         className="absolute top-0 left-0 right-0 h-8 sm:h-10 md:h-[50px] lg:h-[60px] bg-linear-to-b from-[#060010] to-transparent pointer-events-none transition-opacity duration-300 ease"
                         style={{ opacity: topGradientOpacity }}
                     />
                     <div
                         className="absolute bottom-0 left-0 right-0 h-12 sm:h-16 md:h-[100px] lg:h-[120px] bg-linear-to-t from-[#060010] to-transparent pointer-events-none transition-opacity duration-300 ease"
                         style={{ opacity: bottomGradientOpacity }}
-                    />
+                    /> */}
                 </>
             )}
         </div>
