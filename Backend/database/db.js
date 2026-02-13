@@ -21,20 +21,7 @@ const connect = async () => {
             role: "system",
             isAI: true,
         });
-        console.log("✅ AI user inserted");
-    } else {
-        console.log("⚡ AI user already exists");
     }
 }
-
-// const connect = () => {
-//     mongoose.connect('mongodb://0.0.0.0/SleekMind')
-//         .then(() => {
-//             console.log("MongoDB connected successfully");
-//         })
-//         .catch(err => {
-//             console.log(err);
-//         })
-// }
 
 export default connect;
