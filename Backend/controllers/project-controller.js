@@ -11,14 +11,12 @@ export const createProject = async (req, res) => {
     }
 
     try {
-        const { name } = req.body;
+        const { name, description } = req.body;
         const loggedInUser = await User.findOne({ email: req.user.email });
 
         const userId = loggedInUser._id;
 
-        console.log(userId);
-
-        const newProject = await projectService.createProject({ name, userId });
+        const newProject = await projectService.createProject({ name, userId, description });
 
         return res.status(201).json(newProject);
     } catch (error) {
@@ -31,8 +29,7 @@ export const getAllProject = async (req, res) => {
     try {
         const loggedInUser = await User.findOne({
             email: req.user.email
-        })
-        console.log("Running");
+        });
 
         const allProjects = await projectService.getAllProjectByUserId({ userId: loggedInUser._id })
 
@@ -83,5 +80,18 @@ export const getProjectById = async (req, res) => {
         console.log(err);
         res.status(400).json({ error: err.message })
     }
+}
 
+export const deleteProject = async (req, res) => {
+    const projectId = req.params.projectId;
+
+    try {
+        const project = await projectService.deleteProject({ projectId });
+        return res.status(200).json({
+            project
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(400).json({ error: err.message })
+    }
 }
