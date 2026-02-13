@@ -3,7 +3,7 @@ import projectModel from '../models/project-model.js'
 
 
 export const createProject = async ({
-    name, userId
+    name, description, userId
 }) => {
     if (!name) {
         throw new Error('Name is required')
@@ -16,6 +16,7 @@ export const createProject = async ({
     try {
         project = await projectModel.create({
             name,
+            description,
             users: [userId]
         });
     } catch (error) {
@@ -106,5 +107,21 @@ export const getProjectById = async ({ projectId }) => {
     }).populate('users');
 
     return project;
+}
 
+export const deleteProject = async ({ projectId }) => {
+
+    if (!projectId) {
+        throw new Error("ProjectId is required");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(projectId)) {
+        throw new Error("Invalid ProjectId")
+    }
+
+    const project = await projectModel.findOneAndDelete({
+        _id: projectId
+    })
+
+    return { project };
 }
