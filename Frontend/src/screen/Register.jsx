@@ -40,7 +40,7 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center" style={{backgroundImage: `url(${bgImage})`, backgroundSize: 'cover'}}>
+        <div className="min-h-screen flex items-center justify-center">
             <div className="w-full max-w-md backdrop-blur-md bg-white/10 rounded-lg shadow-lg p-8">
                 <h2 className="text-3xl font-bold text-[#433bff] mb-6 text-center">Register</h2>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
