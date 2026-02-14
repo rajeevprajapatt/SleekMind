@@ -50,7 +50,7 @@ const Project = () => {
   const [tempSelectedFile, setTempSelectedFile] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
   const [messageScreen, setMessageScreen] = useState(true);
-  const [projectInfoScreen, setProjectInfoScreen] = useState(true);
+  const [projectInfoScreen, setProjectInfoScreen] = useState(false);
   const userId = JSON.parse(localStorage.getItem("user"))?._id;
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
 
