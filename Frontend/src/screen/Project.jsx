@@ -66,51 +66,43 @@ const Project = () => {
     socketRef.current = socket;
 
     socket.on("connect", () => {
-      // console.log("Socket connected!", socket.id);
+
+      axios.get(`/chats/${project._id}`)
+        .then(response => {
+          setMessages(response.data);
+
+          setAiGeneratedFiles(
+            response.data.filter(msg => msg.message?.files?.length > 0)
+          );
+        })
+        .catch(error => console.log(error));
+
     });
 
-    axios.get(`/chats/${location.state.project._id}`)
-      .then(response => {
-        setMessages(response.data)
-        setAiGeneratedFiles(response.data
-          .filter(msg => msg.message.hasOwnProperty("fileTree")))
-      })
-      .catch(error =>
-        console.log(error)
-      )
-
-    //Receive message
     socket.on("project-message", newMessage => {
       if (!newMessage) return;
 
-      setMessages(prev => {
-        const updated = [...prev, newMessage];
+      setMessages(prev => [...prev, newMessage]);
 
-        // If incoming message contains generated files, append to AiGeneratedFiles
-        if (newMessage?.message && Object.prototype.hasOwnProperty.call(newMessage.message, 'fileTree')) {
-          setAiGeneratedFiles(prevFiles => {
-            // avoid duplicates
-            if (prevFiles.some(f => f._id === newMessage._id)) return prevFiles;
-            return [...prevFiles, newMessage];
-          });
-        }
-
-        return updated;
-      });
-
-      const isAI = String(newMessage.sender._id) === "000000000000000000000001";
-
-      if (isAI) {
-        setAiLoading(false); // ✅ stop ONLY when AI replies
+      if (newMessage?.message?.files.length > 0) {
+        setAiGeneratedFiles(prevFiles => {
+          if (prevFiles.some(f => f._id === newMessage._id)) return prevFiles;
+          return [...prevFiles, newMessage];
+        });
       }
-    });
 
+      const isAI =
+        String(newMessage.sender?._id) ===
+        "000000000000000000000001";
+
+      if (isAI) setAiLoading(false);
+    });
 
     return () => {
       socket.off("project-message");
       socket.disconnect();
     };
-  }, [location.state.project._id]);
+  }, [project._id]);
 
   //Fetch project users
   useEffect(() => {
@@ -381,61 +373,34 @@ const Project = () => {
             </i>
           </div>
           <div className='w-full h-[92.2%] backdrop-blur-sm overflow-y-auto no-scrollbar'>
-            {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile, idx) => (
-              <div className='folder flex flex-col border-white/10' key={idx}>
+            {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile) => (
+              <div className='folder flex flex-col border-white/10' key={aiFile._id}>
                 <div className='w-auto p-2 px-2 md:px-4 mx-1 bg-linear-to-b from-[#212526] to-[#232323] rounded-lg text-white flex justify-between items-center'>
                   <p className='text-sm font-medium capitalize'>
-                    {aiFile.message[`folder-name`] || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}
+                    {aiFile.message.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}
                   </p>
                   <i className="ri-download-2-line cursor-pointer"></i>
                 </div>
-                {Object.keys(aiFile).length > 0 && Object.keys(aiFile.message.fileTree).map((fileName, index) => (
-                  <div className='file-tree w-full' key={index}>
-                    <div className={`tree-element p-1.5 px-6 flex items-center gap-2 w-full cursor-pointer hover:bg-[#37373d] hover:transform hover:translate-x-1 duration-300 overflow-y-auto no-scrollbar ${currentFile.fileName === fileName ? 'px-8 text-blue-400' : 'text-white'}`}
+                {aiFile.message.files?.map((file) => (
+                  <div className='file-tree w-full' key={file.path}>
+                    <div className={`tree-element p-1.5 px-6 flex items-center gap-2 w-full cursor-pointer hover:bg-[#37373d] hover:transform hover:translate-x-1 duration-300 overflow-y-auto no-scrollbar ${currentFile.fileName === file.name ? 'px-8 text-blue-400' : 'text-white'}`}
                       onClick={() => {
-                        if (fileName === 'buildCommand' || fileName === 'runCommand' || fileName === 'startCommand' || fileName === 'testCommand' || fileName.includes('.txt')) {
-                          setCurrentFile({
-                            content: JSON.stringify(aiFile.message.fileTree[fileName]),
-                            fileId: aiFile._id,
-                            fileName: fileName
-                          });
-
-                          // add to tempSelectedFile uniquely
-                          setTempSelectedFile(prev => {
-                            const exists = prev.some(f => f.fileName === fileName);
-                            if (exists) return prev;
-                            return [...prev, {
-                              content: JSON.stringify(aiFile.message.fileTree[fileName]),
-                              fileId: aiFile._id,
-                              fileName: fileName
-                            }];
-                          });
+                        const fileData = {
+                          content: file.content,
+                          fileId: aiFile._id,
+                          fileName: file.name
                         }
-                        else {
-                          setCurrentFile({
-                            content: aiFile.message.fileTree[fileName].content
-                              ? aiFile.message.fileTree[fileName].content
-                              : aiFile.message.fileTree[fileName],
-                            fileId: aiFile._id,
-                            fileName: fileName
-                          });
 
-                          // add to tempSelectedFile uniquely
-                          setTempSelectedFile(prev => {
-                            const exists = prev.some(f => f.fileName === fileName);
-                            if (exists) return prev;
-                            return [...prev, {
-                              content: aiFile.message.fileTree[fileName].content
-                                ? aiFile.message.fileTree[fileName].content
-                                : aiFile.message.fileTree[fileName],
-                              fileId: aiFile._id,
-                              fileName: fileName
-                            }];
-                          });
-                        }
+                        setCurrentFile(fileData)
+
+                        setTempSelectedFile((prev) => {
+                          const exists = prev.some(f => f.fileName === file.name);
+                          if (exists) return prev;
+                          return [...prev, fileData];
+                        })
                       }}
                     >
-                      <p className={`text-sm `}>{fileName}</p>
+                      <p className={`text-sm `}>{file.name}</p>
                     </div>
                   </div>
                 ))
@@ -454,8 +419,7 @@ const Project = () => {
                   </p>
                   <i className="ri-close-line mr-1 cursor-pointer hover:text-red-500 transition-all duration-500"
                     onClick={() => {
-                      // If the closed file is the current file, reset currentFile
-                      if (tempSelectedFile.length < 0) {
+                      if (tempSelectedFile.length <= 1) {
                         setCurrentFile({});
                       }
                       else if (currentFile.fileName === file.fileName) {
