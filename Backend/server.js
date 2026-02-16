@@ -1,6 +1,6 @@
+import dotenv from "dotenv/config";
 import http from "http";
 import app from "./app.js";
-import dotenv from "dotenv/config";
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken'
 import mongoose from "mongoose";
@@ -8,12 +8,13 @@ import projectModel from './models/project-model.js';
 import User from "./models/user.js";
 import ChatMessage from "./models/chat-message.js";
 import { generateResult } from "./services/ai_service.js";
+import { text } from "stream/consumers";
 
 const Port = process.env.PORT || 3000;
 
 const allowedOrigins = [
-  "https://sleekmind.vercel.app",
-  "https://sleekmind-kfrkwn6ol-rajeevprajapat43-gmailcoms-projects.vercel.app"  // Vercel preview URL
+    "https://sleekmind.vercel.app",
+    "https://sleekmind-kfrkwn6ol-rajeevprajapat43-gmailcoms-projects.vercel.app"  // Vercel preview URL
 ];
 // const allowedOrigins = [
 //   "http://localhost:5173",  // Vite frontend
@@ -24,13 +25,13 @@ const allowedOrigins = [
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin:allowedOrigins,
-    methods: ["GET", "POST"],
-    credentials: true,
-    allowedHeaders: ["Authorization"]
-  },
-  transports: ["websocket", "polling"],
+    cors: {
+        origin: allowedOrigins,
+        methods: ["GET", "POST"],
+        credentials: true,
+        allowedHeaders: ["Authorization"]
+    },
+    transports: ["websocket", "polling"],
 });
 
 
@@ -93,11 +94,63 @@ io.on('connection', socket => {
             const AI_USER_ID = "000000000000000000000001";
             user = await User.findById(AI_USER_ID);
 
+            let parsedResult;
+
+            try {
+                parsedResult = JSON.parse(result);
+            } catch (err) {
+                parsedResult = { text: result }
+            }
+
+            function normaliseFileTree(fileTree, parentPath = "") {
+                let files = [];
+
+                for (const key in fileTree) {
+                    const value = fileTree[key];
+                    const currentPath = parentPath ? `${parentPath}/${key}` : key;
+
+                    if (value && typeof value === "object" &&
+                        value.hasOwnProperty("content")
+                    ) {
+                        files.push({
+                            name: key,
+                            path: currentPath,
+                            content: value.content,
+                            type: "file"
+                        })
+                    } else if (typeof value === "object") {
+                        files.push({
+                            name: key,
+                            path: currentPath,
+                            type: "folder"
+                        });
+
+                        files = files.concat(
+                            normaliseFileTree(value, currentPath)
+                        )
+                    }
+                }
+
+                return files;
+            }
+
+            let normalizedMessage = {
+                text: parsedResult.text || "",
+            };
+
+            if (parsedResult.fileTree) {
+                normalizedMessage.files = normaliseFileTree(parsedResult.fileTree);
+                normalizedMessage.folderName = parsedResult["folder-name"] || "AI_Files";
+                normalizedMessage.buildCommand = parsedResult.generationConfig?.buildCommand || null;
+                normalizedMessage.startCommand = parsedResult.generationConfig?.startCommand || null;
+            }
+
             const AIresponse = await ChatMessage.create({
                 projectId,
-                sender: user,
-                message: JSON.parse(result)
+                sender: user._id,
+                message: normalizedMessage
             })
+            console.log("AI response created:", AIresponse);
             io.to(socket.roomId).emit('project-message', AIresponse);
         }
         console.log("message sent");
