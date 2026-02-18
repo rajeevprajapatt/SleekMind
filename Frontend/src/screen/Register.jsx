@@ -45,7 +45,7 @@ const Register = () => {
                 <h2 className="text-3xl font-bold text-[#433bff] mb-6 text-center">Register</h2>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     <div>
-                        <label className="block text-gray-900 mb-2" htmlFor="fullName">
+                        <label className="block text-white opacity-70 mb-2" htmlFor="fullName">
                             Full Name
                         </label>
                         <input
@@ -58,7 +58,7 @@ const Register = () => {
                         {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>}
                     </div>
                     <div>
-                        <label className="block text-gray-900 mb-2" htmlFor="email">
+                        <label className="block text-white opacity-70 mb-2" htmlFor="email">
                             Email
                         </label>
                         <input
@@ -77,7 +77,7 @@ const Register = () => {
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                     </div>
                     <div>
-                        <label className="block text-gray-900 mb-2" htmlFor="password">
+                        <label className="block text-white opacity-70 mb-2" htmlFor="password">
                             Password
                         </label>
                         <input
@@ -102,7 +102,7 @@ const Register = () => {
                         Register
                     </button>
                 </form>
-                <p className="mt-6 text-center text-gray-800">
+                <p className="mt-6 text-center text-white opacity-70">
                     Already have an account?{" "}
                     <Link to="/login" className="text-blue-300 hover:underline">
                         Login

@@ -44,7 +44,7 @@ const Login = () => {
                 <h2 className="text-3xl font-bold text-[#433bff] mb-6 text-center">Login</h2>
                 <form onSubmit={handleSubmit(submitHandler)} className="space-y-5">
                     <div>
-                        <label className="block text-gray-900 mb-2" htmlFor="email">
+                        <label className="block text-white opacity-70 mb-2" htmlFor="email">
                             Email
                         </label>
                         <input
@@ -63,7 +63,7 @@ const Login = () => {
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                     </div>
                     <div>
-                        <label className="block text-gray-900 mb-2" htmlFor="password">
+                        <label className="block text-white opacity-70 mb-2" htmlFor="password">
                             Password
                         </label>
                         <input
@@ -84,7 +84,7 @@ const Login = () => {
                         Login
                     </button>
                 </form>
-                <p className="mt-6 text-center text-gray-800">
+                <p className="mt-6 text-center text-white opacity-70">
                     Don't have an account?{" "}
                     <Link to="/register" className="text-blue-300 hover:underline">
                         Register

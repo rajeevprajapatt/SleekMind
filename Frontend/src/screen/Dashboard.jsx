@@ -228,7 +228,6 @@ const Dashboard = () => {
         <div className="pt-4 h-0" />
         <AnimatedList
           items={items}
-          // onItemSelect={(item, index) => console.log(item, index)}
           showGradients
           enableArrowNavigation
           displayScrollbar
@@ -263,7 +262,6 @@ const Dashboard = () => {
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter project description"
-                required
               />
               <div className="flex justify-end space-x-2">
                 <button
