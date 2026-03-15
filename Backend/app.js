@@ -1,8 +1,5 @@
 import express from "express";
-import mongoose from "mongoose";
-import morgan from "morgan";
 import connect from "./database/db.js";
-import dotenv from "dotenv/config";
 import userRoutes from "./routes/user_routes.js"
 import projectRouter from './routes/project_routes.js';
 import chatRouter from './routes/chats_routes.js'
@@ -19,33 +16,28 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // app.use(cors(corsOptions)); 
 
-// app.use(cors());
-const allowedOrigins = [
-  "https://sleekmind.vercel.app",
-  "https://sleekmind-kfrkwn6ol-rajeevprajapat43-gmailcoms-projects.vercel.app"  // Vercel preview URL
-];
+app.use(cors());
+// const allowedOrigins = [
+//   "https://sleekmind.vercel.app",
+//   "https://sleekmind-kfrkwn6ol-rajeevprajapat43-gmailcoms-projects.vercel.app"  // Vercel preview URL
+// ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (Postman, mobile apps)
-    if (!origin) return callback(null, true);
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     // allow requests with no origin (Postman, mobile apps)
+//     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
-}));
-// app.options("*", cors());
+//     if (allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+//   credentials: true
+// }));
 
-
-
-
- 
 
 app.get("/", (req, res) => {
     return res.json({ msg: "Hello World" });
@@ -58,15 +50,15 @@ app.use("/chats",chatRouter);
 app.use("/ai", aiRouter);
 
 
-const imagekit = new ImageKit({
-  urlEndpoint: process.env.URL_ENDPOINT, 
-  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY
-});
+// const imagekit = new ImageKit({
+//   urlEndpoint: process.env.URL_ENDPOINT, 
+//   publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+//   privateKey: process.env.IMAGEKIT_PRIVATE_KEY
+// });
 
-app.get("/imagekitAuth", (req, res) => {
-  const {token,expire, signature} = imagekit.getAuthenticationParameters();
-  return res.send({ token, expire, signature, publicKey: process.env.IMAGEKIT_PUBLIC_KEY });
-});
+// app.get("/imagekitAuth", (req, res) => {
+//   const {token,expire, signature} = imagekit.getAuthenticationParameters();
+//   return res.send({ token, expire, signature, publicKey: process.env.IMAGEKIT_PUBLIC_KEY });
+// });
 
 export default app;

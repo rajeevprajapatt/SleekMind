@@ -11,6 +11,7 @@ import { generateResult } from "./services/ai_service.js";
 import { text } from "stream/consumers";
 
 const Port = process.env.PORT || 3000;
+// const allowedOrigins = ["http://localhost:5173", "http://localhost:3000", "http://
 
 const allowedOrigins = [
     "https://sleekmind.vercel.app",
@@ -112,7 +113,7 @@ io.on('connection', socket => {
                     if (value && typeof value === "object" &&
                         value.hasOwnProperty("content")
                     ) {
-                        files.push({
+                        files.push({ 
                             name: key,
                             path: currentPath,
                             content: value.content,

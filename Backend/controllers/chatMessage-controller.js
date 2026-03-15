@@ -5,6 +5,7 @@ import * as messageService from "../services/message-service.js";
 export const getAllChatMessages = async (req, res) => {
     try {
         const projectId = req.params.projectId;
+        console.log("Fetching messages for projectId:", projectId);
 
         const allMessages = await messageService.allProjectMessages(projectId);
         return res.status(201).json(allMessages);
@@ -13,7 +14,7 @@ export const getAllChatMessages = async (req, res) => {
         console.log(error);
         return res.status(400).send(error);
     }
-}
+} 
 
 export const getFileTree = async (req, res) => {
     try {
@@ -31,33 +32,20 @@ export const getFileTree = async (req, res) => {
 }
 
 export const getMessage = async (req, res) => {
-    const { fileId, fileName, content } = req.body;
+    const { fileId } = req.query;
 
-    // console.log("content : ", content);
+    console.log("Received request for getMessage with fileId:", fileId);
 
-    try {
-        const doc = await ChatMessage.findById(fileId);
-        if (!doc) return res.status(404).json({ error: "Message not found" });
-
-        // Update content safely (even if filename has dots)
-        if (
-            doc.message &&
-            doc.message.fileTree &&
-            doc.message.fileTree[fileName]
-        ) {
-            console.log("coming content : ", content);
-            doc.message.fileTree[fileName].content = content;
-        } else {
-            return res.status(404).json({ error: "File not found in fileTree" });
-        }
-
-        doc.markModified('message.fileTree');
-        await doc.save();
-        return res.status(200).json(doc);
-    } catch (error) {
-        console.error("❌ Error updating file:", error);
-        return res.status(500).json({ error: error.message });
+    if (!fileId) {
+        return res.status(400).json({ error: "File ID is required" });
     }
+
+    const message = await ChatMessage.findOne({ "message._id": fileId });
+    if (!message) {
+        return res.status(404).json({ error: "File not found" });
+    }
+    console.log("Found message for fileId:", fileId, "Message:", message);
+    res.status(200).json({ content: "This is the content of the file with ID: " + fileId });
 }
 
 
