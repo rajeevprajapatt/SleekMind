@@ -7,9 +7,9 @@ import AppBackground from './components/layout/AppBackground'
 const App = () => {
   return (
     <UserProvider>
-      <AppBackground>
+      <AppBackground/>
         <AppRoutes/>
-      </AppBackground>
+      {/* </AppBackground> */}
     </UserProvider>
   )
 }
