@@ -36,12 +36,12 @@ const Dashboard = () => {
       onClick={() => navigate(`/project`, { state: { project } })}
     >
       {/* Desktop layout */}
-      <div className="hidden md:flex justify-between items-center text-white">
+      <div className="hidden md:flex justify-between items-center text-slate-800">
         <h2 className="md:text-3xl text-2xl font-semibold opacity-90 flex-1 capitalize">
           {project.name}
         </h2>
 
-        <div className="flex items-center gap-4 text-sm text-gray-200">
+        <div className="flex items-center gap-4 text-sm text-slate-600">
           <span>
             <i className="ri-team-line font-normal md:text-lg"></i>{" "}
             Collaborators: {project.users ? project.users.length : 0}
@@ -54,10 +54,10 @@ const Dashboard = () => {
 
       {/* Mobile layout */}
       <div className="flex flex-col md:hidden gap-2">
-        <h2 className="text-white text-2xl font-semibold opacity-90 capitalize">
+        <h2 className="text-slate-800 text-2xl font-semibold opacity-90 capitalize">
           {project.name}
         </h2>
-        <div className="flex justify-between text-sm text-gray-200">
+        <div className="flex justify-between text-sm text-slate-600">
           <span>
             <i className="ri-team-line font-normal"></i>{" "}
             Collaborators: {project.users ? project.users.length : 0}
@@ -69,7 +69,7 @@ const Dashboard = () => {
       </div>
 
       {/* Description (common) */}
-      <div className="mt-1 max-w-64 truncate overflow-hidden font-semibold text-sm text-gray-200">
+      <div className="mt-1 max-w-64 truncate overflow-hidden font-semibold text-sm text-slate-600">
         {project.description ? project.description : "No description"}
       </div>
     </div>
@@ -82,11 +82,11 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    document.body.style.backgroundImage = `url(${bgImage})`;
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundPosition = 'center';
-    document.body.style.backgroundRepeat = 'no-repeat';
-    document.body.style.backgroundAttachment = 'fixed';
+    document.body.style.backgroundImage = 'none';
+    document.body.style.backgroundSize = '';
+    document.body.style.backgroundPosition = '';
+    document.body.style.backgroundRepeat = '';
+    document.body.style.backgroundAttachment = '';
 
     return () => {
       document.body.style.backgroundImage = '';
@@ -95,7 +95,7 @@ const Dashboard = () => {
       document.body.style.backgroundRepeat = '';
       document.body.style.backgroundAttachment = '';
     };
-  }, [bgImage]);
+  }, []);
 
   function createProject(e) {
     e.preventDefault();
@@ -177,7 +177,7 @@ const Dashboard = () => {
     <main className='' >
       <Navbar />
       <div className="md:pt-32 pt-20 w-full" />
-      <div className='md:w-[80%] w-[96%] md:flex md:flex-row-reverse  justify-between items-center mx-[3%] md:m-auto text-[#050315]'>
+      <div className='md:w-[80%] w-[96%] md:flex md:flex-row-reverse  justify-between items-center mx-[3%] md:m-auto text-slate-900'>
         <div className='md:w-2/3 w-full h-full md:p-16 p-4'>
           {fontsReady && (
             <SplitText
@@ -186,7 +186,7 @@ const Dashboard = () => {
                   Welcome, <span className='text-[#2f27ce]'>{user.fullName}</span> 👋
                 </>
               }
-              className="text-4xl font-semibold text-white"
+              className="text-4xl font-semibold text-slate-900"
               delay={70}
               duration={0.6}
               ease="power3.out"
@@ -198,7 +198,7 @@ const Dashboard = () => {
               textAlign="center"
             />
           )}
-          <p className="text-slate-100 mt-2 text-xl leading-relaxed opacity-70">
+          <p className="text-slate-600 mt-2 text-xl leading-relaxed opacity-80">
             Ready to build something amazing today? <br />
             You can <span className="font-medium text-[#2f27ce]">create a new project</span> or
             <span className="font-medium text-[#2f27ce]"> join your existing teams</span> to collaborate in real-time.

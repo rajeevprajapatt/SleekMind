@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "../config/axios"
 import { UserContext } from '../context/user-context';
 import { useForm } from 'react-hook-form'
-import bgImage from '../assets/pexels-tara-winstead-8386369.jpg'
+
 
 const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -39,16 +39,16 @@ const Login = () => {
         }
     }
     return (
-        <div className="min-h-screen flex items-center justify-center">
-            <div className="w-full max-w-md backdrop-blur-md bg-white/10 rounded-lg shadow-lg p-8">
+        <div className="min-h-screen flex items-center justify-center px-4">
+            <div className="w-full max-w-md backdrop-blur-md bg-white/80 border border-slate-200 rounded-lg shadow-lg p-8">
                 <h2 className="text-3xl font-bold text-[#433bff] mb-6 text-center">Login</h2>
                 <form onSubmit={handleSubmit(submitHandler)} className="space-y-5">
                     <div>
-                        <label className="block text-white opacity-70 mb-2" htmlFor="email">
+                        <label className="block text-slate-700 mb-2" htmlFor="email">
                             Email
                         </label>
                         <input
-                            className="w-full px-4 py-2 rounded backdrop-blur-md bg-white/80 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-2 rounded border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             type="email"
                             id="email"
                             placeholder="Enter your email"
@@ -63,11 +63,11 @@ const Login = () => {
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                     </div>
                     <div>
-                        <label className="block text-white opacity-70 mb-2" htmlFor="password">
+                        <label className="block text-slate-700 mb-2" htmlFor="password">
                             Password
                         </label>
                         <input
-                            className={`w-full px-4 py-2 rounded backdrop-blur-md bg-white/80 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border border-red-500' : ''}`}
+                            className={`w-full px-4 py-2 rounded border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border border-red-500' : ''}`}
                             type="password"
                             id="password"
                             placeholder="Enter your password"
@@ -84,9 +84,9 @@ const Login = () => {
                         Login
                     </button>
                 </form>
-                <p className="mt-6 text-center text-white opacity-70">
+                <p className="mt-6 text-center text-slate-600">
                     Don't have an account?{" "}
-                    <Link to="/register" className="text-blue-300 hover:underline">
+                    <Link to="/register" className="text-blue-600 hover:underline">
                         Register
                     </Link>
                 </p>

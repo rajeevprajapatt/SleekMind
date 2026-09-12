@@ -67,6 +67,8 @@ const Project = () => {
 
     socket.on("connect", () => {
 
+      console.log("projectId : ", project._id);
+
       axios.get(`/chats/${project._id}`)
         .then(response => {
           setMessages(response.data);
@@ -78,6 +80,7 @@ const Project = () => {
         .catch(error => console.log(error));
 
     });
+
 
     socket.on("project-message", newMessage => {
       if (!newMessage) return;
@@ -95,7 +98,8 @@ const Project = () => {
         String(newMessage.sender?._id) ===
         "000000000000000000000001";
 
-      if (isAI) setAiLoading(false);
+      setAiLoading(false);
+      // if (isAI) setAiLoading(false);
     });
 
     return () => {
@@ -103,6 +107,8 @@ const Project = () => {
       socket.disconnect();
     };
   }, [project._id]);
+
+  // console.log("Ai generated files:", AiGeneratedFiles);
 
   //Fetch project users
   useEffect(() => {
@@ -168,41 +174,61 @@ const Project = () => {
 
   // Monaco Editor Theme
   const handleEditorMount = (editor, monaco) => {
-    monaco.editor.defineTheme("vscode-dark-modern", {
-      base: "vs-dark",
+    monaco.editor.defineTheme("vscode-light-modern", {
+      base: "vs",
       inherit: true,
       rules: [
-        { token: "", background: "1e1e1e" },
+        { token: "", background: "ffffff" },
         { token: "comment", foreground: "6A9955" },
-        { token: "keyword", foreground: "C586C0" },
-        { token: "string", foreground: "CE9178" },
-        { token: "number", foreground: "B5CEA8" },
-        { token: "function", foreground: "DCDCAA" },
-        { token: "type", foreground: "4EC9B0" },
+        { token: "keyword", foreground: "AF00DB" },
+        { token: "string", foreground: "A31515" },
+        { token: "number", foreground: "098658" },
+        { token: "function", foreground: "795E26" },
+        { token: "type", foreground: "267F99" },
       ],
       colors: {
-        "editor.background": "#1E1E1E",
-        "editor.foreground": "#D4D4D4",
-        "editorLineNumber.foreground": "#858585",
-        "editorCursor.foreground": "#AEAFAD",
-        "editor.selectionBackground": "#264F78",
-        "editor.inactiveSelectionBackground": "#3A3D41",
-        "editor.lineHighlightBackground": "#2A2D2E",
-        "editorWidget.background": "#252526",
-        "editorHoverWidget.background": "#252526",
-        "editorSuggestWidget.background": "#252526",
-        "editorSuggestWidget.border": "#454545",
-        "editorIndentGuide.background": "#404040",
-        "editorIndentGuide.activeBackground": "#707070",
-        "sideBar.background": "#252526",
-        "statusBar.background": "#007ACC",
-        "panel.background": "#1E1E1E",
+        "editor.background": "#F8FAFC",
+        "editor.foreground": "#1F2937",
+        "editorLineNumber.foreground": "#6B7280",
+        "editorCursor.foreground": "#1F2937",
+        "editor.selectionBackground": "#DBEAFE",
+        "editor.inactiveSelectionBackground": "#E5E7EB",
+        "editor.lineHighlightBackground": "#F1F5F9",
+        "editorWidget.background": "#FFFFFF",
+        "editorHoverWidget.background": "#FFFFFF",
+        "editorSuggestWidget.background": "#FFFFFF",
+        "editorSuggestWidget.border": "#D1D5DB",
+        "editorIndentGuide.background": "#E5E7EB",
+        "editorIndentGuide.activeBackground": "#9CA3AF",
+        "sideBar.background": "#F8FAFC",
+        "statusBar.background": "#E0E7FF",
+        "panel.background": "#F5F7FB",
       },
     });
 
-    // Apply it AFTER defining
-    monaco.editor.setTheme("vscode-dark-modern");
+    monaco.editor.setTheme("vscode-light-modern");
   };
+
+  console.log(currentFile)
+
+  const checkUpdate = () => {
+    if (!currentFile?.fileId) return;
+
+    console.log("Checking for content update for fileId:", currentFile.fileId);
+
+    axios.get("/chats/getMessage", {
+      params: {
+        fileId: currentFile.fileId
+      }
+    })
+      .then(res => {
+        console.log(res.data);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+
+  }
 
   const handleSendMessage = () => {
     if (!socketRef.current) return;
@@ -247,7 +273,7 @@ const Project = () => {
   }
 
   return (
-    <main className={`h-dvh w-screen flex flex-col md:flex-row bg-cover bg-center overflow-hidden`} style={{ backgroundImage: `url(${bgImage})` }}>
+    <main className={`h-dvh w-screen flex flex-col md:flex-row bg-cover bg-center overflow-hidden bg-slate-50`}>
       <section className={`left relative md:flex flex-col flex h-full min-w-full md:min-w-96 mr-0 md:mr-2 ${messageScreen ? 'flex' : 'hidden'}`}>
         <header className='flex justify-between items-center md:rounded-tr-xl shadow-md p-2 px-4 w-full bg-[#433bff] text-white backdrop-blur-2xl border-b-2 border-[#433bff]'>
           <h1 className="text-3xl md:text-4xl text-logoColor whitespace-nowrap font-geom font-bold">
@@ -259,9 +285,9 @@ const Project = () => {
             </button>
           </div>
         </header>
-        <div className="conversation-area flex flex-col grow relative overflow-hidden backdrop-blur-sm" >
+        <div className="conversation-area flex flex-col grow relative overflow-hidden bg-slate-100/80 backdrop-blur-sm" >
           <div ref={messageBox}
-            className={`message-box flex flex-col ${messages.length > 0 ? "" : "justify-center"} gap-1 overflow-y-auto px-2 py-2 h-full pb-20 rounded-br-xl border-r-2 border-[#433bff]`}>
+            className={`message-box flex flex-col ${messages.length > 0 ? "" : "justify-center"} gap-1 overflow-y-auto px-2 py-2 h-full pb-20 rounded-br-xl border-r-2 border-slate-200 bg-white/70`}>
             {messages.length === 0 &&
               <div className='flex flex-col justify-center items-center w-full'>
                 {/* <p className="text-center text-xl text-gray-500">Start conversation now with<br /> your team & AI</p> */}
@@ -320,8 +346,8 @@ const Project = () => {
               </div>
             )}
 
-            <div className="inputField w-full flex p-2 absolute left-0 bottom-0 border-2 border-[#433bff] rounded-br-xl backdrop-blur-sm">
-              <input className='w-full p-3 px-4 border-none outline-none rounded-l-md bg-[#E5EBEE]' type="text" placeholder="Type your message here..."
+            <div className="inputField w-full flex p-2 absolute left-0 bottom-0 border-t border-slate-200 bg-white/90 rounded-br-xl backdrop-blur-sm">
+              <input className='w-full p-3 px-4 border-none outline-none rounded-l-md bg-slate-100 text-slate-800' type="text" placeholder="Type your message here..."
                 value={message} onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey && message.trim()) {
@@ -332,7 +358,7 @@ const Project = () => {
               />
               <button
                 onClick={handleSendMessage}
-                className='grow px-3 bg-[#E5EBEE] rounded-r-md hover:bg-gray-200 transition-colors'
+                className='grow px-3 bg-slate-100 rounded-r-md hover:bg-slate-200 transition-colors text-slate-700'
                 aria-label="Send message"
               >
                 <i className="ri-send-plane-2-fill text-xl"></i>
@@ -362,9 +388,9 @@ const Project = () => {
         </div>
       </section>
 
-      <section className={`right md:flex flex-row grow h-full bg-linear-to-b from-[#181818] to-[#1E1E1E] overflow-y-auto ${messageScreen ? 'hidden' : 'flex'}`}>
-        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-linear-to-b from-[#2D3436] to-[#181818] md:min-w-48 max-w-64 min-w-38 overflow-y-auto border rounded-2xl md:rounded-tl-xl md:rounded-bl-xl`}>
-          <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center justify-between text-md text-white  transition-all duration-500`}>
+      <section className={`right md:flex flex-row grow h-full bg-gradient-to-b from-slate-100 via-slate-50 to-white overflow-y-auto ${messageScreen ? 'hidden' : 'flex'}`}>
+        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-gradient-to-b from-slate-100 to-slate-200 md:min-w-48 max-w-64 min-w-38 overflow-y-auto border border-slate-200 rounded-2xl md:rounded-tl-xl md:rounded-bl-xl`}>
+          <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center justify-between text-md text-slate-800 transition-all duration-500`}>
             <span className='font-semibold'>Files</span>
             <i className="ri-arrow-left-box-line text-lg md:hidden"
               onClick={() => {
@@ -375,7 +401,7 @@ const Project = () => {
           <div className='w-full h-[92.2%] backdrop-blur-sm overflow-y-auto no-scrollbar'>
             {AiGeneratedFiles && AiGeneratedFiles.length > 0 && AiGeneratedFiles.map((aiFile) => (
               <div className='folder flex flex-col border-white/10' key={aiFile._id}>
-                <div className='w-auto p-2 px-2 md:px-4 mx-1 bg-linear-to-b from-[#212526] to-[#232323] rounded-lg text-white flex justify-between items-center'>
+                <div className='w-auto p-2 px-2 md:px-4 mx-1 bg-white border border-slate-200 rounded-lg text-slate-800 flex justify-between items-center'>
                   <p className='text-sm font-medium capitalize'>
                     {aiFile.message.folderName || `Folder ${AiGeneratedFiles.indexOf(aiFile) + 1}`}
                   </p>
@@ -383,7 +409,7 @@ const Project = () => {
                 </div>
                 {aiFile.message.files?.map((file) => (
                   <div className='file-tree w-full' key={file.path}>
-                    <div className={`tree-element p-1.5 px-6 flex items-center gap-2 w-full cursor-pointer hover:bg-[#37373d] hover:transform hover:translate-x-1 duration-300 overflow-y-auto no-scrollbar ${currentFile.fileName === file.name ? 'px-8 text-blue-400' : 'text-white'}`}
+                    <div className={`tree-element p-1.5 px-6 flex items-center gap-2 w-full cursor-pointer hover:bg-slate-200 hover:transform hover:translate-x-1 duration-300 overflow-y-auto no-scrollbar ${currentFile.fileName === file.name ? 'px-8 text-blue-600' : 'text-slate-700'}`}
                       onClick={() => {
                         const fileData = {
                           content: file.content,
@@ -411,9 +437,9 @@ const Project = () => {
         </div>
         {currentFile && Object.keys(currentFile).length > 0 ? (
           <div className='code-editor w-full h-full overflow-hidden bg-white/10'>
-            <div className='top flex h-[7.9%] items-center bg-[#181818] text-white text-md overflow-x-scroll no-scrollbar sticky z-10 w-full border-b border-white/10'>
+            <div className='top flex h-[7.9%] items-center bg-slate-100 text-slate-800 text-md overflow-x-scroll no-scrollbar sticky z-10 w-full border-b border-slate-200'>
               {tempSelectedFile && tempSelectedFile.length > 0 && tempSelectedFile.map((file, index) => (
-                <div className={`file-name flex items-center gap-0 cursor-pointer hover:bg-[#37373d] transition-all duration-500 ${currentFile.fileName === file.fileName ? 'text-blue-400 bg-linear-to-b from-[#212526] to-[#232323] rounded-lg m-1 w-auto' : ''}`} key={index}>
+                <div className={`file-name flex items-center gap-0 cursor-pointer hover:bg-slate-200 transition-all duration-500 ${currentFile.fileName === file.fileName ? 'text-blue-600 bg-white rounded-lg m-1 w-auto border border-slate-200' : ''}`} key={index}>
                   <p className={`text-sm cursor-pointer py-3 px-2`} onClick={() => setCurrentFile(file)}>
                     {file.fileName}
                   </p>
@@ -442,7 +468,8 @@ const Project = () => {
                   onMount={handleEditorMount}
                   defaultLanguage="cpp"
                   value={currentFile.content}
-                  onChange={handleContentUpdate}
+                  // onChange={handleContentUpdate}
+                  onChange={checkUpdate}
                   options={{
                     minimap: { enabled: false },
                     fontSize: 14,
@@ -455,7 +482,7 @@ const Project = () => {
             </div>
           </div>
         ) : (
-          <div className='flex flex-col bg-[#1E1E1E] justify-center gap-3 items-center w-full h-full text-gray-500'>
+          <div className='flex flex-col bg-slate-50 justify-center gap-3 items-center w-full h-full text-slate-500'>
             <div className='mt-12'>
               <SplitText
                 className="pb-1 text-2xl md:text-4xl"
@@ -645,12 +672,12 @@ const Project = () => {
       )}
 
       {/* Right Sidebar */}
-      <div className={`fixed top-0 h-screen w-14 bg-black/20 backdrop-blur-lg border-slate-700 z-50 flex flex-col transition-transform duration-300 ease-in-out right-0
+      <div className={`fixed top-0 h-screen w-14 bg-white/85 backdrop-blur-lg border-l border-slate-200 z-50 flex flex-col transition-transform duration-300 ease-in-out right-0
         ${isRightSidebarOpen ? "translate-x-0" : "translate-x-full"} md:left-0 md:right-auto md:-translate-x-full ${isRightSidebarOpen ? "md:translate-x-0" : "md:-translate-x-full"}`}>
-        <button className="self-end mt-4 mr-4 text-white hover:text-gray-300 cursor-pointer" onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}>
+        <button className="self-end mt-4 mr-4 text-slate-700 hover:text-slate-900 cursor-pointer" onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}>
           <X size={22} />
         </button>
-        <ul className="flex flex-col items-center justify-center gap-2 mt-8 px-1 text-white">
+        <ul className="flex flex-col items-center justify-center gap-2 mt-8 px-1 text-slate-700">
           {rightSideBarItems.map((item, index) => (
             <li key={index}>
               <button className={`w-full text-lg hover:bg-white/10 p-2 rounded cursor-pointer ${!item.isMd ? "md:hidden" : "md:block"}`} title={item.label} onClick={() => {
