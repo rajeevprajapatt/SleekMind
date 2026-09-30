@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import ChatMessage from "../models/chat-message.js";
 
 export const allProjectMessages = async (projectId) => {
-    console.log(projectId);
+    // console.log(projectId);
     if (!projectId) {
         throw new Error("Project Id is required");
     }
