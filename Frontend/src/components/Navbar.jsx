@@ -64,7 +64,7 @@ const Navbar = () => {
             {
                 window.scrollY < 20 &&
                 <Marquee
-                    className={`bg-black/30 backdrop-blur-xl text-white transition-all duration-1000 ease-in-out top-1`}
+                    className={`bg-white/80 border-b border-slate-200 text-slate-800 shadow-sm backdrop-blur-xl transition-all duration-1000 ease-in-out top-1`}
                     speed={30}
                     gradient={false}
                     pauseOnHover={true}
@@ -77,7 +77,7 @@ const Navbar = () => {
                 ))}
                 </Marquee>
             }
-            <div className={`fixed w-full bg-black/20 backdrop-blur-xl text-white z-50 transition-all duration-300 ease-out ${scrolled ? "top-8" : "top-2"}`}>
+            <div className={`fixed w-full bg-white/75 backdrop-blur-xl text-slate-800 border-b border-slate-200 z-50 transition-all duration-300 ease-out ${scrolled ? "top-8" : "top-2"}`}>
                 <div className="flex items-center w-full gap-3 md:gap-6 px-4 md:px-8 py-2">
                     {/* LEFT */}
                     <div className="hidden flex-1 md:flex justify-end items-center">
@@ -116,34 +116,34 @@ const Navbar = () => {
                                 </div>
                             </div>
                         )}
-                        {!isLoggedIn && <button className="bg-black md:flex ml-8 hidden text-white px-3 py-2 rounded-sm" >
+                        {!isLoggedIn && <button className="bg-[#433bff] md:flex ml-8 hidden text-white px-3 py-2 rounded-sm shadow-sm" >
                             Get Started
                         </button>}
 
-                        <button className="md:hidden bg-black/20 backdrop-blur-2xl border-2 border-[#433bff]/60 p-2 rounded-full" onClick={() => setIsOpen(!isOpen)}>
+                        <button className="md:hidden bg-white border border-slate-200 backdrop-blur-2xl p-2 rounded-full text-slate-800 shadow-sm" onClick={() => setIsOpen(!isOpen)}>
                             <Menu size={22} />
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div className={`md:hidden fixed top-0 right-0 h-screen w-64 bg-black/20 backdrop-blur-lg border-l border-slate-700 z-50 flex flex-col transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
-                <button className={`self-end mt-10 mr-4 border-2 border-[#433bff]/60 p-2 rounded-full text-white  ${scrolled ? "top-8" : "top-2"}`} onClick={() => setIsOpen(false)}>
+            <div className={`md:hidden fixed top-0 right-0 h-screen w-64 bg-white/85 backdrop-blur-lg border-l border-slate-200 z-50 flex flex-col transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
+                <button className={`self-end mt-10 mr-4 border border-slate-200 p-2 rounded-full text-slate-800  ${scrolled ? "top-8" : "top-2"}`} onClick={() => setIsOpen(false)}>
                     <X size={22} />
                 </button>
-                <ul className="flex flex-col gap-2 mt-8 px-6 text-lg font-semibold text-white">
-                {isLoggedIn && <li className='w-full text-left hover:bg-white/10 p-2 rounded'><Link to="/profile" onClick={() => setIsOpen(false)}>Profile</Link></li>}
+                <ul className="flex flex-col gap-2 mt-8 px-6 text-lg font-semibold text-slate-800">
+                {isLoggedIn && <li className='w-full text-left hover:bg-slate-100 p-2 rounded'><Link to="/profile" onClick={() => setIsOpen(false)}>Profile</Link></li>}
                     {leftNavItems.map((item, index) => (
-                        <li key={index} className='w-full text-left hover:bg-white/10 p-2 rounded'><Link to={item.link} onClick={() => setIsOpen(false)}>{item.title}</Link></li>
+                        <li key={index} className='w-full text-left hover:bg-slate-100 p-2 rounded'><Link to={item.link} onClick={() => setIsOpen(false)}>{item.title}</Link></li>
                     ))}
                     {rightNavItems.map((item, index) => {
                         if (item.title === "Login" && isLoggedIn) return null;
                         if (item.title === "Projects" && !isLoggedIn) return null;
                         return (
-                            <li key={index} className='w-full text-left hover:bg-white/10 p-2 rounded'><Link to={item.link} onClick={() => setIsOpen(false)}>{item.title}</Link></li>
+                            <li key={index} className='w-full text-left hover:bg-slate-100 p-2 rounded'><Link to={item.link} onClick={() => setIsOpen(false)}>{item.title}</Link></li>
                         )
                     })}
-                    {isLoggedIn && <li className='w-full text-left hover:bg-white/10 p-2 rounded'><button onClick={handleLogOut} className="text-red-500">Logout</button></li>}
+                    {isLoggedIn && <li className='w-full text-left hover:bg-slate-100 p-2 rounded'><button onClick={handleLogOut} className="text-red-500">Logout</button></li>}
                 </ul>
             </div>
         </>
