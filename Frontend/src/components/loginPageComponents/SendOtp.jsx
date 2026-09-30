@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 
 // import LoginComponent from '../components/loginPageComponents/loginComponent'
 import { Button, Card, Input, Label, GoogleIcon, GithubIcon } from '../UIcomponents'
-import AxiosInstance from '../../config/AxiosInstance';
+import AxiosInstance from '../../config/axios';
 
 const SendOtp = ({ onSubmit, onBack }) => {
   const {

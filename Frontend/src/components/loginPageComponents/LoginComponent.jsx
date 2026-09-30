@@ -3,8 +3,9 @@ import { Sparkles, Mail, Lock, ArrowRight } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom'
 import { useForm } from "react-hook-form"
 
-import axios from '../../config/AxiosInstance'
-import { UserContext } from '../../context/userContext'
+// import axios from '../../config/AxiosInstance'
+import axios from '../../config/axios'
+import { UserContext } from '../../context/user-context'
 import { Button, Card, Input, Label, GoogleIcon, GithubIcon } from '../UIcomponents'
 
 const LoginComponent = ({ onForgotPassword }) => {
@@ -31,7 +32,7 @@ const LoginComponent = ({ onForgotPassword }) => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post('/user/login', data);
+      const response = await axios.post('/users/login', data);
 
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));

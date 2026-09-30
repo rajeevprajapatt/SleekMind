@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Lock, Sparkles } from 'lucide-reac
 import { useForm } from 'react-hook-form';
 
 import { Button, Card, Input, Label } from '../UIcomponents';
-import AxiosInstance from '../../config/AxiosInstance';
+import AxiosInstance from '../../config/axios';
 
 const ResetPassword = ({ email, onSubmit, onBack }) => {
   const [isLoading, setIsLoading] = useState(false);
