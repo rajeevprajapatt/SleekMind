@@ -32,7 +32,7 @@ export const loginUserController = async (req, res) => {
 
     try {
         const { email, password } = req.body;
-        console.log(password);
+        // console.log(password);
 
         const user = await User.findOne({ email }).select('+password');
         if (!user) {

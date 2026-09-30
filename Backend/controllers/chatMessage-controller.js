@@ -5,7 +5,7 @@ import * as messageService from "../services/message-service.js";
 export const getAllChatMessages = async (req, res) => {
     try {
         const projectId = req.params.projectId;
-        console.log("Fetching messages for projectId:", projectId);
+        // console.log("Fetching messages for projectId:", projectId);
 
         const allMessages = await messageService.allProjectMessages(projectId);
         return res.status(201).json(allMessages);
@@ -14,7 +14,7 @@ export const getAllChatMessages = async (req, res) => {
         console.log(error);
         return res.status(400).send(error);
     }
-} 
+}
 
 export const getFileTree = async (req, res) => {
     try {
@@ -44,7 +44,7 @@ export const getMessage = async (req, res) => {
     if (!message) {
         return res.status(404).json({ error: "File not found" });
     }
-    console.log("Found message for fileId:", fileId, "Message:", message);
+    // console.log("Found message for fileId:", fileId, "Message:", message);
     res.status(200).json({ content: "This is the content of the file with ID: " + fileId });
 }
 
