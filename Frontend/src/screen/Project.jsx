@@ -57,7 +57,7 @@ const Project = () => {
   function handleDeleteProject() {
     axios.delete(`/projects/deleteProject/${location.state.project._id}`).then(() => {
       navigate("/dashboard");
-    }).catch(console.log);
+    }).catch();
   }
 
   //Initialize socket & Fetch messages                      
@@ -67,7 +67,7 @@ const Project = () => {
 
     socket.on("connect", () => {
 
-      console.log("projectId : ", project._id);
+      // console.log("projectId : ", project._id);
 
       axios.get(`/chats/${project._id}`)
         .then(response => {
@@ -77,7 +77,7 @@ const Project = () => {
             response.data.filter(msg => msg.message?.files?.length > 0)
           );
         })
-        .catch(error => console.log(error));
+        // .catch(error => console.log(error));
 
     });
 
@@ -120,10 +120,11 @@ const Project = () => {
         const otherProjectUsers = users.filter(user => user._id !== currentUserId).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
         setProjectUsers([currentUser, ...otherProjectUsers])
       })
-      .catch(console.log);
+      // .catch(console.log);
 
     //Fetch all users
-    axios.get("/users/all").then(res => setUsers(res.data.users)).catch(console.log);
+    axios.get("/users/all").then(res => setUsers(res.data.users))
+    // .catch(console.log);
   }, [location.state.project._id]);
 
   // Remove project users from all users
@@ -166,7 +167,8 @@ const Project = () => {
         // Remove newly added users from users list
         setUsers(prevUsers => prevUsers.filter(user => !selectedUserIds.includes(user._id)));
       }
-    }).catch(console.log);
+    })
+    // .catch(console.log);
     setIsModalOpen(false);
     setSelectedUserIds([]);
     window.location.reload();
@@ -209,12 +211,12 @@ const Project = () => {
     monaco.editor.setTheme("vscode-light-modern");
   };
 
-  console.log(currentFile)
+  // console.log(currentFile)
 
   const checkUpdate = () => {
     if (!currentFile?.fileId) return;
 
-    console.log("Checking for content update for fileId:", currentFile.fileId);
+    // console.log("Checking for content update for fileId:", currentFile.fileId);
 
     axios.get("/chats/getMessage", {
       params: {
@@ -222,11 +224,11 @@ const Project = () => {
       }
     })
       .then(res => {
-        console.log(res.data);
+        // console.log(res.data);
       })
-      .catch(err => {
-        console.log(err);
-      })
+      // .catch(err => {
+      //   console.log(err);
+      // })
 
   }
 
@@ -265,11 +267,11 @@ const Project = () => {
       content: value,
     })
       .then((res) => {
-        console.log("Updated:", res.data);
+        // console.log("Updated:", res.data);
       })
-      .catch((err) => {
-        console.error("Failed to update file:", err);
-      });
+      // .catch((err) => {
+      //   // console.error("Failed to update file:", err);
+      // });
   }
 
   return (
@@ -313,7 +315,7 @@ const Project = () => {
                     className={`opacity-65 text-xs mb-1 ${isSender ? "ml-auto" : ""
                       }`}
                   >
-                    {msg.sender.fullName || msg.sender.email}
+                    {msg.sender.fullName || msg.sender.email || (isAI ? "AI Assistant" : "Unknown User")}
                   </small>
 
                   {/* Message Text */}
@@ -388,8 +390,8 @@ const Project = () => {
         </div>
       </section>
 
-      <section className={`right md:flex flex-row grow h-full bg-gradient-to-b from-slate-100 via-slate-50 to-white overflow-y-auto ${messageScreen ? 'hidden' : 'flex'}`}>
-        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-gradient-to-b from-slate-100 to-slate-200 md:min-w-48 max-w-64 min-w-38 overflow-y-auto border border-slate-200 rounded-2xl md:rounded-tl-xl md:rounded-bl-xl`}>
+      <section className={`right md:flex flex-row grow h-full bg-linear-to-b from-slate-100 via-slate-50 to-white overflow-y-auto ${messageScreen ? 'hidden' : 'flex'}`}>
+        <div className={`explorer ${AiGeneratedFiles && AiGeneratedFiles.length === 0 ? "hidden" : ""} h-full bg-linear-to-b from-slate-100 to-slate-200 md:min-w-48 max-w-64 min-w-38 overflow-y-auto border border-slate-200 rounded-2xl md:rounded-tl-xl md:rounded-bl-xl`}>
           <div className={`folder h-[7.8%] p-4 sticky top-0 z-10 flex items-center justify-between text-md text-slate-800 transition-all duration-500`}>
             <span className='font-semibold'>Files</span>
             <i className="ri-arrow-left-box-line text-lg md:hidden"
