@@ -149,7 +149,7 @@ const AnimatedList = ({
                             {React.isValidElement(item) ? (
                                 item
                             ) : (
-                                <p className="text-white m-0 text-sm sm:text-base md:text-[15px] lg:text-[16px]">
+                                <p className="text-slate-800 m-0 text-sm sm:text-base md:text-[15px] lg:text-[16px]">
                                     {item}
                                 </p>
                             )}
