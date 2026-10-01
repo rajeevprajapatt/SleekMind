@@ -8,7 +8,7 @@ import Dashboard from '../screen/Dashboard'
 import Project from '../screen/Project'
 import UploadExample from '../screen/UploadExample'
 import UserAuth from '../auth/UserAuth'
-import PortfolioPreview from '../screen/PortfolioPreview'
+// import PortfolioPreview from '../screen/PortfolioPreview'
 
 
 
@@ -18,11 +18,11 @@ const router = createBrowserRouter([
       <Home />
     </div>
   },
-  {
-    path: "/portfolio", element: <div>
-      <PortfolioPreview />
-    </div>
-  },
+  // {
+  //   path: "/portfolio", element: <div>
+  //     <PortfolioPreview />
+  //   </div>
+  // },
   {
     path: "/dashboard", element: <div>
       <UserAuth><Dashboard /></UserAuth>
