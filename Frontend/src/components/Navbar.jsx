@@ -116,7 +116,7 @@ const Navbar = () => {
                                 </div>
                             </div>
                         )}
-                        {!isLoggedIn && <button className="bg-[#433bff] md:flex ml-8 hidden text-white px-3 py-2 rounded-sm shadow-sm" >
+                        {!isLoggedIn && <button className="bg-[#433bff] md:flex ml-8 hidden text-white px-3 py-2 rounded-sm shadow-sm" onClick={()=> navigate('/register')}>
                             Get Started
                         </button>}
 
