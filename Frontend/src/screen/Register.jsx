@@ -1,14 +1,20 @@
-import React, { useContext } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+
+
 import axios from "../config/axios";
 import { UserContext } from "../context/user-context";
-import { useForm } from "react-hook-form";
-import bgImage from '../assets/pexels-tara-winstead-8386369.jpg'
+import { Sparkles, Mail, Lock, User, ArrowRight } from 'lucide-react';
+import { Button, Card, Input, Label, GoogleIcon, GithubIcon } from '../components/UIcomponents'
+import logo from '../assets/urlLogo.png'
+
 
 
 const Register = () => {
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     if(localStorage.getItem("token")) {
         navigate("/");
@@ -23,7 +29,7 @@ const Register = () => {
     const onSubmit = async (data) => {
         try {
             const response = await axios.post("/users/register", {
-                fullName: data.fullName,
+                fullName: data.name,
                 email: data.email,
                 password: data.password,
             });
@@ -39,73 +45,118 @@ const Register = () => {
         }
     };
 
-    return (
-        <div className="min-h-screen flex items-center justify-center px-4">
-            <div className="w-full max-w-md backdrop-blur-md bg-white/80 border border-slate-200 rounded-lg shadow-lg p-8">
-                <h2 className="text-3xl font-bold text-[#433bff] mb-6 text-center">Register</h2>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                    <div>
-                        <label className="block text-slate-700 mb-2" htmlFor="fullName">
-                            Full Name
-                        </label>
-                        <input
-                            className={`w-full px-4 py-2 rounded border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.fullName ? 'border border-red-500' : ''}`}
-                            type="text"
-                            id="fullName"
-                            placeholder="Enter your full name"
-                            {...register("fullName")}
-                        />
-                        {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>}
+      return (
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden font-sans selection:bg-blue-200">
+
+            {/* Background Gradient */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-blue-100 via-slate-50 to-slate-50 -z-10" />
+
+            <div className="w-full max-w-[400px]">
+                {/* Logo Area */}
+                <div className="flex flex-col items-center mb-8 text-center">
+                    <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm mb-4">
+                        <img src={logo} alt="Logo" className="h-6 w-6" />
                     </div>
-                    <div>
-                        <label className="block text-slate-700 mb-2" htmlFor="email">
-                            Email
-                        </label>
-                        <input
-                            className={`w-full px-4 py-2 rounded border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border border-red-500' : ''}`}
-                            type="email"
-                            id="email"
-                            placeholder="Enter your email"
-                            {...register("email", {
-                                required: "Email is required",
-                                pattern: {
-                                    value: /^\S+@\S+$/i,
-                                    message: "Invalid email address",
-                                },
-                            })}
-                        />
-                        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Create an account</h1>
+                    <p className="text-sm text-slate-600 mt-1">
+                        Start colleborating with your team today.
+                    </p>
+                </div>
+
+                {/* Sign Up Card */}
+                <Card className="p-6 sm:p-8">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
+                        {/* Full Name Field */}
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Full Name</Label>
+                            <div className="relative">
+                                <User className="absolute left-3 top-2.5 h-5 w-5 text-slate-400" />
+                                <Input
+                                    id="name"
+                                    type="text"
+                                    placeholder="John Doe"
+                                    className="pl-10"
+                                    {...register("name", { required: true })}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/* Email Field */}
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <div className="relative">
+                                <Mail className="absolute left-3 top-2.5 h-5 w-5 text-slate-400" />
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="name@company.com"
+                                    className="pl-10"
+                                    {...register("email", { required: true })}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/* Password Field */}
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-2.5 h-5 w-5 text-slate-400" />
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    placeholder="••••••••"
+                                    className="pl-10"
+                                    required
+                                    {...register("password", { required: true, minLength: 8 })}
+                                    minLength={8}
+                                />
+                            </div>
+                            <p className="text-xs text-slate-500">Must be at least 8 characters long.</p>
+                        </div>
+
+                        {/* Submit Button */}
+                        <Button type="submit" disabled={isLoading} className="mt-2 bg-blue-600 hover:bg-blue-700 text-white">
+                            {isLoading ? (
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            ) : (
+                                <>
+                                    Create Account <ArrowRight className="w-4 h-4 ml-2" />
+                                </>
+                            )}
+                        </Button>
+                    </form>
+
+                    {/* Divider */}
+                    <div className="relative my-6">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-slate-200"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="bg-white px-2 text-slate-500">Or register with</span>
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-slate-700 mb-2" htmlFor="password">
-                            Password
-                        </label>
-                        <input
-                            className={`w-full px-4 py-2 rounded border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border border-red-500' : ''}`}
-                            type="password"
-                            id="password"
-                            placeholder="Enter your password"
-                            {...register("password", {
-                                required: "Password is required",
-                                minLength: {
-                                    value: 6,
-                                    message: "Password must be at least 6 characters",
-                                },
-                            })}
-                        />
-                        {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+
+                    {/* Social Logins */}
+                    <div className="grid grid-cols-2 gap-3">
+                        <Button variant="outline" type="button">
+                            <GithubIcon className="w-4 h-4 mr-2" />
+                            GitHub
+                        </Button>
+                        <Button variant="outline" type="button">
+                            <GoogleIcon className="w-4 h-4 mr-2" />
+                            Google
+                        </Button>
                     </div>
-                    <button
-                        type="submit"
-                        className="w-full py-2 bg-[#433bff] hover:bg-blue-700 text-white font-semibold rounded transition"
-                    >
-                        Register
-                    </button>
-                </form>
-                <p className="mt-6 text-center text-slate-600">
-                    Already have an account?{" "}
-                    <Link to="/login" className="text-blue-600 hover:underline">
-                        Login
+                </Card>
+
+                {/* Footer Link */}
+                <p className="text-center text-sm text-slate-600 mt-6">
+                    Already have an account?{' '}
+                    <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-500 transition-colors" replace>
+                        Sign in
                     </Link>
                 </p>
             </div>
@@ -114,3 +165,4 @@ const Register = () => {
 };
 
 export default Register;
+
