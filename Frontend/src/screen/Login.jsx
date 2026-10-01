@@ -101,7 +101,7 @@
 import React, { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 
-import LoginComponent from '../components/loginPageComponents/loginComponent'
+import LoginComponent from '../components/loginPageComponents/LoginComponent'
 import SendOtp from '../components/loginPageComponents/SendOtp'
 import SubmitOtp from '../components/loginPageComponents/SubmitOtp'
 import ResetPassword from '../components/loginPageComponents/ResetPassword'
